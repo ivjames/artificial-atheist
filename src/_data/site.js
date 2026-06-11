@@ -42,6 +42,14 @@ export default {
       tintLight: "#FAECE7",
       tintDark: "#200F0A",
     },
+    news: {
+      name: "News",
+      icon: "ti-broadcast",
+      light: "#3D4654",
+      dark: "#A8B2C4",
+      tintLight: "#EDEFF3",
+      tintDark: "#14181F",
+    },
   },
 
   nav: [
@@ -49,6 +57,7 @@ export default {
     { label: "Philosophy", url: "/topics/philosophy/", icon: "ti-brain" },
     { label: "Secularism", url: "/topics/secularism/", icon: "ti-building-bank" },
     { label: "Religion", url: "/topics/religion/", icon: "ti-book" },
+    { label: "News", url: "/topics/news/", icon: "ti-broadcast" },
     { label: "About", url: "/about/", icon: "ti-info-circle" },
     { label: "FAQ", url: "/faq/", icon: "ti-help" },
   ],

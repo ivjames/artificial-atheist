@@ -20,7 +20,7 @@ import { generate as llm, providerInfo } from "./providers.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const POSTS_DIR = path.join(__dirname, "..", "src", "posts");
-const TOPICS = ["science", "philosophy", "secularism", "religion"];
+const TOPICS = ["science", "philosophy", "secularism", "religion"]; // news is hand-written, excluded from rotation
 
 function readExisting() {
   const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith(".md"));
