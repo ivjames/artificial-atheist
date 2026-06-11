@@ -194,6 +194,15 @@ a { color: inherit; }
 }
 [data-theme="dark"] .read-link { color: var(--accent-bright); }
 
+/* ===================== Topic artwork (icon + color) ===================== */
+.art-field { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.art-rings { position: absolute; inset: 0; width: 100%; height: 100%; }
+.art-icon { position: relative; z-index: 1; opacity: 0.9; }
+/* icon scales to the container it sits in */
+.lead-img .art-icon, .article-hero-img .art-icon { font-size: 84px; }
+.card-img .art-icon { font-size: 40px; }
+.list-thumb .art-icon { font-size: 24px; }
+
 /* ===================== Section eyebrow ===================== */
 .eyebrow {
   font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
