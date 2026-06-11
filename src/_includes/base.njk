@@ -1,0 +1,105 @@
+{%- macro logoMark() -%}
+<svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs><clipPath id="aa-lens"><path d="M36 16C41 21.5 43.5 28.5 43.5 36S41 50.5 36 56C31 50.5 28.5 43 28.5 36S31 21.5 36 16Z"/></clipPath></defs>
+  <circle cx="27" cy="36" r="20" fill="none" stroke="var(--mark-stroke)" stroke-width="1.75"/>
+  <circle cx="45" cy="36" r="20" fill="none" stroke="var(--mark-stroke)" stroke-width="1.75"/>
+  <path d="M36 16C41 21.5 43.5 28.5 43.5 36S41 50.5 36 56C31 50.5 28.5 43 28.5 36S31 21.5 36 16Z" fill="var(--mark-overlay)"/>
+  <text x="36" y="44" text-anchor="middle" font-family="Oxanium" font-size="26" font-weight="700" fill="var(--mark-letter)" clip-path="url(#aa-lens)">a</text>
+</svg>
+{%- endmacro -%}
+<!doctype html>
+<html lang="en" data-theme="light" data-font="md">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if title and title != site.title %}{{ title }} — {{ site.title }}{% else %}{{ site.title }} — {{ site.description }}{% endif %}</title>
+  <meta name="description" content="{{ description or site.description }}">
+  <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+  <meta property="og:title" content="{{ title or site.title }}">
+  <meta property="og:description" content="{{ description or site.description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+  <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="/feed.xml">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- No-flash: apply saved theme/font before first paint -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('aa-theme');
+        var f = localStorage.getItem('aa-font');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-font', f || 'md');
+      } catch (e) {}
+    })();
+  </script>
+  {% if site.ads.enabled and site.ads.adsenseClient %}
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ site.ads.adsenseClient }}" crossorigin="anonymous"></script>
+  {% endif %}
+</head>
+<body>
+  <header>
+    <div class="mast">
+      <a class="brand" href="/" aria-label="{{ site.title }} home">
+        {{ logoMark() }}
+        <span>
+          <span class="brand-name">{{ site.title }}</span>
+          <span class="brand-sub">{{ site.tagline }}</span>
+        </span>
+      </a>
+      <div class="controls">
+        <div class="ctrl ctrl-font-sm" data-set-font="sm" role="button" tabindex="0" aria-label="Smaller text" aria-pressed="false">A</div>
+        <div class="ctrl ctrl-font-lg" data-set-font="lg" role="button" tabindex="0" aria-label="Larger text" aria-pressed="false">A</div>
+        <div class="ctrl-sep"></div>
+        <div class="ctrl ctrl-icon" data-toggle-theme role="button" tabindex="0" aria-label="Toggle light or dark mode"><i class="ti ti-moon"></i></div>
+        <a class="ctrl ctrl-icon" href="/search/" aria-label="Search"><i class="ti ti-search"></i></a>
+      </div>
+    </div>
+    <nav class="subnav" aria-label="Topics">
+      <div class="subnav-inner">
+        {% for item in site.nav %}
+        <a href="{{ item.url }}"><i class="ti {{ item.icon }}"></i> {{ item.label }}</a>
+        {% endfor %}
+      </div>
+    </nav>
+    {% if collections.posts.length %}
+    <div class="ticker">
+      <div class="ticker-inner">
+        <span class="ticker-label">Latest</span>
+        <div class="ticker-items">
+          {% for post in collections.posts | limit(4) %}
+          <a class="ticker-item" href="{{ post.url }}"><span class="dot">●</span> {{ post.data.title }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </header>
+
+  <main>
+    {{ content | safe }}
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span class="footer-name">{{ site.title }}</span>
+        <span class="ai-badge"><i class="ti ti-robot"></i> AI-generated</span>
+      </div>
+      <div class="footer-links">
+        <a href="/about/">About</a>
+        <a href="/faq/">FAQ</a>
+        <a href="{{ site.social.facebook }}">Facebook</a>
+        <a href="/feed.xml">RSS</a>
+        {% if site.donate.enabled %}<a href="{{ site.donate.url }}">{{ site.donate.label }}</a>{% endif %}
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/app.js" defer></script>
+</body>
+</html>

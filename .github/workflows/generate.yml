@@ -1,0 +1,47 @@
+name: Generate article
+
+# Runs on a schedule and on manual trigger. Cloudflare Pages rebuilds
+# automatically when the commit lands, so this is the only moving part.
+on:
+  schedule:
+    # Every other day at 14:00 UTC. Adjust cadence here.
+    - cron: "0 14 */2 * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Generate a new article
+        env:
+          AA_PROVIDER: ${{ vars.AA_PROVIDER }}
+          AA_MODEL: ${{ vars.AA_MODEL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          DO_INFERENCE_KEY: ${{ secrets.DO_INFERENCE_KEY }}
+        run: npm run generate
+
+      - name: Commit if a new post was created
+        run: |
+          if [ -n "$(git status --porcelain src/posts)" ]; then
+            git config user.name "Artificial Atheist Bot"
+            git config user.email "bot@artificialatheist.com"
+            git add src/posts
+            git commit -m "Add article: $(git status --porcelain src/posts | head -1 | sed 's/^...//')"
+            git push
+          else
+            echo "No new post this run (likely a dedup skip)."
+          fi

@@ -1,0 +1,39 @@
+{# Topic-keyed abstract artwork. Uses currentColor-style theme vars so the
+   same markup adapts to light and dark. `variant` lets the same topic show
+   slightly different compositions so the grid doesn't look repetitive. #}
+{%- macro art(topic, variant) -%}
+{%- set t = topic | lower -%}
+{%- if t == "philosophy" -%}
+  <svg viewBox="0 0 280 160" preserveAspectRatio="xMidYMid slice" style="background:var(--bg-tint)" aria-hidden="true">
+    <rect width="280" height="160" fill="var(--bg-tint)"/>
+    <circle cx="140" cy="80" r="42" fill="none" stroke="var(--accent-soft)" stroke-width="1"/>
+    <circle cx="140" cy="80" r="26" fill="none" stroke="var(--accent)" stroke-width="0.75"/>
+    <line x1="140" y1="34" x2="140" y2="126" stroke="var(--accent-soft)" stroke-width="0.75"/>
+    <line x1="94" y1="80" x2="186" y2="80" stroke="var(--accent-soft)" stroke-width="0.75"/>
+    <circle cx="140" cy="80" r="4" fill="var(--accent)"/>
+  </svg>
+{%- elif t == "secularism" -%}
+  <svg viewBox="0 0 280 160" preserveAspectRatio="xMidYMid slice" style="background:var(--bg-tint)" aria-hidden="true">
+    <rect width="280" height="160" fill="var(--bg-tint)"/>
+    <circle cx="140" cy="80" r="34" fill="none" stroke="var(--topic-color)" stroke-width="1"/>
+    <line x1="140" y1="46" x2="140" y2="114" stroke="var(--topic-color)" stroke-width="0.75"/>
+    <line x1="106" y1="80" x2="174" y2="80" stroke="var(--topic-color)" stroke-width="0.75"/>
+    <rect x="120" y="60" width="40" height="40" rx="2" fill="none" stroke="var(--topic-color)" stroke-width="0.75"/>
+  </svg>
+{%- elif t == "religion" -%}
+  <svg viewBox="0 0 280 160" preserveAspectRatio="xMidYMid slice" style="background:var(--bg-tint)" aria-hidden="true">
+    <rect width="280" height="160" fill="var(--bg-tint)"/>
+    <circle cx="140" cy="84" r="30" fill="none" stroke="var(--topic-color)" stroke-width="1"/>
+    <line x1="140" y1="54" x2="140" y2="40" stroke="var(--topic-color)" stroke-width="1.5"/>
+    <circle cx="140" cy="84" r="4" fill="var(--topic-color)"/>
+  </svg>
+{%- else -%}
+  <svg viewBox="0 0 280 160" preserveAspectRatio="xMidYMid slice" style="background:var(--bg-tint)" aria-hidden="true">
+    <rect width="280" height="160" fill="var(--bg-tint)"/>
+    <circle cx="112" cy="80" r="30" fill="none" stroke="var(--topic-color)" stroke-width="0.75"/>
+    <circle cx="168" cy="80" r="30" fill="none" stroke="var(--topic-color)" stroke-width="0.75"/>
+    <ellipse cx="140" cy="80" rx="14" ry="30" fill="none" stroke="var(--topic-color)" stroke-width="0.75" stroke-dasharray="3,3"/>
+    <circle cx="140" cy="80" r="4" fill="var(--topic-color)"/>
+  </svg>
+{%- endif -%}
+{%- endmacro -%}

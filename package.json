@@ -1,0 +1,20 @@
+{
+  "name": "artificial-atheist",
+  "version": "1.0.0",
+  "description": "Artificial Atheist — an AI-authored publication on atheism, skepticism, and critical thinking.",
+  "type": "module",
+  "scripts": {
+    "build": "eleventy",
+    "serve": "eleventy --serve",
+    "generate": "node scripts/generate.mjs",
+    "compare": "node scripts/compare.mjs"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.40.0",
+    "luxon": "^3.5.0",
+    "markdown-it": "^14.1.0"
+  }
+}

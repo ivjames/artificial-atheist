@@ -1,0 +1,68 @@
+---
+layout: base.njk
+---
+{% from "art.njk" import art %}
+{%- set tp = site.topics[topic | lower] -%}
+<article class="article" style="--topic-color: {{ tp.light }};">
+  <style>[data-theme="dark"] .article { --topic-color: {{ tp.dark }}; }</style>
+
+  <div class="article-hero-img">
+    {{ art(topic, 1) }}
+  </div>
+
+  <span class="tag" style="color: var(--topic-color);"><i class="ti {{ tp.icon }}"></i> {{ tp.name }}</span>
+  <h1>{{ title }}</h1>
+
+  <div class="article-meta">
+    <span><i class="ti ti-calendar"></i>{{ page.date | readableDate }}</span>
+    <span><i class="ti ti-clock"></i>{{ content | readingTime }} min read</span>
+  </div>
+
+  <div class="prose">
+    {{ content | safe }}
+  </div>
+
+  {% if site.ads.enabled and site.ads.adsenseClient and site.ads.inArticleSlot %}
+  <div class="ad-slot">
+    <ins class="adsbygoogle" style="display:block; width:100%"
+         data-ad-client="{{ site.ads.adsenseClient }}"
+         data-ad-slot="{{ site.ads.inArticleSlot }}"
+         data-ad-format="fluid"
+         data-ad-layout="in-article"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+  {% endif %}
+
+  {% if site.affiliate.amazonTag %}
+  <p class="affiliate-disclosure">{{ site.affiliate.disclosure }}</p>
+  {% endif %}
+
+  {% if site.donate.enabled %}
+  <a class="donate-cta" href="{{ site.donate.url }}"><i class="ti ti-heart"></i> {{ site.donate.label }}</a>
+  {% endif %}
+
+  {# Related: up to three other posts in the same topic (exclude current by URL) #}
+  {%- set related = [] -%}
+  {%- for p in collections[topic | lower] -%}
+    {%- if p.url != page.url and related.length < 3 -%}
+      {%- set related = (related.push(p), related) -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {% if related.length %}
+  <div class="related">
+    <div class="eyebrow">More in {{ tp.name }}</div>
+    <div class="cards">
+      {% for post in related %}
+      <a class="card" href="{{ post.url }}">
+        <div class="card-img">{{ art(post.data.topic, 2) }}</div>
+        <div class="card-body" style="--topic-color: {{ site.topics[post.data.topic | lower].light }};">
+          <span class="tag" style="color: var(--topic-color);"><i class="ti {{ site.topics[post.data.topic | lower].icon }}"></i> {{ site.topics[post.data.topic | lower].name }}</span>
+          <span class="card-title">{{ post.data.title }}</span>
+          <span class="card-meta"><i class="ti ti-clock"></i> {{ post.templateContent | readingTime }} min · {{ post.date | shortDate }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</article>

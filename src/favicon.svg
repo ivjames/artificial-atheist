@@ -1,0 +1,7 @@
+<svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <rect width="72" height="72" rx="12" fill="#0E0E0F"/>
+  <defs><clipPath id="f"><path d="M36 16C41 21.5 43.5 28.5 43.5 36S41 50.5 36 56C31 50.5 28.5 43 28.5 36S31 21.5 36 16Z"/></clipPath></defs>
+  <circle cx="27" cy="36" r="20" fill="none" stroke="#AFA9EC" stroke-width="2.5"/>
+  <circle cx="45" cy="36" r="20" fill="none" stroke="#AFA9EC" stroke-width="2.5"/>
+  <path d="M36 16C41 21.5 43.5 28.5 43.5 36S41 50.5 36 56C31 50.5 28.5 43 28.5 36S31 21.5 36 16Z" fill="#C8B8FF"/>
+</svg>
