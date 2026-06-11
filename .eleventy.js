@@ -37,7 +37,7 @@ export default function (eleventyConfig) {
   );
 
   // One collection per topic, derived from each post's `topic` front-matter.
-  const TOPICS = ["science", "philosophy", "secularism", "religion"];
+  const TOPICS = ["science", "philosophy", "secularism", "religion", "news"];
   for (const topic of TOPICS) {
     eleventyConfig.addCollection(topic, (api) =>
       api
