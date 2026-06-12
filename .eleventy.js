@@ -53,34 +53,43 @@ export default function (eleventyConfig) {
   }
   const C = "var(--topic-color)";
 
+  // All patterns are true tessellations in the topic color (var --topic-color),
+  // sized for the 280x160 art field. A few cells get a faint fill for texture;
+  // the seed shifts which cells, giving per-article variation.
+  const W = 280, H = 160;
   function patScience(r) {
-    const n = 6 + Math.floor(r() * 3);
-    const pts = [];
-    for (let i = 0; i < n; i++)
-      pts.push([30 + r() * 220, 24 + r() * 112]);
-    let s = "";
-    for (let i = 0; i < pts.length; i++)
-      for (let j = i + 1; j < pts.length; j++) {
-        const dx = pts[i][0] - pts[j][0], dy = pts[i][1] - pts[j][1];
-        if (Math.hypot(dx, dy) < 85)
-          s += `<line x1="${pts[i][0].toFixed(1)}" y1="${pts[i][1].toFixed(1)}" x2="${pts[j][0].toFixed(1)}" y2="${pts[j][1].toFixed(1)}" stroke="${C}" stroke-width="0.6" opacity="0.6"/>`;
+    // hexagonal tiling
+    let s = "", R = 19, dx = R * 1.5, dy = R * 0.866, col = 0;
+    for (let cx = -R; cx < W + R; cx += dx) {
+      const off = (col % 2) ? dy : 0; col++;
+      for (let cy = -R + off; cy < H + R; cy += dy * 2) {
+        let p = [];
+        for (let i = 0; i < 6; i++) {
+          const a = (Math.PI / 180) * (60 * i);
+          p.push(`${(cx + R * Math.cos(a)).toFixed(1)},${(cy + R * Math.sin(a)).toFixed(1)}`);
+        }
+        const f = r() < 0.18 ? `fill="${C}" opacity="0.16"` : `fill="none"`;
+        s += `<polygon points="${p.join(" ")}" ${f} stroke="${C}" stroke-width="0.6" opacity="0.4"/>`;
       }
-    for (const [x, y] of pts)
-      s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(2 + r() * 2).toFixed(1)}" fill="${C}" opacity="0.7"/>`;
-    return s;
-  }
-  function patPhilosophy(r) {
-    const n = 4 + Math.floor(r() * 3);
-    const cx = 110 + r() * 60, cy = 60 + r() * 40;
-    let s = "";
-    for (let i = 0; i < n; i++) {
-      const rad = 14 + i * (10 + r() * 6);
-      s += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rad.toFixed(1)}" fill="none" stroke="${C}" stroke-width="0.7" opacity="${(0.62 - i * 0.07).toFixed(2)}"/>`;
     }
     return s;
   }
+  function patPhilosophy(r) {
+    // diamond (rotated square) tiling
+    const cols = 8, rows = 5, w = W / cols, h = H / rows;
+    let s = "";
+    for (let y = 0; y < rows; y++)
+      for (let x = 0; x < cols; x++) {
+        const cx = x * w + w / 2, cy = y * h + h / 2;
+        const p = `${cx},${(cy - h / 2).toFixed(1)} ${(cx + w / 2).toFixed(1)},${cy} ${cx},${(cy + h / 2).toFixed(1)} ${(cx - w / 2).toFixed(1)},${cy}`;
+        const f = r() < 0.18 ? `fill="${C}" opacity="0.16"` : `fill="none"`;
+        s += `<polygon points="${p}" ${f} stroke="${C}" stroke-width="0.55" opacity="0.4"/>`;
+      }
+    return s;
+  }
   function patSecularism(r) {
-    const cols = 6, rows = 4, w = 280 / cols, h = 160 / rows;
+    // triangular tiling
+    const cols = 7, rows = 4, w = W / cols, h = H / rows;
     let s = "";
     for (let y = 0; y < rows; y++)
       for (let x = 0; x < cols; x++) {
@@ -88,28 +97,41 @@ export default function (eleventyConfig) {
         const pts = up
           ? `${x0},${y0 + h} ${x0 + w / 2},${y0} ${x0 + w},${y0 + h}`
           : `${x0},${y0} ${x0 + w / 2},${y0 + h} ${x0 + w},${y0}`;
-        const fill = r() < 0.18 ? `fill="${C}" opacity="0.2"` : `fill="none"`;
-        s += `<polygon points="${pts}" ${fill} stroke="${C}" stroke-width="0.5" opacity="0.45"/>`;
+        const f = r() < 0.2 ? `fill="${C}" opacity="0.18"` : `fill="none"`;
+        s += `<polygon points="${pts}" ${f} stroke="${C}" stroke-width="0.5" opacity="0.42"/>`;
       }
     return s;
   }
   function patReligion(r) {
-    const cx = 140, cy = 80, n = 9 + Math.floor(r() * 5);
-    const off = r() * Math.PI;
-    let s = "";
-    for (let i = 0; i < n; i++) {
-      const a = off + (i / n) * Math.PI * 2;
-      const r1 = 18, r2 = 50 + r() * 28;
-      s += `<line x1="${(cx + Math.cos(a) * r1).toFixed(1)}" y1="${(cy + Math.sin(a) * r1).toFixed(1)}" x2="${(cx + Math.cos(a) * r2).toFixed(1)}" y2="${(cy + Math.sin(a) * r2).toFixed(1)}" stroke="${C}" stroke-width="0.6" opacity="0.5"/>`;
+    // rhombille tiling (hexagons split into 3 rhombi -> isometric cubes)
+    let s = "", R = 24, dx = R * 1.5, dy = R * 0.866, col = 0;
+    for (let cx = 0; cx < W + R; cx += dx) {
+      const off = (col % 2) ? dy : 0; col++;
+      for (let cy = off; cy < H + R; cy += dy * 2) {
+        const v = [];
+        for (let i = 0; i < 6; i++) {
+          const a = (Math.PI / 180) * (60 * i);
+          v.push([cx + R * Math.cos(a), cy + R * Math.sin(a)]);
+        }
+        const hexP = v.map((q) => q.map((n) => n.toFixed(1)).join(",")).join(" ");
+        s += `<polygon points="${hexP}" fill="none" stroke="${C}" stroke-width="0.5" opacity="0.34"/>`;
+        for (let i = 0; i < 6; i += 2)
+          s += `<line x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${v[i][0].toFixed(1)}" y2="${v[i][1].toFixed(1)}" stroke="${C}" stroke-width="0.5" opacity="0.34"/>`;
+      }
     }
-    s += `<circle cx="${cx}" cy="${cy}" r="16" fill="none" stroke="${C}" stroke-width="0.7" opacity="0.6"/>`;
     return s;
   }
   function patNews(r) {
-    const cx = 110 + r() * 60, cy = 60 + r() * 40, n = 4 + Math.floor(r() * 3);
+    // vertical brick tiling (small scale to match the others' rhythm)
+    const cols = 8, bw = W / cols, bh = H / 3.5;
     let s = "";
-    for (let i = 0; i < n; i++)
-      s += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${(14 + i * 16).toFixed(1)}" fill="none" stroke="${C}" stroke-width="0.7" opacity="${(0.62 - i * 0.1).toFixed(2)}"/>`;
+    for (let x = 0; x < cols; x++) {
+      const off = (x % 2) ? -bh / 2 : 0;
+      for (let y = off; y < H; y += bh) {
+        const f = r() < 0.18 ? `fill="${C}" opacity="0.15"` : `fill="none"`;
+        s += `<rect x="${(x * bw).toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" ${f} stroke="${C}" stroke-width="0.5" opacity="0.4"/>`;
+      }
+    }
     return s;
   }
   const PATTERNS = {
