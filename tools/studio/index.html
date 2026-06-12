@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artificial Atheist Studio</title>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it@14/dist/markdown-it.min.js"></script>
+<style>
+  :root{
+    --bg:#0E0E0F; --panel:#16151F; --panel2:#1C1B26; --border:#2A2830;
+    --text:#F2F0EA; --muted:#8A8694; --accent:#C8B8FF; --accent2:#7F77DD;
+    --good:#5DCAA5; --bad:#F0997B; --radius:8px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border)}
+  .brand{font-weight:600;letter-spacing:.04em}
+  .brand small{color:var(--muted);font-weight:400;margin-left:8px}
+  .status{font-size:12px;color:var(--muted)}
+  .status b{color:var(--accent)}
+  main{display:grid;grid-template-columns:380px 1fr;gap:0;height:calc(100vh - 53px)}
+  .left{border-right:1px solid var(--border);padding:18px;overflow:auto}
+  .right{display:grid;grid-template-rows:auto 1fr;overflow:hidden}
+  label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 5px}
+  textarea,input,select{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:9px 11px;font-family:inherit;font-size:14px}
+  textarea{resize:vertical}
+  textarea#seed{min-height:110px}
+  .row{display:flex;gap:10px}
+  .row>*{flex:1}
+  button{cursor:pointer;border:none;border-radius:6px;padding:10px 14px;font-family:inherit;font-size:13px;font-weight:500}
+  .primary{background:var(--accent2);color:#fff}
+  .primary:hover{background:#6f66d0}
+  .ghost{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+  .ghost:hover{border-color:var(--accent2)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  .editor{display:grid;grid-template-columns:1fr 1fr;gap:0;overflow:hidden}
+  .pane{overflow:auto;padding:18px}
+  .pane.edit{border-right:1px solid var(--border)}
+  #body{width:100%;height:100%;min-height:300px;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.6}
+  .preview h1{font-size:24px;margin:.2em 0 .4em}
+  .preview h2{font-size:19px;margin:1.2em 0 .4em}
+  .preview p{margin:0 0 1em;color:#ddd}
+  .preview blockquote{border-left:3px solid var(--accent2);padding-left:12px;color:var(--muted);font-style:italic}
+  .toolbar{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--panel)}
+  .toolbar .meta{display:flex;gap:8px;flex:1;flex-wrap:wrap}
+  .toolbar .meta input,.toolbar .meta select{font-size:13px;padding:6px 8px}
+  .w-title{flex:2 1 200px}
+  .w-slug{flex:2 1 160px}
+  .w-topic,.w-date{flex:1 1 120px}
+  .pubrow{display:flex;align-items:center;gap:14px;padding:12px 18px;border-top:1px solid var(--border);background:var(--panel)}
+  .check{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+  .check input{width:auto}
+  .log{font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;color:var(--muted);padding:10px 18px;max-height:120px;overflow:auto;border-top:1px solid var(--border)}
+  .log.err{color:var(--bad)}
+  .log.ok{color:var(--good)}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .excerpt-wrap textarea{min-height:54px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Artificial Atheist <small>Studio</small></div>
+  <div class="status" id="status">…</div>
+</header>
+<main>
+  <div class="left">
+    <label for="seed">Seed idea</label>
+    <textarea id="seed" placeholder="e.g. The difference between doubt and denial, and why conflating them is a rhetorical trick."></textarea>
+    <label for="topic-sel">Topic</label>
+    <select id="topic-sel">
+      <option value="auto">Auto (let the model choose)</option>
+    </select>
+    <button class="primary" id="gen" style="width:100%;margin-top:16px">Generate draft</button>
+    <div class="hint" id="genhint"></div>
+    <div style="margin-top:22px">
+      <label>Existing titles (dedup reference)</label>
+      <div class="hint" id="titles" style="max-height:240px;overflow:auto"></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="toolbar">
+      <div class="meta">
+        <input class="w-title" id="title" placeholder="Title">
+        <input class="w-slug" id="slug" placeholder="slug (auto)">
+        <select class="w-topic" id="topic-out"></select>
+        <input class="w-date" id="date" type="date">
+      </div>
+    </div>
+    <div class="editor">
+      <div class="pane edit">
+        <div class="excerpt-wrap">
+          <label for="excerpt">Excerpt</label>
+          <textarea id="excerpt" placeholder="One-sentence summary"></textarea>
+        </div>
+        <label for="body">Body (Markdown)</label>
+        <textarea id="body" placeholder="The article will appear here. Edit freely."></textarea>
+      </div>
+      <div class="pane preview" id="preview"></div>
+    </div>
+    <div class="pubrow">
+      <label class="check"><input type="checkbox" id="commit" checked> commit</label>
+      <label class="check"><input type="checkbox" id="push" checked> push (deploys)</label>
+      <label class="check"><input type="checkbox" id="overwrite"> overwrite if exists</label>
+      <div style="flex:1"></div>
+      <span id="gitstate" class="hint" style="margin:0"></span>
+      <button class="ghost" id="saveDraft">Save file only</button>
+      <button class="primary" id="publish">Publish</button>
+    </div>
+    <div class="log" id="log"></div>
+  </div>
+</main>
+
+<script>
+const md = window.markdownit({ html:false, linkify:true, typographer:true });
+const $ = (id) => document.getElementById(id);
+const api = async (path, opts) => (await fetch(path, opts)).json();
+
+function setLog(msg, cls=""){ const l=$("log"); l.className="log "+cls; l.textContent=msg; }
+function renderPreview(){ $("preview").innerHTML = md.render($("body").value || "*Nothing yet.*"); }
+function autoSlug(){ if(!$("slug").dataset.touched){ $("slug").value = ($("title").value||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,60); } }
+
+$("body").addEventListener("input", renderPreview);
+$("title").addEventListener("input", autoSlug);
+$("slug").addEventListener("input", () => $("slug").dataset.touched="1");
+
+let TOPICS=[];
+async function loadContext(){
+  const c = await api("/api/context");
+  TOPICS = c.topics;
+  const sel=$("topic-sel"), out=$("topic-out");
+  for(const t of TOPICS){
+    const label = t.charAt(0).toUpperCase()+t.slice(1)+` (${c.counts[t]||0})`;
+    sel.insertAdjacentHTML("beforeend", `<option value="${t}">${label}</option>`);
+    out.insertAdjacentHTML("beforeend", `<option value="${t}">${t}</option>`);
+  }
+  $("titles").innerHTML = c.titles.map(t=>"• "+t).join("<br>") || "none yet";
+  $("status").innerHTML = `provider <b>${c.provider.provider}</b> · ${c.provider.model}` +
+    (c.hasKey ? "" : ` · <span style="color:var(--bad)">no API key</span>`);
+  $("date").value = new Date().toISOString().slice(0,10);
+}
+
+$("gen").addEventListener("click", async () => {
+  const seed=$("seed").value.trim();
+  if(!seed){ $("genhint").textContent="Enter a seed idea first."; return; }
+  $("gen").disabled=true; $("gen").innerHTML='<span class="spin"></span> Generating…'; setLog("");
+  try{
+    const data = await api("/api/generate", {method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({seed, topic:$("topic-sel").value})});
+    if(data.error){ setLog(data.error,"err"); }
+    else{
+      $("title").value=data.title||""; autoSlug();
+      $("excerpt").value=data.excerpt||"";
+      $("body").value=data.body_markdown||"";
+      $("topic-out").value=(data.topic||"philosophy").toLowerCase();
+      renderPreview();
+      setLog("Draft generated. Review, edit, then Publish.","ok");
+    }
+  }catch(e){ setLog(String(e),"err"); }
+  $("gen").disabled=false; $("gen").textContent="Generate draft";
+});
+
+async function refreshGit(){
+  try{
+    const g = await api("/api/gitstatus");
+    const el = $("gitstate");
+    if(!g.isRepo){ el.innerHTML='<span style="color:var(--bad)">not a git repo</span>'; return; }
+    let bits = [`<b style="color:var(--text)">${g.branch}</b>`];
+    if(g.behind>0) bits.push(`<span style="color:var(--bad)">↓${g.behind} behind</span>`);
+    if(g.ahead>0) bits.push(`<span style="color:var(--accent)">↑${g.ahead} ahead</span>`);
+    if(g.dirty) bits.push(`<span style="color:var(--bad)">dirty</span>`);
+    if(g.behind===0 && !g.dirty) bits.push(`<span style="color:var(--good)">clean</span>`);
+    el.innerHTML = bits.join(" · ");
+  }catch(e){}
+}
+
+async function doPublish(commit, push, allowDirty=false){
+  const payload={
+    title:$("title").value, slug:$("slug").value, topic:$("topic-out").value,
+    date:$("date").value, excerpt:$("excerpt").value, body_markdown:$("body").value,
+    commit, push, overwrite:$("overwrite").checked, allowDirty
+  };
+  if(!payload.title.trim()){ setLog("Title required.","err"); return; }
+  setLog("Working…");
+  const r = await fetch("/api/publish",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+  const data = await r.json();
+  if(data.error){
+    setLog((data.log?data.log.join("\n")+"\n":"")+data.error,"err");
+    if(data.needsDirtyOverride && confirm("Working tree has unrelated uncommitted changes. Proceed anyway (commit only this article)?")){
+      return doPublish(commit, push, true);
+    }
+  } else {
+    setLog(data.log.join("\n"),"ok");
+    loadContext(); refreshGit();
+  }
+}
+
+$("publish").addEventListener("click", () => doPublish($("commit").checked, $("push").checked));
+$("saveDraft").addEventListener("click", () => doPublish(false, false));
+
+loadContext();
+refreshGit();
+setInterval(refreshGit, 20000);
+renderPreview();
+</script>
+</body>
+</html>

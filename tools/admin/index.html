@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artificial Atheist Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it@14/dist/markdown-it.min.js"></script>
+<style>
+  :root{--bg:#0E0E0F;--panel:#16151F;--panel2:#1C1B26;--border:#2A2830;--text:#F2F0EA;--muted:#8A8694;--accent:#C8B8FF;--accent2:#7F77DD;--good:#5DCAA5;--bad:#F0997B}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+  header{display:flex;align-items:center;gap:20px;padding:12px 20px;border-bottom:1px solid var(--border)}
+  .brand{font-weight:600;letter-spacing:.04em}
+  .brand small{color:var(--muted);font-weight:400;margin-left:8px}
+  nav{display:flex;gap:4px}
+  nav button{background:none;border:none;color:var(--muted);font-family:inherit;font-size:14px;padding:7px 14px;border-radius:6px;cursor:pointer}
+  nav button.active{background:var(--panel2);color:var(--text)}
+  .status{margin-left:auto;font-size:12px;color:var(--muted)}
+  .status b{color:var(--accent)}
+  .panel{display:none;padding:22px}
+  .panel.active{display:block}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+  .stat{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px}
+  .stat .n{font-size:26px;font-weight:600}
+  .stat .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:16px}
+  .card h3{margin:0 0 10px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+  textarea,input,select{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:9px 11px;font-family:inherit;font-size:14px}
+  textarea{resize:vertical}
+  button.btn{cursor:pointer;border:none;border-radius:6px;padding:9px 14px;font-family:inherit;font-size:13px;font-weight:500}
+  .primary{background:var(--accent2);color:#fff}.primary:hover{background:#6f66d0}
+  .ghost{background:var(--panel2);color:var(--text);border:1px solid var(--border)}.ghost:hover{border-color:var(--accent2)}
+  .danger{background:none;border:1px solid var(--border);color:var(--bad)}.danger:hover{border-color:var(--bad)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .hint{font-size:12px;color:var(--muted)}
+  .commits{font-size:13px}
+  .commits div{padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:10px}
+  .commits .h{color:var(--accent2);font-family:ui-monospace,monospace}
+  .commits .w{color:var(--muted);margin-left:auto;white-space:nowrap}
+  /* studio */
+  .studio{display:grid;grid-template-columns:340px 1fr;gap:16px}
+  .editor-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  #body{width:100%;min-height:340px;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.6;color:var(--text)}
+  .preview{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:14px;overflow:auto;max-height:520px}
+  .preview h1{font-size:22px}.preview h2{font-size:18px;margin:1.1em 0 .3em}.preview p{color:#ddd}
+  .preview blockquote{border-left:3px solid var(--accent2);padding-left:12px;color:var(--muted);font-style:italic}
+  .metarow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .metarow .t{flex:2 1 180px}.metarow .s{flex:2 1 140px}.metarow .tp,.metarow .d{flex:1 1 110px}
+  .pub{display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap}
+  .chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}.chk input{width:auto}
+  .log{font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;color:var(--muted);margin-top:12px;max-height:140px;overflow:auto}
+  .log.err{color:var(--bad)}.log.ok{color:var(--good)}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  /* articles */
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border);font-size:13px}
+  th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .tp-badge{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+  td .act{display:flex;gap:6px;justify-content:flex-end}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Artificial Atheist <small>Admin</small></div>
+  <nav>
+    <button data-tab="dash" class="active">Dashboard</button>
+    <button data-tab="studio">Studio</button>
+    <button data-tab="articles">Articles</button>
+  </nav>
+  <div class="status" id="status">…</div>
+</header>
+
+<!-- DASHBOARD -->
+<section class="panel active" id="dash">
+  <div class="grid" id="stats"></div>
+  <div class="card">
+    <h3>Repository</h3>
+    <div id="gitbox" class="hint">…</div>
+    <div class="commits" id="commits" style="margin-top:10px"></div>
+  </div>
+  <div class="card">
+    <h3>Quick draft</h3>
+    <div class="hint">Seed an idea, generate, and it opens in Studio for review.</div>
+    <textarea id="qseed" rows="2" style="margin-top:8px" placeholder="Seed idea…"></textarea>
+    <div style="margin-top:8px"><button class="btn primary" id="qgen">Generate → Studio</button></div>
+  </div>
+</section>
+
+<!-- STUDIO -->
+<section class="panel" id="studio">
+  <div class="studio">
+    <div>
+      <label for="seed">Seed idea</label>
+      <textarea id="seed" rows="5" placeholder="e.g. The difference between doubt and denial…"></textarea>
+      <label for="topic-sel">Topic</label>
+      <select id="topic-sel"><option value="auto">Auto (model chooses)</option></select>
+      <button class="btn primary" id="gen" style="width:100%;margin-top:14px">Generate draft</button>
+      <div class="hint" id="editing" style="margin-top:12px"></div>
+    </div>
+    <div>
+      <div class="metarow">
+        <input class="t" id="title" placeholder="Title">
+        <input class="s" id="slug" placeholder="slug (auto)">
+        <select class="tp" id="topic-out"></select>
+        <input class="d" id="date" type="date">
+      </div>
+      <div class="editor-cols">
+        <div>
+          <label for="excerpt">Excerpt</label>
+          <textarea id="excerpt" rows="2"></textarea>
+          <label for="body">Body (Markdown)</label>
+          <textarea id="body"></textarea>
+        </div>
+        <div>
+          <label>Preview</label>
+          <div class="preview" id="preview"></div>
+        </div>
+      </div>
+      <div class="pub">
+        <label class="chk"><input type="checkbox" id="commit" checked> commit</label>
+        <label class="chk"><input type="checkbox" id="push" checked> push (deploys)</label>
+        <label class="chk"><input type="checkbox" id="overwrite"> overwrite</label>
+        <div style="flex:1"></div>
+        <button class="btn ghost" id="newDraft">New</button>
+        <button class="btn ghost" id="saveDraft">Save file only</button>
+        <button class="btn primary" id="publish">Publish</button>
+      </div>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLES -->
+<section class="panel" id="articles">
+  <div class="card">
+    <h3>Articles</h3>
+    <table><thead><tr><th>Title</th><th>Topic</th><th>Date</th><th></th></tr></thead>
+    <tbody id="artrows"></tbody></table>
+  </div>
+  <div class="log" id="artlog"></div>
+</section>
+
+<script>
+const md = window.markdownit({ html:false, linkify:true, typographer:true });
+const $ = (id) => document.getElementById(id);
+const api = async (path, opts) => (await fetch(path, opts)).json();
+let editingFile = null;
+
+// tabs
+document.querySelectorAll("nav button").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll("nav button").forEach((x) => x.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach((x) => x.classList.remove("active"));
+  b.classList.add("active"); $(b.dataset.tab).classList.add("active");
+  if (b.dataset.tab === "articles") loadArticles();
+  if (b.dataset.tab === "dash") loadDash();
+}));
+
+function setLog(el,msg,cls=""){ el.className="log "+cls; el.textContent=msg; }
+function renderPreview(){ $("preview").innerHTML = md.render($("body").value || "*Nothing yet.*"); }
+function autoSlug(){ if(!$("slug").dataset.touched){ $("slug").value=($("title").value||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,60); } }
+$("body").addEventListener("input", renderPreview);
+$("title").addEventListener("input", autoSlug);
+$("slug").addEventListener("input", () => $("slug").dataset.touched="1");
+
+let TOPICS=[];
+async function loadContext(){
+  const c = await api("api/context");
+  TOPICS=c.topics;
+  $("topic-sel").innerHTML='<option value="auto">Auto (model chooses)</option>';
+  $("topic-out").innerHTML="";
+  for(const t of TOPICS){
+    $("topic-sel").insertAdjacentHTML("beforeend",`<option value="${t}">${t} (${c.counts[t]||0})</option>`);
+    $("topic-out").insertAdjacentHTML("beforeend",`<option value="${t}">${t}</option>`);
+  }
+  $("status").innerHTML = `<b>${c.provider.provider}</b> · ${c.provider.model}` + (c.hasKey?"":` · <span style="color:var(--bad)">no API key</span>`);
+  if(!$("date").value) $("date").value=new Date().toISOString().slice(0,10);
+  return c;
+}
+
+async function loadDash(){
+  const c = await loadContext();
+  const g = await api("api/gitstatus");
+  $("stats").innerHTML =
+    `<div class="stat"><div class="n">${c.total}</div><div class="l">Articles</div></div>` +
+    TOPICS.map(t=>`<div class="stat"><div class="n">${c.counts[t]||0}</div><div class="l">${t}</div></div>`).join("");
+  let gb = g.isRepo ? `branch <b style="color:var(--text)">${g.branch}</b>` : '<span style="color:var(--bad)">not a git repo</span>';
+  if(g.behind>0) gb+=` · <span style="color:var(--bad)">↓${g.behind} behind</span>`;
+  if(g.ahead>0) gb+=` · <span style="color:var(--accent)">↑${g.ahead} ahead</span>`;
+  gb += g.dirty?` · <span style="color:var(--bad)">dirty</span>`:` · <span style="color:var(--good)">clean</span>`;
+  $("gitbox").innerHTML=gb;
+  $("commits").innerHTML=(g.lastCommits||[]).map(c=>`<div><span class="h">${c.hash}</span><span>${c.subject}</span><span class="w">${c.when}</span></div>`).join("");
+}
+
+// generation
+async function generate(seed, topic){
+  const data = await api("api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({seed,topic})});
+  return data;
+}
+function fillStudio(data){
+  $("title").value=data.title||""; delete $("slug").dataset.touched; autoSlug();
+  $("excerpt").value=data.excerpt||"";
+  $("body").value=data.body_markdown||"";
+  $("topic-out").value=(data.topic||"philosophy").toLowerCase();
+  renderPreview();
+}
+function gotoStudio(){ document.querySelector('nav [data-tab="studio"]').click(); }
+
+$("gen").addEventListener("click", async () => {
+  const seed=$("seed").value.trim();
+  if(!seed){ setLog($("log"),"Enter a seed idea.","err"); return; }
+  $("gen").disabled=true; $("gen").innerHTML='<span class="spin"></span> Generating…'; setLog($("log"),"");
+  const data = await generate(seed,$("topic-sel").value);
+  if(data.error) setLog($("log"),data.error,"err");
+  else { editingFile=null; $("editing").textContent=""; fillStudio(data); setLog($("log"),"Draft ready. Review and Publish.","ok"); }
+  $("gen").disabled=false; $("gen").textContent="Generate draft";
+});
+
+$("qgen").addEventListener("click", async () => {
+  const seed=$("qseed").value.trim(); if(!seed) return;
+  $("qgen").disabled=true; $("qgen").innerHTML='<span class="spin"></span> Generating…';
+  const data = await generate(seed,"auto");
+  $("qgen").disabled=false; $("qgen").textContent="Generate → Studio";
+  if(data.error){ alert(data.error); return; }
+  editingFile=null; $("editing").textContent=""; $("seed").value=seed; $("qseed").value="";
+  fillStudio(data); gotoStudio(); setLog($("log"),"Draft ready. Review and Publish.","ok");
+});
+
+$("newDraft").addEventListener("click", () => {
+  editingFile=null; $("editing").textContent=""; $("seed").value="";
+  $("title").value="";$("slug").value="";delete $("slug").dataset.touched;$("excerpt").value="";$("body").value="";
+  $("date").value=new Date().toISOString().slice(0,10); renderPreview(); setLog($("log"),"");
+});
+
+async function doPublish(commit, push, allowDirty=false){
+  const payload={ title:$("title").value, slug:$("slug").value, topic:$("topic-out").value, date:$("date").value,
+    excerpt:$("excerpt").value, body_markdown:$("body").value, commit, push, overwrite:$("overwrite").checked||!!editingFile,
+    originalFile:editingFile||"", allowDirty };
+  if(!payload.title.trim()){ setLog($("log"),"Title required.","err"); return; }
+  setLog($("log"),"Working…");
+  const data = await api("api/publish",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+  if(data.error){
+    setLog($("log"),(data.log?data.log.join("\n")+"\n":"")+data.error,"err");
+    if(data.needsDirtyOverride && confirm("Unrelated uncommitted changes exist. Proceed anyway?")) return doPublish(commit,push,true);
+  } else { setLog($("log"),data.log.join("\n"),"ok"); editingFile=data.filename; $("editing").innerHTML=`editing <b>${data.filename}</b>`; loadContext(); }
+}
+$("publish").addEventListener("click", () => doPublish($("commit").checked,$("push").checked));
+$("saveDraft").addEventListener("click", () => doPublish(false,false));
+
+// articles
+async function loadArticles(){
+  const {articles} = await api("api/articles");
+  $("artrows").innerHTML = articles.map(a=>`<tr>
+    <td>${a.title}</td><td><span class="tp-badge">${a.topic}</span></td><td>${a.date}</td>
+    <td><div class="act"><button class="btn ghost" data-edit="${a.file}">Edit</button><button class="btn danger" data-del="${a.file}">Delete</button></div></td>
+  </tr>`).join("") || '<tr><td colspan="4" class="hint">No articles.</td></tr>';
+  $("artrows").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>editArticle(b.dataset.edit)));
+  $("artrows").querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>delArticle(b.dataset.del)));
+}
+async function editArticle(file){
+  const a = await api("api/article?file="+encodeURIComponent(file));
+  if(a.error){ alert(a.error); return; }
+  editingFile=file; fillStudio(a); $("date").value=a.date||$("date").value;
+  $("slug").value=file.replace(/^\d{4}-\d{2}-\d{2}-/,"").replace(/\.md$/,""); $("slug").dataset.touched="1";
+  $("editing").innerHTML=`editing <b>${file}</b>`; gotoStudio();
+}
+async function delArticle(file){
+  if(!confirm(`Delete ${file}? This commits and pushes the removal.`)) return;
+  const data = await api("api/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({file,push:true})});
+  if(data.error) setLog($("artlog"),data.error,"err");
+  else { setLog($("artlog"),data.log.join("\n"),"ok"); loadArticles(); }
+}
+
+loadContext(); loadDash(); renderPreview();
+</script>
+</body>
+</html>

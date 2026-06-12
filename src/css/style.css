@@ -350,3 +350,22 @@ a { color: inherit; }
 [data-theme="dark"] .art-field[data-t="religion"]   { --topic-color: #F0997B; --bg-tint: #3A1C12; }
 [data-theme="dark"] .art-field[data-t="news"]       { --topic-color: #A8B2C4; --bg-tint: #222834; }
 .art-icon { color: var(--topic-color); }
+
+/* ===================== Search (Pagefind UI, themed to site tokens) ===================== */
+.aa-search {
+  --pagefind-ui-scale: 0.9;
+  --pagefind-ui-primary: var(--accent);
+  --pagefind-ui-text: var(--text);
+  --pagefind-ui-background: var(--bg-raised);
+  --pagefind-ui-border: var(--border);
+  --pagefind-ui-tag: var(--bg-sub);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 8px;
+  --pagefind-ui-font: var(--font-body);
+}
+[data-theme="dark"] .aa-search { --pagefind-ui-primary: var(--accent-bright); }
+.aa-search .pagefind-ui__result-title a { font-family: var(--font-display); font-weight: 500; }
+.aa-search .pagefind-ui__result { border-bottom: 1px solid var(--border); }
+.aa-search .pagefind-ui__search-input { font-family: var(--font-body); }
+.aa-search mark { background: var(--bg-tint); color: var(--accent); padding: 0 2px; border-radius: 2px; }
+[data-theme="dark"] .aa-search mark { color: var(--accent-bright); }

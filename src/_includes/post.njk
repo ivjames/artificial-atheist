@@ -3,7 +3,7 @@ layout: base.njk
 ---
 {% from "art.njk" import art %}
 {%- set tp = site.topics[topic | lower] -%}
-<article class="article" style="--topic-color: {{ tp.light }};">
+<article class="article" data-pagefind-body data-pagefind-filter="topic:{{ tp.name }}" style="--topic-color: {{ tp.light }};">
   <style>[data-theme="dark"] .article { --topic-color: {{ tp.dark }}; }</style>
 
   <div class="article-hero-img">

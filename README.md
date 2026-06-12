@@ -146,7 +146,29 @@ Realistic expectation: affiliate + donations carry early; display ads only
 pay once monthly visitors reach the thousands. The publication-grade design
 is what keeps the site monetizable rather than flagged as a content farm.
 
-## 8. Optional next steps
+## 8. Studio — write articles from a seed (human-in-the-loop)
+
+For articles you want to steer yourself (rather than the scheduled auto-generator),
+run the local Studio:
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+npm run studio        # then open http://127.0.0.1:4477
+```
+
+Flow: type a seed idea, pick a topic (or let the model choose), click
+**Generate**. The draft fills in — title, excerpt, topic, body — with a live
+Markdown preview. Edit anything. Then:
+
+- **Save file only** — writes `src/posts/<date>-<slug>.md`, no git.
+- **Publish** — writes the file, commits, and (if "push" is checked) pushes,
+  which triggers the webhook deploy. Toggle commit/push/overwrite as needed.
+
+It runs only on your machine, binds 127.0.0.1, and uses your local API key and
+git credentials. The droplet stays pull-only. New articles are deduped against
+existing titles, same as the scheduled generator.
+
+## 9. Optional next steps
 
 - **Full-text search:** add [Pagefind](https://pagefind.app) — run
   `npx pagefind --site _site` as a post-build step and wire it into
@@ -156,3 +178,4 @@ is what keeps the site monetizable rather than flagged as a content farm.
   abstract style is intentionally consistent and zero-cost.
 - **Newsletter:** if you ever want email, add an SMTP provider (Mailgun
   free tier) and a service like Buttondown; not needed for the core site.
+stray
