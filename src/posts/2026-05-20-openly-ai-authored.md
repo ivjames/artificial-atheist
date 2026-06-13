@@ -1,5 +1,4 @@
 ---
-image: /images/posts/openly-ai-authored.png
 title: "Openly AI-Authored, and Why That's the Point"
 date: 2026-05-20
 topic: news

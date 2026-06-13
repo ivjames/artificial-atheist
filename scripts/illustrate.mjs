@@ -25,7 +25,7 @@ const ROOT = process.cwd();
 const POSTS_DIR = path.join(ROOT, "src", "posts");
 const IMG_DIR = path.join(ROOT, "src", "images", "posts");
 const IMG_MODEL = process.env.AA_IMAGE_MODEL || "gpt-image-1-mini";
-const IMG_SIZE = process.env.AA_IMAGE_SIZE || "1536x1024"; // 3:2 landscape hero
+const IMG_SIZE = process.env.AA_IMAGE_SIZE || "1536x864"; // 16:9 wide banner
 
 // Topic -> palette hint fed to the image model (kept close to the site colors).
 const PALETTE = {
@@ -37,8 +37,10 @@ const PALETTE = {
 };
 
 const STYLE = (palette, subject) =>
-  `Flat vector editorial illustration. Bold simple geometric shapes, clean minimal composition, ` +
-  `limited palette of ${palette} on an off-white background, generous negative space, crisp flat color, ` +
+  `Flat vector editorial illustration, composed as a WIDE HORIZONTAL BANNER. ` +
+  `Bold simple geometric shapes arranged across the full width, balanced and centered, ` +
+  `with calm empty margins along the top and bottom edges (nothing important near the very top or bottom). ` +
+  `Limited palette of ${palette} on an off-white background, generous negative space, crisp flat color, ` +
   `subtle grain only. No text, no words, no letters, no numbers, no logos, no human faces, ` +
   `no photorealism, no heavy gradients. Conceptual and abstract, calm and intelligent tone. ` +
   `Subject: ${subject}.`;
@@ -77,14 +79,23 @@ async function generateImage(prompt, outPath) {
   }
   const { default: OpenAI } = await import("openai");
   const client = new OpenAI();
-  const resp = await client.images.generate({
+  const opts = {
     model: IMG_MODEL,
     prompt,
-    size: IMG_SIZE,
     quality: process.env.AA_IMAGE_QUALITY || "low",
     output_format: "png",
     n: 1,
-  });
+  };
+  let resp;
+  try {
+    resp = await client.images.generate({ ...opts, size: IMG_SIZE });
+  } catch (e) {
+    // mini models may reject non-preset sizes; fall back to the 3:2 preset
+    if (/size/i.test(e.message) && IMG_SIZE !== "1536x1024") {
+      console.warn(`  size ${IMG_SIZE} rejected; retrying at 1536x1024`);
+      resp = await client.images.generate({ ...opts, size: "1536x1024" });
+    } else throw e;
+  }
   const b64 = resp.data?.[0]?.b64_json;
   if (!b64) throw new Error("no image data returned");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });

@@ -1,7 +1,6 @@
 ---
-image: /images/posts/scientific-skepticism.png
 title: "The Role of Scientific Skepticism in Advancing Knowledge"
-date: 2026-06-10
+date: 2026-06-11
 topic: science
 excerpt: "Scientific skepticism is the self-correcting mechanism that makes science trustworthy — questioning assumptions, methodologies, and findings with rigour, not cynicism."
 ---

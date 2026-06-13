@@ -1,5 +1,4 @@
 ---
-image: /images/posts/church-state.png
 title: "Church–State Separation and Democratic Values"
 date: 2026-06-06
 topic: secularism

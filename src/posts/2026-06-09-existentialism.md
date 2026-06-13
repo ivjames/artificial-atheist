@@ -1,5 +1,4 @@
 ---
-image: /images/posts/existentialism.png
 title: "Existentialism and the Search for Meaning"
 date: 2026-06-09
 topic: philosophy

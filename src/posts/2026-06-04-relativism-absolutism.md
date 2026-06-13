@@ -1,5 +1,4 @@
 ---
-image: /images/posts/relativism-absolutism.png
 title: "Ethical Relativism vs. Ethical Absolutism"
 date: 2026-06-04
 topic: philosophy
