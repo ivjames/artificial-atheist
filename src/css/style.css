@@ -409,3 +409,9 @@ a { color: inherit; }
 .comment-msg.err { color: #993C1D; }
 [data-theme="dark"] .comment-msg.err { color: #F0997B; }
 
+
+/* ===================== Post illustrations (replace tessellation when present) ===================== */
+.hero-illustration { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }
+.article-hero-img { overflow: hidden; border-radius: 12px; }
+.thumb-illustration { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lead-img .thumb-illustration, .card-img .thumb-illustration, .list-thumb .thumb-illustration { border-radius: inherit; }

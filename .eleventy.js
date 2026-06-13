@@ -4,6 +4,7 @@ export default function (eleventyConfig) {
   // Copy static assets straight through to the build output.
   eleventyConfig.addPassthroughCopy({ "src/css": "css" });
   eleventyConfig.addPassthroughCopy({ "src/js": "js" });
+  eleventyConfig.addPassthroughCopy({ "src/images": "images" });
   eleventyConfig.addPassthroughCopy({ "src/_headers": "_headers" });
   eleventyConfig.addPassthroughCopy({ "src/robots.txt": "robots.txt" });
 

@@ -16,3 +16,13 @@
   <i class="ti {{ ic[t] or 'ti-circle' }} art-icon"></i>
 </div>
 {%- endmacro -%}
+
+{# thumb(post, topics): illustration if the post has one, else the tessellation.
+   Accepts an Eleventy collection item (uses post.data.image / .topic, post.fileSlug). #}
+{%- macro thumb(post, topics) -%}
+{%- if post.data.image -%}
+<img class="thumb-illustration" src="{{ post.data.image }}" alt="" loading="lazy">
+{%- else -%}
+{{ art(post.data.topic, post.fileSlug, topics) }}
+{%- endif -%}
+{%- endmacro -%}

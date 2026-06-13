@@ -1,13 +1,13 @@
 ---
 layout: base.njk
 ---
-{% from "art.njk" import art %}
+{% from "art.njk" import art, thumb %}
 {%- set tp = site.topics[topic | lower] -%}
 <article class="article" data-pagefind-body data-pagefind-filter="topic:{{ tp.name }}" style="--topic-color: {{ tp.light }};">
   <style>[data-theme="dark"] .article { --topic-color: {{ tp.dark }}; }</style>
 
   <div class="article-hero-img">
-    {{ art(topic, page.fileSlug, site.topics) }}
+    {% if image %}<img class="hero-illustration" src="{{ image }}" alt="" loading="eager">{% else %}{{ art(topic, page.fileSlug, site.topics) }}{% endif %}
   </div>
 
   <span class="tag" style="color: var(--topic-color);"><i class="ti {{ tp.icon }}"></i> {{ tp.name }}</span>
@@ -54,7 +54,7 @@ layout: base.njk
     <div class="cards">
       {% for post in related %}
       <a class="card" href="{{ post.url }}">
-        <div class="card-img">{{ art(post.data.topic, post.fileSlug, site.topics) }}</div>
+        <div class="card-img">{{ thumb(post, site.topics) }}</div>
         <div class="card-body" style="--topic-color: {{ site.topics[post.data.topic | lower].light }};">
           <span class="tag" style="color: var(--topic-color);"><i class="ti {{ site.topics[post.data.topic | lower].icon }}"></i> {{ site.topics[post.data.topic | lower].name }}</span>
           <span class="card-title">{{ post.data.title }}</span>
@@ -67,4 +67,3 @@ layout: base.njk
   {% endif %}
 
 </article>
-

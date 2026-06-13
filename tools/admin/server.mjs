@@ -231,6 +231,23 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, { file, ...parseFront(fs.readFileSync(fp, "utf8")) });
     }
 
+    if (req.method === "POST" && p === "/api/illustrate") {
+      const d = await body(req);
+      const file = path.basename(d.file || "");
+      if (!file.endsWith(".md") || !fs.existsSync(path.join(POSTS_DIR, file)))
+        return send(res, 404, { error: "Save the article first, then illustrate." });
+      if (!process.env.OPENAI_API_KEY)
+        return send(res, 400, { error: "OPENAI_API_KEY is not set on the server." });
+      try {
+        const { illustratePost } = await import("../../scripts/illustrate.mjs");
+        const img = await illustratePost(file, { force: Boolean(d.force) });
+        if (!img) return send(res, 500, { error: "Illustration failed (see server logs)." });
+        return send(res, 200, { ok: true, image: img });
+      } catch (e) {
+        return send(res, 500, { error: e.message });
+      }
+    }
+
     if (req.method === "POST" && p === "/api/generate") {
       const { seed, topic } = await body(req);
       if (!seed || !seed.trim()) return send(res, 400, { error: "Provide a seed idea." });

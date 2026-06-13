@@ -134,6 +134,15 @@ async function main() {
   }
   const filename = writePost(data, topic, existing);
   console.log(`Wrote ${filename}`);
+
+  // Generate the illustration (non-fatal: post keeps the tessellation fallback on failure)
+  try {
+    const { illustratePost } = await import("./illustrate.mjs");
+    const img = await illustratePost(filename);
+    console.log(img ? `Illustration: ${img}` : "No illustration (using tessellation fallback)");
+  } catch (e) {
+    console.warn("Illustration step skipped:", e.message);
+  }
 }
 
 main().catch((e) => {

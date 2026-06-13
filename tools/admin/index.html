@@ -125,9 +125,11 @@
         <label class="chk"><input type="checkbox" id="overwrite"> overwrite</label>
         <div style="flex:1"></div>
         <button class="btn ghost" id="newDraft">New</button>
+        <button class="btn ghost" id="illustrate">Illustrate</button>
         <button class="btn ghost" id="saveDraft">Save file only</button>
         <button class="btn primary" id="publish">Publish</button>
       </div>
+      <div id="art-preview"></div>
       <div class="log" id="log"></div>
     </div>
   </div>
@@ -290,6 +292,23 @@ async function doPublish(commit, push, allowDirty=false){
 }
 $("publish").addEventListener("click", () => doPublish($("commit").checked,$("push").checked));
 $("saveDraft").addEventListener("click", () => doPublish(false,false));
+
+$("illustrate").addEventListener("click", async () => {
+  if(!$("title").value.trim()){ setLog($("log"),"Add a title first.","err"); return; }
+  // ensure the file exists on disk (illustration reads it), without committing
+  if(!editingFile){ await doPublish(false,false); if(!editingFile) return; }
+  const btn=$("illustrate"); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Illustrating…';
+  setLog($("log"),"Generating illustration…");
+  try{
+    const r = await api("api/illustrate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({file:editingFile,force:true})});
+    if(r.error){ setLog($("log"),r.error,"err"); }
+    else {
+      setLog($("log"),"Illustration generated. It will be the article hero.","ok");
+      $("art-preview").innerHTML='<div style="margin-top:10px"><img src="'+r.image+'?t='+Date.now()+'" style="max-width:320px;border-radius:8px;border:1px solid var(--border)"></div>';
+    }
+  }catch(e){ setLog($("log"),String(e),"err"); }
+  btn.disabled=false; btn.textContent="Illustrate";
+});
 
 // articles
 async function loadArticles(){

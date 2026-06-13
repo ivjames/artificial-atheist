@@ -18,6 +18,9 @@ eleventyExcludeFromCollections: true
     <updated>{{ post.date | isoDate }}T00:00:00Z</updated>
     <id>{{ site.url }}{{ post.url }}</id>
     <summary>{{ post.data.excerpt }}</summary>
+    {%- if post.data.image %}
+    <link rel="enclosure" type="image/png" href="{{ site.url }}{{ post.data.image }}"/>
+    {%- endif %}
   </entry>
   {%- endfor %}
 </feed>

@@ -2,7 +2,7 @@
 layout: base.njk
 permalink: /
 ---
-{% from "art.njk" import art %}
+{% from "art.njk" import art, thumb %}
 {%- set posts = collections.posts -%}
 <div class="wrap">
 
@@ -11,7 +11,7 @@ permalink: /
   {%- set lt = site.topics[lead.data.topic | lower] -%}
   <section class="lead" style="--topic-color: {{ lt.light }};">
     <style>[data-theme="dark"] .lead { --topic-color: {{ lt.dark }}; }</style>
-    <a class="lead-img" href="{{ lead.url }}">{{ art(lead.data.topic, lead.fileSlug, site.topics) }}</a>
+    <a class="lead-img" href="{{ lead.url }}">{{ thumb(lead, site.topics) }}</a>
     <div class="lead-content">
       <span class="tag" style="color: var(--topic-color);"><i class="ti {{ lt.icon }}"></i> {{ lt.name }} · Featured</span>
       <h1><a href="{{ lead.url }}">{{ lead.data.title }}</a></h1>
@@ -31,7 +31,7 @@ permalink: /
     {% for post in posts.slice(1, 4) %}
     {%- set pt = site.topics[post.data.topic | lower] -%}
     <a class="card" href="{{ post.url }}">
-      <div class="card-img">{{ art(post.data.topic, post.fileSlug, site.topics) }}</div>
+      <div class="card-img">{{ thumb(post, site.topics) }}</div>
       <div class="card-body" style="--topic-color: {{ pt.light }};">
         <style>[data-theme="dark"] .card-body { --topic-color: {{ pt.dark }}; }</style>
         <span class="tag" style="color: var(--topic-color);"><i class="ti {{ pt.icon }}"></i> {{ pt.name }}</span>
@@ -51,7 +51,7 @@ permalink: /
         {% for post in posts.slice(4, 8) %}
         {%- set pt = site.topics[post.data.topic | lower] -%}
         <a class="list-item" href="{{ post.url }}">
-          <div class="list-thumb">{{ art(post.data.topic, post.fileSlug, site.topics) }}</div>
+          <div class="list-thumb">{{ thumb(post, site.topics) }}</div>
           <div style="--topic-color: {{ pt.light }};">
             <style>[data-theme="dark"] .list-item div { --topic-color: {{ pt.dark }}; }</style>
             <span class="tag" style="color: var(--topic-color);"><i class="ti {{ pt.icon }}"></i> {{ pt.name }}</span>

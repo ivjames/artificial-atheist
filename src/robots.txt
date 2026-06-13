@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://www.artificialatheist.com/feed.xml
+
+Sitemap: https://artificialatheist.com/sitemap.xml

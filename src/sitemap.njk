@@ -1,0 +1,20 @@
+---
+permalink: /sitemap.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{%- set staticPages = ["/", "/about/", "/faq/", "/search/"] -%}
+{%- for p in staticPages %}
+  <url><loc>{{ site.url }}{{ p }}</loc></url>
+{%- endfor %}
+{%- for t in site.topics %}
+  <url><loc>{{ site.url }}/topics/{{ t }}/</loc></url>
+{%- endfor %}
+{%- for post in collections.posts %}
+  <url>
+    <loc>{{ site.url }}{{ post.url }}</loc>
+    <lastmod>{{ post.date | isoDate }}</lastmod>
+  </url>
+{%- endfor %}
+</urlset>

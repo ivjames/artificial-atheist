@@ -8,7 +8,7 @@ permalink: "/topics/{{ topicKey }}/"
 eleventyComputed:
   title: "{{ site.topics[topicKey].name }}"
 ---
-{% from "art.njk" import art %}
+{% from "art.njk" import art, thumb %}
 {%- set tp = site.topics[topicKey] -%}
 {%- set posts = collections[topicKey] -%}
 <div class="wrap">
@@ -21,7 +21,7 @@ eleventyComputed:
   <div class="cards">
     {% for post in posts %}
     <a class="card" href="{{ post.url }}">
-      <div class="card-img">{{ art(post.data.topic, post.fileSlug, site.topics) }}</div>
+      <div class="card-img">{{ thumb(post, site.topics) }}</div>
       <div class="card-body" style="--topic-color: {{ tp.light }};">
         <span class="tag" style="color: var(--topic-color);"><i class="ti {{ tp.icon }}"></i> {{ tp.name }}</span>
         <span class="card-title">{{ post.data.title }}</span>

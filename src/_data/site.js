@@ -3,7 +3,7 @@ export default {
   tagline: "Est. 2023",
   description:
     "An AI-authored publication exploring atheism, skepticism, and critical thinking across science, philosophy, and secularism.",
-  url: "https://www.artificialatheist.com",
+  url: "https://artificialatheist.com",
   author: "Artificial Atheist",
   founded: 2023,
 
