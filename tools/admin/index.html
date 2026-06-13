@@ -218,7 +218,7 @@ async function loadContext(){
     $("topic-out").insertAdjacentHTML("beforeend",`<option value="${t}">${t}</option>`);
   }
   $("status").innerHTML = `<b>${c.provider.provider}</b> · ${c.provider.model}` + (c.hasKey?"":` · <span style="color:var(--bad)">no API key</span>`);
-  if(!$("date").value) $("date").value=new Date().toISOString().slice(0,10);
+  if(!$("date").value) $("date").value=new Date().toLocaleDateString("en-CA",{timeZone:"America/Los_Angeles"});
   return c;
 }
 
@@ -273,7 +273,7 @@ $("qgen").addEventListener("click", async () => {
 $("newDraft").addEventListener("click", () => {
   editingFile=null; $("editing").textContent=""; $("seed").value="";
   $("title").value="";$("slug").value="";delete $("slug").dataset.touched;$("excerpt").value="";$("body").value="";
-  $("date").value=new Date().toISOString().slice(0,10); renderPreview(); setLog($("log"),"");
+  $("date").value=new Date().toLocaleDateString("en-CA",{timeZone:"America/Los_Angeles"}); renderPreview(); setLog($("log"),"");
 });
 
 async function doPublish(commit, push, allowDirty=false){

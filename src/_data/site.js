@@ -83,7 +83,7 @@ export default {
   },
   donate: {
     enabled: true,
-    url: "https://www.buymeacoffee.com/", // replace with your page
+    url: "https://ko-fi.com/artificialatheist",
     label: "Support the site",
   },
 };

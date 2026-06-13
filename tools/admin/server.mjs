@@ -206,7 +206,7 @@ const server = http.createServer(async (req, res) => {
       if (text.length < 2 || text.length > 4000) return send(res, 400, { error: "Comment length out of range." });
       if ((text.match(/https?:\/\//g) || []).length > 3) return send(res, 200, { status: "ok" }); // link spam -> drop
       const ip = req.headers["x-real-ip"] || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
-      const r = await comments.submitComment(slug, { author, body: text, ip });
+      const r = await comments.submitComment(slug, { author, body: text, email: (d.email || "").trim(), ip });
       // Don't reveal reject reasons to submitters (avoid tipping spammers).
       const msg = r.status === "approved" ? "posted" : "submitted — pending review";
       return send(res, 200, { status: "ok", result: r.status === "approved" ? "posted" : "pending", message: msg });
@@ -244,7 +244,7 @@ const server = http.createServer(async (req, res) => {
       const topic = (d.topic || "").toLowerCase();
       if (!title) return send(res, 400, { error: "Title required." });
       if (!TOPICS.includes(topic)) return send(res, 400, { error: "Invalid topic." });
-      const date = (d.date || new Date().toISOString().slice(0, 10)).trim();
+      const date = (d.date || new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" })).trim();
       const slug = slugify(d.slug || title);
       const filename = `${date}-${slug}.md`;
       const filepath = path.join(POSTS_DIR, filename);

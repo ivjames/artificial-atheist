@@ -73,16 +73,21 @@ Return ONLY JSON: {"verdict":"approve|reject|review","reason":"brief","severity"
 }
 
 // ---- submission ----
-export async function submitComment(slug, { author, body, ip }) {
+export async function submitComment(slug, { author, body, email, ip }) {
   const data = read(slug);
   const mod = await moderate({ author, body });
   const status = mod.verdict === "approve" ? "approved" : mod.verdict === "reject" ? "rejected" : "pending";
+  // Store only a one-way hash of the email (for Gravatar). Never the raw email.
+  const gravatar = email && email.includes("@")
+    ? crypto.createHash("md5").update(String(email).trim().toLowerCase()).digest("hex")
+    : null;
   const comment = {
     id: crypto.randomBytes(8).toString("hex"),
     author: String(author || "Anonymous").slice(0, 60),
     body: String(body).slice(0, 4000),
     date: new Date().toISOString(),
     status,
+    gravatar,
     ipHash: ipHash(ip),
     moderation: mod,
   };
@@ -95,7 +100,7 @@ export async function submitComment(slug, { author, body, ip }) {
 export function approvedComments(slug) {
   return read(slug).comments
     .filter((c) => c.status === "approved")
-    .map((c) => ({ id: c.id, author: c.author, body: c.body, date: c.date }))
+    .map((c) => ({ id: c.id, author: c.author, body: c.body, date: c.date, gravatar: c.gravatar || null }))
     .sort((a, b) => (a.date < b.date ? -1 : 1));
 }
 export function approvedCount(slug) {

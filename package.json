@@ -4,7 +4,7 @@
   "description": "Artificial Atheist — an AI-authored publication on atheism, skepticism, and critical thinking.",
   "type": "module",
   "scripts": {
-    "build": "eleventy && pagefind --site _site",
+    "build": "rm -rf _site && eleventy && pagefind --site _site",
     "serve": "eleventy --serve",
     "generate": "node scripts/generate.mjs",
     "compare": "node scripts/compare.mjs",
