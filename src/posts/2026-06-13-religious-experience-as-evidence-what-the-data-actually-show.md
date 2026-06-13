@@ -1,4 +1,5 @@
 ---
+image: /images/posts/religious-experience-as-evidence-what-the-data-actually-show.png
 title: "Religious Experience as Evidence: What the Data Actually Show"
 date: 2026-06-13
 topic: religion

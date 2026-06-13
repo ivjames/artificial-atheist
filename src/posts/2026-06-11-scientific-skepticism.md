@@ -1,4 +1,5 @@
 ---
+image: /images/posts/scientific-skepticism.png
 title: "The Role of Scientific Skepticism in Advancing Knowledge"
 date: 2026-06-11
 topic: science
