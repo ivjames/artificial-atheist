@@ -68,6 +68,7 @@
     <button data-tab="dash" class="active">Dashboard</button>
     <button data-tab="studio">Studio</button>
     <button data-tab="articles">Articles</button>
+    <button data-tab="comments">Comments</button>
   </nav>
   <div class="status" id="status">…</div>
 </header>
@@ -142,6 +143,16 @@
   <div class="log" id="artlog"></div>
 </section>
 
+<!-- COMMENTS -->
+<section class="panel" id="comments">
+  <div class="grid" id="cstats"></div>
+  <div class="card">
+    <h3>Moderation queue</h3>
+    <div id="queue"></div>
+  </div>
+  <div class="log" id="modlog"></div>
+</section>
+
 <script>
 const md = window.markdownit({ html:false, linkify:true, typographer:true });
 const $ = (id) => document.getElementById(id);
@@ -155,7 +166,39 @@ document.querySelectorAll("nav button").forEach((b) => b.addEventListener("click
   b.classList.add("active"); $(b.dataset.tab).classList.add("active");
   if (b.dataset.tab === "articles") loadArticles();
   if (b.dataset.tab === "dash") loadDash();
+  if (b.dataset.tab === "comments") loadQueue();
 }));
+
+async function loadQueue(){
+  const d = await api("api/mod/queue");
+  $("cstats").innerHTML =
+    `<div class="stat"><div class="n">${d.stats.pending}</div><div class="l">Pending</div></div>`+
+    `<div class="stat"><div class="n">${d.stats.approved}</div><div class="l">Approved</div></div>`+
+    `<div class="stat"><div class="n">${d.stats.rejected}</div><div class="l">Rejected</div></div>`;
+  const q=d.queue||[];
+  if(!q.length){ $("queue").innerHTML='<div class="hint">Nothing pending.</div>'; return; }
+  $("queue").innerHTML = q.map(c=>`
+    <div class="card" style="margin:0 0 10px">
+      <div style="display:flex;gap:10px;align-items:baseline;margin-bottom:6px">
+        <b>${escapeHtml(c.author||"Anonymous")}</b>
+        <span class="hint">${c.slug}</span>
+        <span class="hint" style="margin-left:auto">${c.moderation?.verdict||""}${c.moderation?.reason?" — "+escapeHtml(c.moderation.reason):""}</span>
+      </div>
+      <div style="font-size:14px;margin-bottom:10px;white-space:pre-wrap">${escapeHtml(c.body)}</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost" data-ok="${c.slug}|${c.id}">Approve</button>
+        <button class="btn danger" data-no="${c.slug}|${c.id}">Reject</button>
+      </div>
+    </div>`).join("");
+  $("queue").querySelectorAll("[data-ok]").forEach(b=>b.addEventListener("click",()=>decide(b.dataset.ok,"approve")));
+  $("queue").querySelectorAll("[data-no]").forEach(b=>b.addEventListener("click",()=>decide(b.dataset.no,"reject")));
+}
+function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+async function decide(key,verdict){
+  const [slug,id]=key.split("|");
+  const r = await api("api/mod/decide",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({slug,id,verdict})});
+  if(r.error) setLog($("modlog"),r.error,"err"); else { setLog($("modlog"),`${verdict}d.`,"ok"); loadQueue(); }
+}
 
 function setLog(el,msg,cls=""){ el.className="log "+cls; el.textContent=msg; }
 function renderPreview(){ $("preview").innerHTML = md.render($("body").value || "*Nothing yet.*"); }

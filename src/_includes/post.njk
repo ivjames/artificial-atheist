@@ -65,4 +65,60 @@ layout: base.njk
     </div>
   </div>
   {% endif %}
+
+  {# ---- Comments (loaded client-side from the comment API) ---- #}
+  <section class="comments" id="comments" data-slug="{{ page.fileSlug }}">
+    <div class="eyebrow">Comments</div>
+    <div id="comment-list" class="comment-list"><p class="comment-empty">Loading…</p></div>
+
+    <form id="comment-form" class="comment-form" autocomplete="off">
+      <input type="text" name="website" id="cf-website" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px">
+      <input type="text" id="cf-author" placeholder="Name (optional)" maxlength="60">
+      <textarea id="cf-body" placeholder="Add a comment. Disagreement is welcome; keep it civil." maxlength="4000" required></textarea>
+      <div class="comment-actions">
+        <span class="comment-note">Comments are moderated.</span>
+        <button type="submit" id="cf-submit">Post comment</button>
+      </div>
+      <div id="cf-msg" class="comment-msg"></div>
+    </form>
+  </section>
 </article>
+
+<script>
+(function(){
+  var sec=document.getElementById("comments"); if(!sec) return;
+  var slug=sec.dataset.slug, loadedAt=Date.now();
+  var list=document.getElementById("comment-list");
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function fmt(d){try{return new Date(d).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"})}catch(e){return""}}
+  function render(items){
+    if(!items.length){list.innerHTML='<p class="comment-empty">No comments yet. Be the first.</p>';return}
+    list.innerHTML=items.map(function(c){
+      return '<div class="comment"><div class="comment-head"><span class="comment-author">'+esc(c.author||"Anonymous")+'</span><span class="comment-date">'+fmt(c.date)+'</span></div><div class="comment-body">'+esc(c.body).replace(/\n/g,"<br>")+'</div></div>';
+    }).join("");
+  }
+  fetch("/api/comments/get?slug="+encodeURIComponent(slug)).then(function(r){return r.json()}).then(function(d){render(d.comments||[])}).catch(function(){list.innerHTML='<p class="comment-empty">Comments unavailable.</p>'});
+
+  var form=document.getElementById("comment-form"), msg=document.getElementById("cf-msg"), btn=document.getElementById("cf-submit");
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    var body=document.getElementById("cf-body").value.trim(); if(!body)return;
+    btn.disabled=true; msg.textContent="Posting…"; msg.className="comment-msg";
+    fetch("/api/comments/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+      slug:slug, author:document.getElementById("cf-author").value, body:body,
+      website:document.getElementById("cf-website").value, elapsed:Date.now()-loadedAt
+    })}).then(function(r){return r.json()}).then(function(d){
+      btn.disabled=false;
+      if(d.error){msg.textContent=d.error;msg.className="comment-msg err";return}
+      if(d.result==="posted"){
+        msg.textContent="Posted."; msg.className="comment-msg ok";
+        document.getElementById("cf-body").value="";
+        fetch("/api/comments/get?slug="+encodeURIComponent(slug)).then(function(r){return r.json()}).then(function(d){render(d.comments||[])});
+      } else {
+        msg.textContent="Submitted — held for review."; msg.className="comment-msg ok";
+        document.getElementById("cf-body").value="";
+      }
+    }).catch(function(){btn.disabled=false;msg.textContent="Something went wrong.";msg.className="comment-msg err"});
+  });
+})();
+</script>

@@ -21,6 +21,7 @@ import path from "node:path";
 import { execFile } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { generate as llm, providerInfo } from "../../scripts/providers.mjs";
+import * as comments from "./comments.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = process.cwd();
@@ -184,6 +185,41 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "GET" && p === "/api/gitstatus") return send(res, 200, await gitStatus());
+
+    // ---------- PUBLIC comment routes (exposed without auth via nginx, rate-limited) ----------
+    if (req.method === "GET" && p === "/api/comments/get") {
+      const slug = url.searchParams.get("slug") || "";
+      res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "public, max-age=30" });
+      return res.end(JSON.stringify({ comments: comments.approvedComments(slug) }));
+    }
+
+    if (req.method === "POST" && p === "/api/comments/submit") {
+      const d = await body(req);
+      const slug = (d.slug || "").trim();
+      const author = (d.author || "").trim();
+      const text = (d.body || "").trim();
+      // cheap pre-AI gates
+      if (d.website) return send(res, 200, { status: "ok" }); // honeypot filled -> pretend success, drop
+      const elapsed = Number(d.elapsed || 0);
+      if (elapsed > 0 && elapsed < 3000) return send(res, 200, { status: "ok" }); // submitted too fast
+      if (!slug || !text) return send(res, 400, { error: "Missing comment." });
+      if (text.length < 2 || text.length > 4000) return send(res, 400, { error: "Comment length out of range." });
+      if ((text.match(/https?:\/\//g) || []).length > 3) return send(res, 200, { status: "ok" }); // link spam -> drop
+      const ip = req.headers["x-real-ip"] || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
+      const r = await comments.submitComment(slug, { author, body: text, ip });
+      // Don't reveal reject reasons to submitters (avoid tipping spammers).
+      const msg = r.status === "approved" ? "posted" : "submitted — pending review";
+      return send(res, 200, { status: "ok", result: r.status === "approved" ? "posted" : "pending", message: msg });
+    }
+
+    // ---------- ADMIN moderation routes (behind /admin/ basic auth) ----------
+    if (req.method === "GET" && p === "/api/mod/queue")
+      return send(res, 200, { queue: comments.queue(), stats: comments.stats() });
+
+    if (req.method === "POST" && p === "/api/mod/decide") {
+      const d = await body(req);
+      return send(res, 200, comments.decide(d.slug, d.id, d.verdict));
+    }
 
     if (req.method === "GET" && p === "/api/articles")
       return send(res, 200, { articles: readExisting().map(({ file, title, topic, date, excerpt }) => ({ file, title, topic, date, excerpt })) });
