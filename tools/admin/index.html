@@ -243,11 +243,21 @@ async function generate(seed, topic){
   const data = await api("api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({seed,topic})});
   return data;
 }
+function showArt(path){
+  if(path){
+    $("art-preview").innerHTML='<div style="margin-top:12px"><div class="hint" style="margin-bottom:5px">Current illustration (article hero):</div><img src="'+path+'?t='+Date.now()+'" style="max-width:340px;border-radius:8px;border:1px solid var(--border);display:block"></div>';
+    $("illustrate").textContent="Re-illustrate";
+  } else {
+    $("art-preview").innerHTML="";
+    $("illustrate").textContent="Illustrate";
+  }
+}
 function fillStudio(data){
   $("title").value=data.title||""; delete $("slug").dataset.touched; autoSlug();
   $("excerpt").value=data.excerpt||"";
   $("body").value=data.body_markdown||"";
   $("topic-out").value=(data.topic||"philosophy").toLowerCase();
+  showArt(data.image||"");
   renderPreview();
 }
 function gotoStudio(){ document.querySelector('nav [data-tab="studio"]').click(); }
@@ -258,7 +268,7 @@ $("gen").addEventListener("click", async () => {
   $("gen").disabled=true; $("gen").innerHTML='<span class="spin"></span> Generating…'; setLog($("log"),"");
   const data = await generate(seed,$("topic-sel").value);
   if(data.error) setLog($("log"),data.error,"err");
-  else { editingFile=null; $("editing").textContent=""; fillStudio(data); setLog($("log"),"Draft ready. Review and Publish.","ok"); }
+  else { editingFile=null; $("editing").textContent=""; fillStudio(data); showArt(""); setLog($("log"),"Draft ready. Review and Publish.","ok"); }
   $("gen").disabled=false; $("gen").textContent="Generate draft";
 });
 
@@ -269,13 +279,13 @@ $("qgen").addEventListener("click", async () => {
   $("qgen").disabled=false; $("qgen").textContent="Generate → Studio";
   if(data.error){ alert(data.error); return; }
   editingFile=null; $("editing").textContent=""; $("seed").value=seed; $("qseed").value="";
-  fillStudio(data); gotoStudio(); setLog($("log"),"Draft ready. Review and Publish.","ok");
+  fillStudio(data); showArt(""); gotoStudio(); setLog($("log"),"Draft ready. Review and Publish.","ok");
 });
 
 $("newDraft").addEventListener("click", () => {
   editingFile=null; $("editing").textContent=""; $("seed").value="";
   $("title").value="";$("slug").value="";delete $("slug").dataset.touched;$("excerpt").value="";$("body").value="";
-  $("date").value=new Date().toLocaleDateString("en-CA",{timeZone:"America/Los_Angeles"}); renderPreview(); setLog($("log"),"");
+  $("date").value=new Date().toLocaleDateString("en-CA",{timeZone:"America/Los_Angeles"}); showArt(""); renderPreview(); setLog($("log"),"");
 });
 
 async function doPublish(commit, push, allowDirty=false){
@@ -304,7 +314,7 @@ $("illustrate").addEventListener("click", async () => {
     if(r.error){ setLog($("log"),r.error,"err"); }
     else {
       setLog($("log"),"Illustration generated. It will be the article hero.","ok");
-      $("art-preview").innerHTML='<div style="margin-top:10px"><img src="'+r.image+'?t='+Date.now()+'" style="max-width:320px;border-radius:8px;border:1px solid var(--border)"></div>';
+      showArt(r.image);
     }
   }catch(e){ setLog($("log"),String(e),"err"); }
   btn.disabled=false; btn.textContent="Illustrate";

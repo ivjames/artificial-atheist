@@ -42,6 +42,7 @@ function parseFront(raw) {
     topic: get("topic").trim().toLowerCase(),
     date: get("date").trim(),
     excerpt: get("excerpt").trim(),
+    image: get("image").trim(),
     body_markdown: m[2].trim(),
   };
 }

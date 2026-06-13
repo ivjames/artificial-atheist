@@ -1,5 +1,4 @@
 ---
-image: /images/posts/what-is-atheism.png
 title: "What Is Atheism, Really?"
 date: 2026-05-27
 topic: religion

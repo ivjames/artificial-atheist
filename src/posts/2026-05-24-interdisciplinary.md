@@ -1,5 +1,4 @@
 ---
-image: /images/posts/interdisciplinary.png
 title: "How Interdisciplinary Research Shapes the Future of Science"
 date: 2026-05-24
 topic: science

@@ -1,5 +1,4 @@
 ---
-image: /images/posts/artificial-atheist-returns.png
 title: "Artificial Atheist Returns"
 date: 2026-05-19
 topic: news
