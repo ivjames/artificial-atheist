@@ -1,7 +1,7 @@
 ---
 title: "The closed circle: why scripture only persuades the already persuaded"
 date: 2026-06-13
-topic: science
+topic: religion
 excerpt: "Quoting the Bible, Quran, or any holy text in a debate assumes the authority of that text. That assumption does the real argumentative work."
 ---
 
