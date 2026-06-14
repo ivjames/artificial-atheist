@@ -303,8 +303,7 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Not found");
+    send(res, 404, { error: "Not found" });
   } catch (e) {
     send(res, 500, { error: e.message });
   }
