@@ -77,8 +77,8 @@ export default {
   // nothing renders and the layout stays clean.
   ads: {
     enabled: true,
-    adsenseClient: "ca-pub-7805599315918388"
-    inArticleSlot: "", // AdSense slot id for the in-article unit
+    adsenseClient: "ca-pub-7805599315918388",
+    inArticleSlot: "",
   },
   affiliate: {
     // Amazon Associates tag appended to book/product links in articles.
