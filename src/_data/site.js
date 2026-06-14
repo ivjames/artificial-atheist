@@ -76,8 +76,8 @@ export default {
   // Flip `enabled` on once approved; leave the client id blank until then so
   // nothing renders and the layout stays clean.
   ads: {
-    enabled: false,
-    adsenseClient: "", // e.g. "ca-pub-XXXXXXXXXXXXXXXX"
+    enabled: true,
+    adsenseClient: "ca-pub-7805599315918388"
     inArticleSlot: "", // AdSense slot id for the in-article unit
   },
   affiliate: {
