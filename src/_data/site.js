@@ -67,6 +67,11 @@ export default {
     rss: "/feed.xml",
   },
 
+  // --- Analytics ---
+  analytics: {
+    gaId: "G-XVVGV474F0", // Google Analytics 4 Measurement ID
+  },
+
   // --- Monetization ---
   // Flip `enabled` on once approved; leave the client id blank until then so
   // nothing renders and the layout stays clean.

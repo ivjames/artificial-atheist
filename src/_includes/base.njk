@@ -82,6 +82,10 @@
       } catch (e) {}
     })();
   </script>
+  {% if site.analytics.gaId %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.analytics.gaId }}"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ site.analytics.gaId }}');</script>
+  {% endif %}
   {% if site.ads.enabled and site.ads.adsenseClient %}
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ site.ads.adsenseClient }}" crossorigin="anonymous"></script>
   {% endif %}
