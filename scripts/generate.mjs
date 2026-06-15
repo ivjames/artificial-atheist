@@ -82,7 +82,12 @@ function parseJSON(text) {
   const first = t.indexOf("{");
   const last = t.lastIndexOf("}");
   if (first > 0 || last < t.length - 1) t = t.slice(first, last + 1);
-  return JSON.parse(t);
+  try {
+    return JSON.parse(t);
+  } catch {
+    // Claude sometimes emits literal newlines inside JSON strings; escape them
+    return JSON.parse(t.replace(/\n/g, "\\n"));
+  }
 }
 
 function writePost(data, topic, existing, { dryRunDir } = {}) {

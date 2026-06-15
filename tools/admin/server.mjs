@@ -62,7 +62,11 @@ function parseJSON(text) {
   let t = String(text).trim().replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
   const f = t.indexOf("{"), l = t.lastIndexOf("}");
   if (f > 0 || l < t.length - 1) t = t.slice(f, l + 1);
-  return JSON.parse(t);
+  try {
+    return JSON.parse(t);
+  } catch {
+    return JSON.parse(t.replace(/\n/g, "\\n"));
+  }
 }
 
 function git(args) {
