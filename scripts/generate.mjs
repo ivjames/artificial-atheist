@@ -96,7 +96,7 @@ function writePost(data, topic, existing, { dryRunDir } = {}) {
     console.error(`Title too similar to existing ("${dup}"). Skipping.`);
     process.exit(0);
   }
-  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
+  const today = process.env.AA_DATE || new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
   const slug = slugify(data.title);
   const dir = dryRunDir || POSTS_DIR;
   const filename = `${today}-${slug}.md`;
