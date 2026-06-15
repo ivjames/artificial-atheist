@@ -1,4 +1,5 @@
 ---
+image: /images/posts/you-can-t-be-angry-at-something-you-don-t-think-exists.png
 title: "You can't be angry at something you don't think exists"
 date: 2026-06-14
 topic: philosophy
