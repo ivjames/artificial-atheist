@@ -4,8 +4,9 @@ name: Generate article
 # automatically when the commit lands, so this is the only moving part.
 on:
   schedule:
-    # Every other day at 14:00 UTC. Adjust cadence here.
-    - cron: "0 14 */2 * *"
+    # Daily at 14:00 UTC. Adjust cadence here.
+    # For two a day, add a second line, e.g.: - cron: "0 2 * * *"
+    - cron: "0 14 * * *"
   workflow_dispatch: {}
 
 permissions:
