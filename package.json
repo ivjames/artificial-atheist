@@ -7,6 +7,7 @@
     "build": "rm -rf _site && eleventy && pagefind --site _site",
     "serve": "eleventy --serve",
     "generate": "node scripts/generate.mjs",
+    "generate:test": "AA_PROVIDER=mock node scripts/generate.mjs --dry-run",
     "compare": "node scripts/compare.mjs",
     "admin": "node tools/admin/server.mjs",
     "illustrate": "node scripts/illustrate.mjs"

@@ -34,6 +34,9 @@ NO local node/npm — all builds run on the droplet or in GitHub Actions, never 
 - src/_includes/ — base.njk (head, JSON-LD, OG), post.njk (article + hero), art.njk
   (tessellation + thumb macros).
 - scripts/generate.mjs — scheduled article generator. scripts/illustrate.mjs — AI art.
+  Test mode: `npm run generate:test` (AA_PROVIDER=mock + --dry-run) runs the full
+  parse/write pipeline offline — no API key, no cost, writes to gitignored drafts/,
+  never touches src/posts. Add --dry-run to any real run to draft without publishing.
 - tools/admin/ — web dashboard (Studio/Articles/Comments) at /admin/ behind basic auth.
   Comment system is built but the FRONT-END is removed; backend is dormant.
 

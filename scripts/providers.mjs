@@ -13,8 +13,6 @@
  *
  * Default model per provider is chosen below if AA_MODEL is unset.
  */
-import Anthropic from "@anthropic-ai/sdk";
-
 const PROVIDER = (process.env.AA_PROVIDER || "claude").toLowerCase();
 
 const DEFAULT_MODEL = {
@@ -23,6 +21,8 @@ const DEFAULT_MODEL = {
   cloudflare: "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
   // DO Gradient model ids, e.g. "llama3.3-70b-instruct"
   digitalocean: "llama3.3-70b-instruct",
+  // Offline stub for test mode — no network, no key, no cost.
+  mock: "mock",
 };
 
 function model() {
@@ -49,6 +49,7 @@ const ARTICLE_TOOL = {
 };
 
 async function viaClaude({ system, prompt }) {
+  const { default: Anthropic } = await import("@anthropic-ai/sdk");
   const client = new Anthropic(); // reads ANTHROPIC_API_KEY
   const resp = await client.messages.create({
     model: model(),
@@ -109,8 +110,27 @@ async function viaDigitalOcean({ system, prompt }) {
   return j.choices?.[0]?.message?.content ?? "";
 }
 
+// ---- Mock (offline test stub) ----
+// Returns a fixed, valid-JSON article as a raw text string — the same shape the
+// open-model providers return — so `node scripts/generate.mjs --dry-run` can
+// exercise the full parse + write pipeline with no API key, no network, no cost.
+// The body deliberately includes embedded "double quotes", a brace { and a
+// blank line so it also smoke-tests JSON parsing of awkward content.
+async function viaMock() {
+  return JSON.stringify({
+    title: "A Mock Article for Pipeline Testing",
+    excerpt: "This is a stub response used by test mode; it is never published.",
+    body_markdown:
+      "This placeholder body exists only so the generator can be run end to end without calling a real model.\n\n" +
+      '## Why a mock exists\n\nIt lets you verify parsing and file writing after edits, including awkward characters like "scare quotes" and a stray { brace.\n\n' +
+      "## What it proves\n\nIf this file lands in drafts/ cleanly, the parse and write path is healthy.",
+  });
+}
+
 export async function generate({ system, prompt }) {
   switch (PROVIDER) {
+    case "mock":
+      return viaMock({ system, prompt });
     case "cloudflare":
       return viaCloudflare({ system, prompt });
     case "digitalocean":

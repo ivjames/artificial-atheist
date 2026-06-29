@@ -92,9 +92,12 @@ function parseJSON(text) {
 
 function writePost(data, topic, existing, { dryRunDir } = {}) {
   const dup = tooSimilar(data.title, existing);
-  if (dup && !dryRunDir) {
-    console.error(`Title too similar to existing ("${dup}"). Skipping.`);
-    process.exit(0);
+  if (dup) {
+    console.error(
+      `Title too similar to existing ("${dup}").` +
+        (dryRunDir ? " (dry-run: writing draft anyway)" : " Skipping.")
+    );
+    if (!dryRunDir) process.exit(0);
   }
   const today = process.env.AA_DATE || new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
   const slug = slugify(data.title);
@@ -122,12 +125,18 @@ function writePost(data, topic, existing, { dryRunDir } = {}) {
 }
 
 async function main() {
+  // Test mode: write a draft to drafts/ instead of publishing into src/posts,
+  // skip the dedup/slug exits, and skip illustration. Combine with
+  // AA_PROVIDER=mock to exercise the full parse+write pipeline offline (no API
+  // key, no cost). Enable with --dry-run or AA_DRY_RUN=1.
+  const dryRun = process.argv.includes("--dry-run") || process.env.AA_DRY_RUN === "1";
+
   const info = providerInfo();
   const existing = readExisting();
   const topic = pickTopic(existing);
   const { system, prompt } = buildPrompt(topic, existing.map((p) => p.title));
 
-  console.log(`Provider: ${info.provider} (${info.model}) — topic: ${topic}`);
+  console.log(`Provider: ${info.provider} (${info.model}) — topic: ${topic}${dryRun ? " [DRY RUN]" : ""}`);
   const raw = await llm({ system, prompt });
 
   let data;
@@ -137,7 +146,13 @@ async function main() {
     console.error("Provider did not return valid JSON:\n", raw.slice(0, 500));
     process.exit(1);
   }
-  const filename = writePost(data, topic, existing);
+
+  const dryRunDir = dryRun ? path.join(__dirname, "..", "drafts") : undefined;
+  const filename = writePost(data, topic, existing, { dryRunDir });
+  if (dryRun) {
+    console.log(`Dry run OK — wrote drafts/${filename} (nothing published, no illustration).`);
+    return;
+  }
   console.log(`Wrote ${filename}`);
 
   // Generate the illustration (non-fatal: post keeps the tessellation fallback on failure)
