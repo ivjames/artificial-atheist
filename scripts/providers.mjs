@@ -30,6 +30,24 @@ function model() {
 }
 
 // ---- Claude (Anthropic SDK) ----
+// Use a forced tool call for structured output. The API guarantees that a
+// tool_use block's `input` is valid JSON matching the schema, so we never have
+// to parse model-hand-escaped JSON (the recurring cause of generate failures:
+// an unescaped quote anywhere in ~800 words of markdown broke JSON.parse).
+const ARTICLE_TOOL = {
+  name: "publish_article",
+  description: "Submit the finished article for publication.",
+  input_schema: {
+    type: "object",
+    properties: {
+      title: { type: "string", description: "Title Case, under 70 characters, no clickbait" },
+      excerpt: { type: "string", description: "One sentence, under 160 characters" },
+      body_markdown: { type: "string", description: "700-900 words of Markdown; see prompt for structure" },
+    },
+    required: ["title", "excerpt", "body_markdown"],
+  },
+};
+
 async function viaClaude({ system, prompt }) {
   const client = new Anthropic(); // reads ANTHROPIC_API_KEY
   const resp = await client.messages.create({
@@ -37,7 +55,13 @@ async function viaClaude({ system, prompt }) {
     max_tokens: 2000,
     system,
     messages: [{ role: "user", content: prompt }],
+    tools: [ARTICLE_TOOL],
+    tool_choice: { type: "tool", name: ARTICLE_TOOL.name },
   });
+  const toolUse = resp.content.find((b) => b.type === "tool_use" && b.name === ARTICLE_TOOL.name);
+  if (toolUse) return JSON.stringify(toolUse.input);
+  // Should not happen with a forced tool_choice, but fall back to text so the
+  // caller's parseJSON can still try.
   return resp.content.map((b) => (b.type === "text" ? b.text : "")).join("");
 }
 
