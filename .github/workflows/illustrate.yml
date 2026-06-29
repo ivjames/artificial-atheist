@@ -1,0 +1,46 @@
+name: Backfill illustrations
+
+# Manual only. Generates AI illustrations for every post missing one
+# (illustrate.mjs --all skips posts that already have an `image:`), then
+# commits the PNGs and the frontmatter that references them.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  illustrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Backfill missing illustrations
+        env:
+          AA_PROVIDER: ${{ vars.AA_PROVIDER }}
+          AA_MODEL: ${{ vars.AA_MODEL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          DO_INFERENCE_KEY: ${{ secrets.DO_INFERENCE_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: npm run illustrate -- --all
+
+      - name: Commit any new illustrations
+        run: |
+          if [ -n "$(git status --porcelain src/posts src/images/posts)" ]; then
+            git config user.name "Artificial Atheist Bot"
+            git config user.email "bot@artificialatheist.com"
+            git add src/posts src/images/posts
+            git commit -m "Backfill illustrations for posts missing art"
+            git push
+          else
+            echo "No posts needed illustration."
+          fi
