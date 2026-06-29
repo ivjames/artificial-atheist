@@ -33,6 +33,10 @@ jobs:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           DO_INFERENCE_KEY: ${{ secrets.DO_INFERENCE_KEY }}
+          # Enables the AI illustration step. Without it, illustrate.mjs skips
+          # and posts fall back to the tessellation art. If the secret is unset
+          # this is empty and the step degrades gracefully (no error).
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: npm run generate
 
       - name: Commit if a new post was created
