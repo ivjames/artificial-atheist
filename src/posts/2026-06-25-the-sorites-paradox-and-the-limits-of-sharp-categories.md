@@ -1,4 +1,5 @@
 ---
+image: /images/posts/the-sorites-paradox-and-the-limits-of-sharp-categories.png
 title: "The Sorites Paradox and the Limits of Sharp Categories"
 date: 2026-06-25
 topic: philosophy

@@ -1,4 +1,5 @@
 ---
+image: /images/posts/pascal-s-wager-why-the-classic-bet-still-fails.png
 title: "Pascal's Wager: Why the Classic Bet Still Fails"
 date: 2026-06-17
 topic: religion

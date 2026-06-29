@@ -1,4 +1,5 @@
 ---
+image: /images/posts/theodicy-the-problem-of-evil-as-a-logical-challenge.png
 title: "Theodicy: The Problem of Evil as a Logical Challenge"
 date: 2026-06-19
 topic: religion
