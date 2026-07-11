@@ -6,16 +6,17 @@
  * Discussion for Artificial Atheist lives on Facebook, not on-site comments.
  * Rather than hand-posting every article, the generator hands each freshly
  * written post to Buffer, which queues it to the connected Facebook page.
- * The article URL is included in the post text; Facebook scrapes the per-post
- * OpenGraph tags (base.njk emits og:title / og:description / og:image), so the
- * share renders a rich preview card with the illustration — no image re-upload.
+ * The article URL is sent as a Facebook linkAttachment; Facebook scrapes the
+ * per-post OpenGraph tags (base.njk emits og:title / og:description / og:image),
+ * so the share renders a rich preview card with the illustration — no re-upload.
  *
  * Uses Buffer's GraphQL API (https://api.buffer.com) with a Bearer API key.
  * (The old classic REST API at api.bufferapp.com rejects modern public tokens
  * with "Public API tokens are not accepted for REST API access".) Env:
  *   BUFFER_ACCESS_TOKEN  (required to actually post; unset ⇒ skip, no error)
- *   BUFFER_PROFILE_IDS   (optional, comma-separated Buffer channel ids;
- *                         unset ⇒ auto-target every connected Facebook channel)
+ *   BUFFER_PROFILE_IDS   (comma-separated Buffer channel ids; unset ⇒ try to
+ *                         auto-detect Facebook channels — but keys that lack the
+ *                         channels-read scope must set this explicitly)
  *   BUFFER_NOW           (optional, "1" ⇒ publish immediately instead of
  *                         adding to the Buffer queue; default is queue)
  *
@@ -104,8 +105,18 @@ async function resolveChannelIds() {
     .filter(Boolean);
   if (configured.length) return configured;
 
-  // Default: every connected Facebook channel across all organizations.
-  const data = await graphql(CHANNELS_QUERY, {});
+  // Default: every connected Facebook channel across all organizations. Some
+  // API keys are scoped so they can publish but not enumerate channels (the
+  // channels query returns FORBIDDEN); in that case set BUFFER_PROFILE_IDS to
+  // the channel id(s) explicitly.
+  let data;
+  try {
+    data = await graphql(CHANNELS_QUERY, {});
+  } catch (e) {
+    throw new Error(
+      `Could not list Buffer channels (${e.message}). Set BUFFER_PROFILE_IDS to your channel id(s) to skip auto-detection.`
+    );
+  }
   const channels = (data?.account?.organizations || []).flatMap((o) => o.channels || []);
   return channels
     .filter((c) => String(c.service || "").toLowerCase().includes("facebook"))
@@ -128,17 +139,17 @@ export async function postToBuffer(meta, { now } = {}) {
   }
 
   const publishNow = now ?? process.env.BUFFER_NOW === "1";
-  // The URL rides in the post text so Facebook scrapes the article's OG tags
-  // for the preview card (title + excerpt + illustration).
-  const text = meta.excerpt
-    ? `${meta.title}\n\n${meta.excerpt}\n\n${meta.url}`
-    : `${meta.title}\n\n${meta.url}`;
+  const caption = meta.excerpt ? `${meta.title}\n\n${meta.excerpt}` : meta.title;
   const mode = publishNow ? "shareNow" : "addToQueue";
+  // Facebook requires a post type. The article URL goes in linkAttachment so
+  // Facebook renders a link card scraped from the per-post OG tags (title,
+  // excerpt, illustration) — no image re-upload.
+  const metadata = { facebook: { type: "post", linkAttachment: { url: meta.url } } };
 
   const postIds = [];
   for (const channelId of channelIds) {
     const data = await graphql(CREATE_POST, {
-      input: { text, channelId, schedulingType: "automatic", mode },
+      input: { text: caption, channelId, schedulingType: "automatic", mode, metadata },
     });
     const result = data.createPost;
     if (result.__typename !== "PostActionSuccess") {
