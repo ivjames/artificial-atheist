@@ -10,7 +10,8 @@
     "generate:test": "AA_PROVIDER=mock node scripts/generate.mjs --dry-run",
     "compare": "node scripts/compare.mjs",
     "admin": "node tools/admin/server.mjs",
-    "illustrate": "node scripts/illustrate.mjs"
+    "illustrate": "node scripts/illustrate.mjs",
+    "buffer": "node scripts/buffer.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",

@@ -163,6 +163,18 @@ async function main() {
   } catch (e) {
     console.warn("Illustration step skipped:", e.message);
   }
+
+  // Push the article to Facebook via Buffer (non-fatal: discussion routing is
+  // best-effort, and the post is already committed regardless). Skips silently
+  // when BUFFER_ACCESS_TOKEN is unset. Queues by default; set BUFFER_NOW=1 to
+  // publish immediately. Note the illustration was just re-read from disk into
+  // the post's frontmatter, so the Buffer share picks up the image too.
+  try {
+    const { bufferPostFromFile } = await import("./buffer.mjs");
+    await bufferPostFromFile(filename);
+  } catch (e) {
+    console.warn("Buffer push skipped:", e.message);
+  }
 }
 
 main().catch((e) => {

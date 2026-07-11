@@ -1,0 +1,36 @@
+name: Share to Buffer
+
+# Manual only. Pushes one existing post to Facebook via Buffer — useful for
+# re-sharing, or for backfilling a post that was published before auto-push
+# was wired in. The scheduled generator already does this for new posts.
+on:
+  workflow_dispatch:
+    inputs:
+      post:
+        description: "Post path or filename (e.g. src/posts/2026-07-09-the-regress-problem-....md)"
+        required: true
+        type: string
+      now:
+        description: "Publish immediately instead of adding to the Buffer queue"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  share:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Push the post to Buffer
+        env:
+          BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
+          BUFFER_PROFILE_IDS: ${{ vars.BUFFER_PROFILE_IDS }}
+        run: npm run buffer -- ${{ inputs.now && '--now' || '' }} "${{ inputs.post }}"
