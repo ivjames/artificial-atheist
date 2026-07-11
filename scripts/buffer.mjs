@@ -167,20 +167,6 @@ function resolvePostPath(filename) {
   return path.join(POSTS_DIR, filename);
 }
 
-/**
- * Resolve a post argument to an on-disk path. Accepts:
- *   - an absolute path,
- *   - a path relative to the current directory (e.g. the repo-root-relative
- *     "src/posts/2026-...md" the CLI / Share-to-Buffer action passes),
- *   - a bare filename (e.g. the "2026-...md" generate.mjs passes), resolved
- *     against src/posts.
- */
-function resolvePostPath(filename) {
-  if (path.isAbsolute(filename)) return filename;
-  if (fs.existsSync(filename)) return path.resolve(filename);
-  return path.join(POSTS_DIR, filename);
-}
-
 /** Convenience wrapper used by generate.mjs: post straight from a filename. */
 export async function bufferPostFromFile(filename, opts = {}) {
   const filepath = resolvePostPath(filename);
