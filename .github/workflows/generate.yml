@@ -37,6 +37,11 @@ jobs:
           # and posts fall back to the tessellation art. If the secret is unset
           # this is empty and the step degrades gracefully (no error).
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Auto-push the new article to Facebook via Buffer. Unset token ⇒ the
+          # Buffer step is skipped (no error). BUFFER_PROFILE_IDS is optional:
+          # when blank, every connected Facebook profile is targeted.
+          BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
+          BUFFER_PROFILE_IDS: ${{ vars.BUFFER_PROFILE_IDS }}
         run: npm run generate
 
       - name: Commit if a new post was created
