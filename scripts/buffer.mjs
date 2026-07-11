@@ -1,20 +1,21 @@
 #!/usr/bin/env node
 /**
  * buffer.mjs — push new articles to Facebook (and any other connected
- * profile) via Buffer.
+ * channel) via Buffer.
  *
  * Discussion for Artificial Atheist lives on Facebook, not on-site comments.
  * Rather than hand-posting every article, the generator hands each freshly
  * written post to Buffer, which queues it to the connected Facebook page.
- * Facebook scrapes the article URL's OpenGraph tags (base.njk emits per-post
- * og:title / og:description / og:image), so a plain link share renders a rich
- * preview card with the illustration — no need to re-upload the image.
+ * The article URL is included in the post text; Facebook scrapes the per-post
+ * OpenGraph tags (base.njk emits og:title / og:description / og:image), so the
+ * share renders a rich preview card with the illustration — no image re-upload.
  *
- * Uses Buffer's classic REST API (api.bufferapp.com/1) with a legacy access
- * token. Env:
+ * Uses Buffer's GraphQL API (https://api.buffer.com) with a Bearer API key.
+ * (The old classic REST API at api.bufferapp.com rejects modern public tokens
+ * with "Public API tokens are not accepted for REST API access".) Env:
  *   BUFFER_ACCESS_TOKEN  (required to actually post; unset ⇒ skip, no error)
- *   BUFFER_PROFILE_IDS   (optional, comma-separated Buffer profile ids;
- *                         unset ⇒ auto-target every connected Facebook profile)
+ *   BUFFER_PROFILE_IDS   (optional, comma-separated Buffer channel ids;
+ *                         unset ⇒ auto-target every connected Facebook channel)
  *   BUFFER_NOW           (optional, "1" ⇒ publish immediately instead of
  *                         adding to the Buffer queue; default is queue)
  *
@@ -29,7 +30,7 @@ import site from "../src/_data/site.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const POSTS_DIR = path.join(__dirname, "..", "src", "posts");
-const API = "https://api.bufferapp.com/1";
+const API = "https://api.buffer.com"; // Buffer GraphQL endpoint
 
 /** Strip eleventy's leading date prefix + extension to recover the URL slug. */
 function slugFromFilename(filename) {
@@ -56,82 +57,100 @@ function readPostMeta(filepath) {
   };
 }
 
-async function bufferGET(pathname) {
+/** Run a GraphQL operation against the Buffer API. */
+async function graphql(query, variables) {
   const token = process.env.BUFFER_ACCESS_TOKEN;
-  const res = await fetch(`${API}${pathname}?access_token=${encodeURIComponent(token)}`);
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(`Buffer GET ${pathname} → ${res.status}: ${JSON.stringify(body)}`);
-  return body;
-}
-
-async function bufferPOST(pathname, params) {
-  const token = process.env.BUFFER_ACCESS_TOKEN;
-  const form = new URLSearchParams();
-  form.set("access_token", token);
-  for (const [k, v] of params) form.append(k, v);
-  const res = await fetch(`${API}${pathname}`, {
+  const res = await fetch(API, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: form.toString(),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ query, variables }),
   });
   const body = await res.json().catch(() => ({}));
-  if (!res.ok || body.success === false) {
-    throw new Error(`Buffer POST ${pathname} → ${res.status}: ${JSON.stringify(body)}`);
+  if (!res.ok || body.errors) {
+    throw new Error(`Buffer GraphQL ${res.status}: ${JSON.stringify(body.errors || body)}`);
   }
-  return body;
+  return body.data;
 }
 
-/** Resolve the Buffer profile ids to post to. */
-async function resolveProfileIds() {
+const CHANNELS_QUERY = `
+  query Channels {
+    account {
+      organizations {
+        channels {
+          id
+          service
+        }
+      }
+    }
+  }`;
+
+const CREATE_POST = `
+  mutation CreatePost($input: CreatePostInput!) {
+    createPost(input: $input) {
+      __typename
+      ... on PostActionSuccess { post { id } }
+      ... on MutationError { message }
+    }
+  }`;
+
+/** Resolve the Buffer channel ids to post to. */
+async function resolveChannelIds() {
   const configured = (process.env.BUFFER_PROFILE_IDS || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
   if (configured.length) return configured;
 
-  // Default: every connected Facebook profile (page or profile).
-  const profiles = await bufferGET("/profiles.json");
-  return profiles
-    .filter((p) => String(p.service || "").toLowerCase().includes("facebook"))
-    .map((p) => p.id);
+  // Default: every connected Facebook channel across all organizations.
+  const data = await graphql(CHANNELS_QUERY, {});
+  const channels = (data?.account?.organizations || []).flatMap((o) => o.channels || []);
+  return channels
+    .filter((c) => String(c.service || "").toLowerCase().includes("facebook"))
+    .map((c) => c.id);
 }
 
 /**
  * Queue (or immediately publish) a link share for one article.
- * Returns the Buffer API response, or null when skipped (no token).
+ * Returns an array of created post ids, or null when skipped (no token).
  */
 export async function postToBuffer(meta, { now } = {}) {
   if (!process.env.BUFFER_ACCESS_TOKEN) {
     console.warn("BUFFER_ACCESS_TOKEN unset — skipping Buffer push.");
     return null;
   }
-  const profileIds = await resolveProfileIds();
-  if (!profileIds.length) {
-    console.warn("No Buffer Facebook profiles found — skipping Buffer push.");
+  const channelIds = await resolveChannelIds();
+  if (!channelIds.length) {
+    console.warn("No Buffer Facebook channels found — skipping Buffer push.");
     return null;
   }
 
   const publishNow = now ?? process.env.BUFFER_NOW === "1";
-  const caption = meta.excerpt ? `${meta.title}\n\n${meta.excerpt}` : meta.title;
+  // The URL rides in the post text so Facebook scrapes the article's OG tags
+  // for the preview card (title + excerpt + illustration).
+  const text = meta.excerpt
+    ? `${meta.title}\n\n${meta.excerpt}\n\n${meta.url}`
+    : `${meta.title}\n\n${meta.url}`;
+  const mode = publishNow ? "shareNow" : "addToQueue";
 
-  const params = [];
-  for (const id of profileIds) params.push(["profile_ids[]", id]);
-  params.push(["text", caption]);
-  params.push(["media[link]", meta.url]);
-  params.push(["media[title]", meta.title]);
-  if (meta.excerpt) params.push(["media[description]", meta.excerpt]);
-  if (meta.image) {
-    params.push(["media[picture]", meta.image]);
-    params.push(["media[thumbnail]", meta.image]);
+  const postIds = [];
+  for (const channelId of channelIds) {
+    const data = await graphql(CREATE_POST, {
+      input: { text, channelId, schedulingType: "automatic", mode },
+    });
+    const result = data.createPost;
+    if (result.__typename !== "PostActionSuccess") {
+      throw new Error(`Buffer createPost error (channel ${channelId}): ${result.message}`);
+    }
+    postIds.push(result.post?.id);
   }
-  if (publishNow) params.push(["now", "true"]);
 
-  const body = await bufferPOST("/updates/create.json", params);
-  const n = (body.updates || []).length || profileIds.length;
   console.log(
-    `Buffer: ${publishNow ? "published" : "queued"} "${meta.title}" to ${n} profile(s).`
+    `Buffer: ${publishNow ? "published" : "queued"} "${meta.title}" to ${postIds.length} channel(s).`
   );
-  return body;
+  return postIds;
 }
 
 /**

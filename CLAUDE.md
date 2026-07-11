@@ -33,10 +33,11 @@ NO local node/npm — all builds run on the droplet or in GitHub Actions, never 
 - src/_data/site.js — site metadata, topics taxonomy, monetization (Ko-fi donate on).
 - src/_includes/ — base.njk (head, JSON-LD, OG), post.njk (article + hero), art.njk
   (tessellation + thumb macros).
-- scripts/buffer.mjs — auto-push new posts to Facebook via Buffer (classic API).
-  generate.mjs calls it after illustrating (non-fatal, best-effort). Shares the
-  article URL as a link so Facebook scrapes the per-post OG tags for a rich card;
-  no image re-upload. Skips silently if BUFFER_ACCESS_TOKEN is unset. Queues by
+- scripts/buffer.mjs — auto-push new posts to Facebook via Buffer (GraphQL API
+  at api.buffer.com, Bearer token; the classic REST API rejects modern tokens).
+  generate.mjs calls it after illustrating (non-fatal, best-effort). Puts the
+  article URL in the post text so Facebook scrapes the per-post OG tags for a
+  rich card; no image re-upload. Skips silently if BUFFER_ACCESS_TOKEN is unset. Queues by
   default; BUFFER_NOW=1 publishes immediately. Targets BUFFER_PROFILE_IDS if set,
   else every connected Facebook profile. Manual re-share: `npm run buffer -- <post.md>`
   locally, or the "Share to Buffer" GitHub Action. Secret: BUFFER_ACCESS_TOKEN;
