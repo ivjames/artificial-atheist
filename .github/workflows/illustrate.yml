@@ -22,6 +22,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Install pngquant
+        run: sudo apt-get update && sudo apt-get install -y pngquant
+
       - name: Backfill missing illustrations
         env:
           AA_PROVIDER: ${{ vars.AA_PROVIDER }}

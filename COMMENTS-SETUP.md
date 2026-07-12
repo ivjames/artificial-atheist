@@ -1,5 +1,12 @@
 # Comments — droplet setup (delta)
 
+> **⚠️ DORMANT / ARCHIVED — comments are OFF by design.** The on-site comment
+> front-end was removed; discussion is routed to Facebook via Buffer. The
+> backend code still exists but is not wired into any page. This document
+> describes how the system *would* be stood up and is kept for reference only.
+> **Do not re-enable on-site comments without an explicit decision** (see the
+> "Comments are OFF" note in `CLAUDE.md`).
+
 The comment system reuses the admin service you already have. This adds public
 routes (submit / read) that nginx exposes **without** auth and rate-limits, plus
 a moderation panel in `/admin/`. Comments are stored in `data/comments/` on the

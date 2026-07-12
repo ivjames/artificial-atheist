@@ -1,7 +1,7 @@
 name: Generate article
 
-# Runs on a schedule and on manual trigger. Cloudflare Pages rebuilds
-# automatically when the commit lands, so this is the only moving part.
+# Runs on a schedule and on manual trigger. The commit's push fires the
+# droplet's webhook, which pulls + rebuilds + serves the new post.
 on:
   schedule:
     # Daily at 14:00 UTC. Adjust cadence here.
@@ -24,6 +24,11 @@ jobs:
           cache: "npm"
 
       - run: npm ci
+
+      # illustrate.mjs shells out to pngquant to shrink the committed PNGs (~80%).
+      # Best-effort: if it were missing the images would just publish uncompressed.
+      - name: Install pngquant
+        run: sudo apt-get update && sudo apt-get install -y pngquant
 
       - name: Generate a new article
         env:
@@ -57,5 +62,10 @@ jobs:
             git commit -m "Add article: $(git status --porcelain src/posts | head -1 | sed 's/^...//')"
             git push
           else
-            echo "No new post this run (likely a dedup skip)."
+            # generate.mjs retries on dedup collisions, so reaching here means it
+            # gave up after several attempts (topic exhaustion) or generation
+            # failed. Fail the job so the miss is visible (email/red run) instead
+            # of the site silently going quiet for days.
+            echo "::error::Generator produced no new post this run (dedup exhaustion or generation failure) — investigate."
+            exit 1
           fi

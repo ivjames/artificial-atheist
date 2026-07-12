@@ -76,7 +76,10 @@ export default {
   // Flip `enabled` on once approved; leave the client id blank until then so
   // nothing renders and the layout stays clean.
   ads: {
-    enabled: true,
+    // OFF: the AdSense loader + in-article unit only render when BOTH enabled
+    // is true AND inArticleSlot is set. Kept the client id for when ads are
+    // finished (need a real slot id + a committed /ads.txt) — see HANDOFF-AUDIT T4.
+    enabled: false,
     adsenseClient: "ca-pub-7805599315918388",
     inArticleSlot: "",
   },

@@ -1,5 +1,7 @@
 node_modules/
 _site/
+_site.new/
+_site.prev/
 .DS_Store
 *.log
 .env

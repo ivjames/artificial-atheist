@@ -1,10 +1,11 @@
 # Artificial Atheist
 
 An AI-authored publication on atheism, skepticism, and critical thinking.
-Static site (Eleventy) → Cloudflare Pages (free, unlimited bandwidth).
-New articles are written by a scheduled GitHub Actions job that calls the
-Claude API, avoids repeating existing topics, and commits Markdown — which
-auto-triggers a rebuild. No server to run.
+Static site (Eleventy), self-hosted on a DigitalOcean droplet and served by
+nginx from `_site/`. New articles are written by a scheduled GitHub Actions job
+that calls the Claude API, avoids repeating existing topics, and commits
+Markdown; the push fires a webhook on the droplet that pulls, rebuilds, and
+serves the update. See `CLAUDE.md` for the durable stack notes and gotchas.
 
 ```
 src/
@@ -41,30 +42,21 @@ The script reads every existing post's title, picks the topic with the
 fewest articles, asks Claude for a fresh angle that doesn't overlap, and
 rejects near-duplicate titles automatically.
 
-## 3. Deploy to Cloudflare Pages (free)
+## 3. How deploys work (droplet + webhook)
 
-1. Push this repo to GitHub.
-2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git**.
-3. Pick the repo. Build settings:
-   - Build command: `npm run build`
-   - Build output directory: `_site`
-4. Deploy. You get a `*.pages.dev` URL immediately.
+The site is self-hosted on a DigitalOcean droplet ("Lab980"), served by nginx
+from `/var/www/artificial-atheist/_site/`, live at https://artificialatheist.com
+(non-www canonical). There is no manual deploy step:
 
-## 4. Point artificialatheist.com at it
+1. A push to `main` (from the scheduled generator, the Studio, or by hand)
+2. fires the adnanh/webhook listener on the droplet, which
+3. runs `deploy.sh`: `git pull`, `npm install`, `npm run build`.
 
-Your domain is at GoDaddy, currently pointing to the droplet. To move it:
+`npm run build` builds into a scratch dir and swaps `_site` into place only on
+success, so a failed build leaves the previous site serving (it can no longer
+403 the live site). Confirm a deploy with the health check in `CLAUDE.md`.
 
-- Easiest: in Cloudflare Pages → **Custom domains → Set up a domain**,
-  add `artificialatheist.com` and `www.artificialatheist.com`. Cloudflare
-  will tell you to either (a) move the domain's nameservers to Cloudflare
-  (recommended — then SSL and DNS are automatic), or (b) add CNAME records
-  at GoDaddy pointing to your `*.pages.dev` target.
-- SSL is issued automatically by Cloudflare. Nothing to renew.
-
-Once it resolves, your other droplet sites are untouched — this site no
-longer lives on the droplet at all.
-
-> Update `url` in `src/_data/site.js` if the production domain differs.
+> Update `url` in `src/_data/site.js` if the production domain ever changes.
 
 ## 5. Turn on automated publishing
 
@@ -75,11 +67,12 @@ In the GitHub repo:
 - (optional) **Variables → New variable**
   - `AA_MODEL` = `claude-sonnet-4-6` (default) or another model string
 
-The workflow in `.github/workflows/generate.yml` runs every other day at
-14:00 UTC. Change the `cron:` line to adjust cadence. You can also trigger
+The workflow in `.github/workflows/generate.yml` runs daily at 14:00 UTC.
+Change the `cron:` line to adjust cadence. You can also trigger
 it manually from the **Actions** tab (`workflow_dispatch`).
 
-Each run commits at most one new post; Cloudflare rebuilds on the push.
+Each run commits at most one new post; the push triggers the droplet's webhook
+deploy (see section 3).
 
 ## 6. Choosing / comparing the AI provider
 
@@ -117,7 +110,7 @@ Where to get keys:
 
 ### Cost summary
 
-- Hosting (Cloudflare Pages): **free**, unlimited bandwidth.
+- Hosting (DigitalOcean droplet, shared with other sites): existing cost, no per-site charge.
 - Scheduler (GitHub Actions): free tier covers this easily.
 - Content: **free** on Cloudflare Workers AI, or pennies/article on Claude.
   Claude gives the best writing; the open models are serviceable and $0.
@@ -168,14 +161,14 @@ It runs only on your machine, binds 127.0.0.1, and uses your local API key and
 git credentials. The droplet stays pull-only. New articles are deduped against
 existing titles, same as the scheduled generator.
 
-## 9. Optional next steps
+## 9. Already built (was "optional", now done)
 
-- **Full-text search:** add [Pagefind](https://pagefind.app) — run
-  `npx pagefind --site _site` as a post-build step and wire it into
-  `/search/`. Static, free, no backend.
-- **Real header images:** swap the geometric SVG artwork (in
-  `_includes/art.njk`) for generated images if you prefer. The current
-  abstract style is intentionally consistent and zero-cost.
+- **Full-text search:** [Pagefind](https://pagefind.app) runs as part of
+  `npm run build` and is wired into `/search/`. Static, free, no backend.
+- **Real header images:** AI illustrations (`scripts/illustrate.mjs`, 16:9)
+  are generated per post; the tessellation SVG art is the fallback.
+
+Still optional:
+
 - **Newsletter:** if you ever want email, add an SMTP provider (Mailgun
   free tier) and a service like Buttondown; not needed for the core site.
-stray

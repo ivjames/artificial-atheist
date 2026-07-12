@@ -8,8 +8,8 @@ eleventyExcludeFromCollections: true
 {%- for p in staticPages %}
   <url><loc>{{ site.url }}{{ p }}</loc></url>
 {%- endfor %}
-{%- for t in site.topics %}
-  <url><loc>{{ site.url }}/topics/{{ t }}/</loc></url>
+{%- for key, tp in site.topics %}
+  <url><loc>{{ site.url }}/topics/{{ key }}/</loc></url>
 {%- endfor %}
 {%- for post in collections.posts %}
   <url>
