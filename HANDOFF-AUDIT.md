@@ -3,8 +3,33 @@
 Delegation-ready work items derived from `AUDIT.md` (2026-07-12). Each card is
 self-contained: a fresh session or agent should be able to execute it without
 re-discovering context. Read `CLAUDE.md` first for the durable gotchas
-(destructive build, duplicate slugs, Pacific dates). Treat this as a checklist —
-delete items as they land.
+(destructive build, duplicate slugs, Pacific dates).
+
+## STATUS — all cards implemented on `claude/project-audit-gaps-190uck` (2026-07-12)
+
+Owner decisions taken: **AdSense OFF**, **pngquant compression**, **MIT license**.
+
+| Card | Status | Notes |
+|------|--------|-------|
+| T1 Atomic deploy | ✅ done | Verified: broken build leaves `_site` byte-identical, exits 1. |
+| T2 Generator visibility | ✅ done | Retry on dedup + workflow fails on no-post. |
+| T3 Docs reconciled | ✅ done | README → droplet+webhook; COMMENTS-SETUP marked dormant. |
+| T4 AdSense | ✅ done (OFF) | `ads.enabled: false`; loader no longer emitted. |
+| T5 CI build check | ✅ done | `.github/workflows/ci.yml`. |
+| T6 Sitemap topics | ✅ done | 69 URLs; 5 topic pages restored. |
+| T7 Image compression | ✅ done | 103MB → 20MB; new art auto-compresses. |
+| T8 Branded 404 | ✅ done | `src/404.html` — **needs droplet nginx line (below)**. |
+| T9 LICENSE/dependabot/model | ✅ done | MIT + dependabot; model id verified current (no change). |
+
+### Remaining manual (droplet-side, not in-repo)
+- **T8 nginx:** add `error_page 404 /404.html;` to the 443 server block so the
+  branded page actually serves on misses (`nginx -t && systemctl reload nginx`).
+- **Deploy note:** the first deploy after this branch merges runs the new atomic
+  build; confirm `_site/index.html` exists afterward (health check in `CLAUDE.md`).
+
+The original task cards are preserved below for reference / future re-runs.
+
+---
 
 ## How to use this file
 - **Autonomous** cards can be picked up and shipped as-is.
