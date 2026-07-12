@@ -134,17 +134,44 @@ async function main() {
   const info = providerInfo();
   const existing = readExisting();
   const topic = pickTopic(existing);
-  const { system, prompt } = buildPrompt(topic, existing.map((p) => p.title));
 
-  console.log(`Provider: ${info.provider} (${info.model}) — topic: ${topic}${dryRun ? " [DRY RUN]" : ""}`);
-  const raw = await llm({ system, prompt });
+  // As the corpus grows against a handful of topics, the model increasingly
+  // proposes a near-duplicate title and the run would otherwise no-op silently.
+  // Retry up to AA_MAX_ATTEMPTS times, feeding each rejected title back into the
+  // avoid-list so the model picks a fresher angle before we give up.
+  const maxAttempts = dryRun ? 1 : Number(process.env.AA_MAX_ATTEMPTS || 3);
+  const rejected = [];
+  let data = null;
 
-  let data;
-  try {
-    data = parseJSON(raw);
-  } catch (e) {
-    console.error("Provider did not return valid JSON:\n", raw.slice(0, 500));
-    process.exit(1);
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const { system, prompt } = buildPrompt(topic, existing.map((p) => p.title).concat(rejected));
+    console.log(
+      `Provider: ${info.provider} (${info.model}) — topic: ${topic}` +
+        (maxAttempts > 1 ? ` (attempt ${attempt}/${maxAttempts})` : "") +
+        (dryRun ? " [DRY RUN]" : "")
+    );
+    const raw = await llm({ system, prompt });
+
+    let parsed;
+    try {
+      parsed = parseJSON(raw);
+    } catch (e) {
+      console.error("Provider did not return valid JSON:\n", raw.slice(0, 500));
+      if (attempt === maxAttempts) process.exit(1);
+      continue;
+    }
+
+    // In dry-run we skip the dedup gate so the offline pipeline test always writes.
+    const dup = dryRun ? null : tooSimilar(parsed.title, existing);
+    if (dup) {
+      console.warn(`Attempt ${attempt}: title too similar to existing ("${dup}").`);
+      rejected.push(parsed.title);
+      if (attempt < maxAttempts) continue;
+      console.error(`No sufficiently-novel title after ${maxAttempts} attempts — no post this run.`);
+      process.exit(0);
+    }
+    data = parsed;
+    break;
   }
 
   const dryRunDir = dryRun ? path.join(__dirname, "..", "drafts") : undefined;
