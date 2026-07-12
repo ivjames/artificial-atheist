@@ -25,6 +25,11 @@ jobs:
 
       - run: npm ci
 
+      # illustrate.mjs shells out to pngquant to shrink the committed PNGs (~80%).
+      # Best-effort: if it were missing the images would just publish uncompressed.
+      - name: Install pngquant
+        run: sudo apt-get update && sudo apt-get install -y pngquant
+
       - name: Generate a new article
         env:
           AA_PROVIDER: ${{ vars.AA_PROVIDER }}

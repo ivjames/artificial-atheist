@@ -19,6 +19,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { generate as llm } from "./providers.mjs";
 
 const ROOT = process.cwd();
@@ -100,7 +101,25 @@ async function generateImage(prompt, outPath) {
   if (!b64) throw new Error("no image data returned");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, Buffer.from(b64, "base64"));
+  compressPng(outPath);
   return true;
+}
+
+// Best-effort palette compression. These flat/geometric illustrations quantize
+// extremely well (~80% smaller) with no visible loss, which keeps the committed
+// PNGs from bloating the repo. Skips silently if pngquant isn't installed
+// (the raw PNG is still valid), and --skip-if-larger leaves the file untouched
+// if it can't beat the original.
+function compressPng(file) {
+  try {
+    spawnSync(
+      "pngquant",
+      ["--force", "--skip-if-larger", "--strip", "--quality=60-90", "--output", file, "--", file],
+      { stdio: "ignore" }
+    );
+  } catch {
+    /* pngquant absent — leave the PNG uncompressed */
+  }
 }
 
 // Upsert an `image:` line into a post's frontmatter.
