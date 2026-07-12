@@ -1,0 +1,38 @@
+name: CI build check
+
+# Catches broken builds and duplicate slugs before they reach the droplet
+# (a failed build there empties _site and 403s the live site). No secrets:
+# this only builds the static site; article generation is a separate workflow.
+on:
+  pull_request: {}
+  push:
+    branches-ignore:
+      - main # main is what the droplet deploys; PRs into it are already covered above
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Duplicate-slug guard
+        run: |
+          dupes=$(ls src/posts/ | sed -E 's/^[0-9]{4}-[0-9]{2}-[0-9]{2}-//' | sort | uniq -d)
+          if [ -n "$dupes" ]; then
+            echo "Duplicate slugs would cause a fatal DuplicatePermalinkOutputError:" >&2
+            echo "$dupes" >&2
+            exit 1
+          fi
+
+      - name: Build
+        run: npm run build
+
+      - name: Assert the build produced a homepage
+        run: test -f _site/index.html || { echo "Build produced no _site/index.html" >&2; exit 1; }
