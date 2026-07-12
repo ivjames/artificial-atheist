@@ -1,7 +1,7 @@
 name: Generate article
 
-# Runs on a schedule and on manual trigger. Cloudflare Pages rebuilds
-# automatically when the commit lands, so this is the only moving part.
+# Runs on a schedule and on manual trigger. The commit's push fires the
+# droplet's webhook, which pulls + rebuilds + serves the new post.
 on:
   schedule:
     # Daily at 14:00 UTC. Adjust cadence here.
