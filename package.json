@@ -21,6 +21,6 @@
     "@anthropic-ai/sdk": "^0.40.0",
     "luxon": "^3.5.0",
     "markdown-it": "^14.1.0",
-    "openai": "^4.0.0"
+    "openai": "^6.48.0"
   }
 }
