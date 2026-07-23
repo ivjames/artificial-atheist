@@ -5,10 +5,13 @@ name: Backfill posts to Buffer
 # works through that backlog at a controlled rate: each run publishes one
 # unbuffered post (oldest first, shareNow) and stamps it `buffered: true` so
 # it's never re-sent — two runs/day ⇒ 2 posts/day until the backlog is dry.
+# GitHub Actions cron is UTC-only, so these are 9am/6pm America/Los_Angeles
+# (PDT, UTC-7) converted by hand — they'll drift an hour once PST (UTC-8)
+# kicks in; nudge by 1 if that matters.
 on:
   schedule:
-    - cron: "0 6 * * *"
-    - cron: "0 18 * * *"
+    - cron: "0 16 * * *"
+    - cron: "0 1 * * *"
   workflow_dispatch:
     inputs:
       count:
