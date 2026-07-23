@@ -4,8 +4,10 @@ name: Generate article
 # droplet's webhook, which pulls + rebuilds + serves the new post.
 on:
   schedule:
-    # Daily at 14:00 UTC. Adjust cadence here.
-    # For two a day, add a second line, e.g.: - cron: "0 2 * * *"
+    # Daily at 14:00 UTC = 7am America/Los_Angeles (PDT, UTC-7). GitHub
+    # Actions cron is UTC-only, so this is a manual conversion — it'll drift
+    # an hour once PST (UTC-8) kicks in. Adjust cadence here; for two a day,
+    # add a second line, e.g.: - cron: "0 2 * * *"
     - cron: "0 14 * * *"
   workflow_dispatch: {}
 
