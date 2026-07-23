@@ -1,0 +1,52 @@
+name: Backfill posts to Buffer
+
+# Twice daily. Auto-push to Facebook via Buffer only went live 2026-07-11
+# (see buffer.mjs), so everything published before that never went out. This
+# works through that backlog at a controlled rate: each run publishes one
+# unbuffered post (oldest first, shareNow) and stamps it `buffered: true` so
+# it's never re-sent — two runs/day ⇒ 2 posts/day until the backlog is dry.
+on:
+  schedule:
+    - cron: "0 6 * * *"
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+    inputs:
+      count:
+        description: "Backlog posts to publish this run"
+        required: false
+        type: string
+        default: "1"
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Publish oldest unbuffered backlog post(s)
+        env:
+          BUFFER_ACCESS_TOKEN: ${{ secrets.BUFFER_ACCESS_TOKEN }}
+          BUFFER_PROFILE_IDS: ${{ vars.BUFFER_PROFILE_IDS }}
+        run: node scripts/buffer.mjs --backfill ${{ inputs.count || '1' }}
+
+      - name: Commit buffered stamps
+        run: |
+          if [ -n "$(git status --porcelain src/posts)" ]; then
+            git config user.name "Artificial Atheist Bot"
+            git config user.email "bot@artificialatheist.com"
+            git add src/posts
+            git commit -m "Stamp buffered: true for Facebook backfill"
+            git push
+          else
+            echo "No posts were published this run (backlog dry, or Buffer push skipped)."
+          fi

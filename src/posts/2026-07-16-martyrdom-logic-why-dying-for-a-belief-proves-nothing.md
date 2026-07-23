@@ -4,6 +4,7 @@ title: "Martyrdom Logic: Why Dying for a Belief Proves Nothing"
 date: 2026-07-16
 topic: religion
 excerpt: "The willingness to die for a religious belief is often treated as evidence of its truth. It is not, and understanding why matters."
+buffered: true
 ---
 
 The martyr has always held a special place in religious imagination. Across traditions, those who die rather than renounce their faith are honoured as the strongest possible witnesses to its truth. But the inferential step from "someone died for this belief" to "this belief is credible" is far weaker than it looks.

@@ -4,6 +4,7 @@ title: "Secularism and the Census: How States Count Religion"
 date: 2026-07-13
 topic: secularism
 excerpt: "When governments ask citizens about religion, the question is never neutral — the design of the question shapes what the data can and cannot tell us."
+buffered: true
 ---
 
 Whether a country counts its religious population says something about how it understands the relationship between the state and belief. The decision to ask, and equally the decision not to ask, is itself a policy choice with real consequences for secular governance.

@@ -4,6 +4,7 @@ title: "The Argument from Miracles: Testimony, Probability, and Hume"
 date: 2026-07-20
 topic: religion
 excerpt: "Miracle claims rest on eyewitness testimony, but probability theory gives us a precise way to ask whether that testimony is ever strong enough to believe."
+buffered: true
 ---
 
 Miracle claims occupy a peculiar place in religious epistemology: they are offered as evidence for the supernatural, yet they arrive almost exclusively through human testimony, the most error-prone channel we have. Understanding what it would actually take for such testimony to be convincing is not a matter of faith or cynicism — it is a matter of probability.

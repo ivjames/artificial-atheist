@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * buffer.mjs — push new articles to Facebook (and any other connected
- * channel) via Buffer.
+ * buffer.mjs — push articles to Facebook (and any other connected channel)
+ * via Buffer.
  *
  * Discussion for Artificial Atheist lives on Facebook, not on-site comments.
  * Rather than hand-posting every article, the generator hands each freshly
@@ -20,18 +20,16 @@
  *   BUFFER_NOW           (optional, "1" ⇒ publish immediately instead of
  *                         adding to the Buffer queue; default is queue)
  *
- * generate.mjs queues every new post (addToQueue) rather than publishing it
- * immediately, so Buffer's own posting schedule decides when it actually
- * goes out — and a backlog builds up in the queue if that schedule doesn't
- * drain it fast enough. publishQueueDrip() below works through that backlog
- * from this repo's side: it finds the oldest still-queued post per channel
- * and publishes it right now (shareMode shareNow) via the editPost mutation.
- * The "Drip-publish from Buffer queue" workflow runs it on a cron.
+ * Every post successfully pushed gets `buffered: true` stamped into its
+ * frontmatter (see stampBuffered). Auto-push went live 2026-07-11 (#1); posts
+ * from 2026-07-12 on were already sent live and got backdated-stamped in that
+ * same change, so backfillBuffered() only ever touches the genuine backlog —
+ * the 2026-03-01–2026-07-09 posts written before Buffer was wired up at all.
  *
- * As a module:  import { bufferPostFromFile, publishQueueDrip } from "./buffer.mjs"
+ * As a module:  import { bufferPostFromFile, backfillBuffered } from "./buffer.mjs"
  * As a CLI:     node scripts/buffer.mjs src/posts/2026-07-09-....md
  *               node scripts/buffer.mjs --now src/posts/2026-07-09-....md
- *               node scripts/buffer.mjs --drip [count]
+ *               node scripts/buffer.mjs --backfill [count]
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -65,6 +63,21 @@ function readPostMeta(filepath) {
     url: `${site.url}/posts/${slug}/`,
     image: image ? `${site.url}${image}` : "",
   };
+}
+
+/** True if the post's frontmatter is already stamped `buffered: true`. */
+function isBuffered(filepath) {
+  const raw = fs.readFileSync(filepath, "utf8");
+  const fm = (raw.match(/^---\n([\s\S]*?)\n---/) || [])[1] || "";
+  return /^buffered:\s*true\s*$/m.test(fm);
+}
+
+/** Stamp `buffered: true` into a post's frontmatter (no-op if already stamped). */
+function stampBuffered(filepath) {
+  if (isBuffered(filepath)) return;
+  const raw = fs.readFileSync(filepath, "utf8");
+  const stamped = raw.replace(/^---\n([\s\S]*?)\n---/, (whole, fm) => `---\n${fm}\nbuffered: true\n---`);
+  fs.writeFileSync(filepath, stamped);
 }
 
 /** Run a GraphQL operation against the Buffer API. */
@@ -106,38 +119,6 @@ const CREATE_POST = `
     }
   }`;
 
-// Organizations only — deliberately doesn't select `channels`, which is the
-// field this account's API key is forbidden from reading (see resolveChannelIds).
-const ORGANIZATIONS_QUERY = `
-  query Organizations {
-    account {
-      organizations { id }
-    }
-  }`;
-
-const PENDING_POSTS_QUERY = `
-  query PendingPosts($organizationId: OrganizationId!, $channelIds: [ChannelId!]!, $first: Int) {
-    posts(
-      first: $first
-      input: {
-        organizationId: $organizationId
-        filter: { status: [scheduled], channelIds: $channelIds }
-        sort: [{ field: dueAt, direction: asc }]
-      }
-    ) {
-      edges { node { id text dueAt channelId } }
-    }
-  }`;
-
-const EDIT_POST = `
-  mutation EditPost($input: EditPostInput!) {
-    editPost(input: $input) {
-      __typename
-      ... on PostActionSuccess { post { id } }
-      ... on MutationError { message }
-    }
-  }`;
-
 /** Resolve the Buffer channel ids to post to. */
 async function resolveChannelIds() {
   const configured = (process.env.BUFFER_PROFILE_IDS || "")
@@ -162,17 +143,6 @@ async function resolveChannelIds() {
   return channels
     .filter((c) => String(c.service || "").toLowerCase().includes("facebook"))
     .map((c) => c.id);
-}
-
-/**
- * Resolve the Buffer organization id. Assumes a single organization on this
- * account (true for this site) — first one wins.
- */
-async function resolveOrganizationId() {
-  const data = await graphql(ORGANIZATIONS_QUERY, {});
-  const orgs = data?.account?.organizations || [];
-  if (!orgs.length) throw new Error("No Buffer organization found for this account.");
-  return orgs[0].id;
 }
 
 /**
@@ -217,49 +187,6 @@ export async function postToBuffer(meta, { now } = {}) {
 }
 
 /**
- * Publish the oldest still-queued post on each configured Buffer channel,
- * right now, via editPost's shareNow mode. Used to work through a queue
- * backlog at a controlled rate instead of waiting on Buffer's own posting
- * schedule. Returns the array of published post ids.
- */
-export async function publishQueueDrip({ count = 1 } = {}) {
-  if (!process.env.BUFFER_ACCESS_TOKEN) {
-    console.warn("BUFFER_ACCESS_TOKEN unset — skipping Buffer drip.");
-    return [];
-  }
-  const channelIds = await resolveChannelIds();
-  if (!channelIds.length) {
-    console.warn("No Buffer Facebook channels found — skipping Buffer drip.");
-    return [];
-  }
-  const organizationId = await resolveOrganizationId();
-
-  const published = [];
-  for (const channelId of channelIds) {
-    const data = await graphql(PENDING_POSTS_QUERY, {
-      organizationId,
-      channelIds: [channelId],
-      first: count,
-    });
-    const posts = (data?.posts?.edges || []).map((e) => e.node);
-    if (!posts.length) {
-      console.log(`Buffer: queue empty for channel ${channelId} — nothing to drip.`);
-      continue;
-    }
-    for (const post of posts) {
-      const data2 = await graphql(EDIT_POST, { input: { id: post.id, mode: "shareNow" } });
-      const result = data2.editPost;
-      if (result.__typename !== "PostActionSuccess") {
-        throw new Error(`Buffer editPost error (post ${post.id}): ${result.message}`);
-      }
-      published.push(post.id);
-      console.log(`Buffer: published queued post ${post.id} to channel ${channelId}.`);
-    }
-  }
-  return published;
-}
-
-/**
  * Resolve a post argument to an on-disk path. Accepts:
  *   - an absolute path,
  *   - a path relative to the current directory (e.g. the repo-root-relative
@@ -273,22 +200,57 @@ function resolvePostPath(filename) {
   return path.join(POSTS_DIR, filename);
 }
 
-/** Convenience wrapper used by generate.mjs: post straight from a filename. */
+/**
+ * Convenience wrapper used by generate.mjs: post straight from a filename.
+ * Stamps `buffered: true` on success so backfillBuffered() never re-sends it.
+ */
 export async function bufferPostFromFile(filename, opts = {}) {
   const filepath = resolvePostPath(filename);
   const meta = readPostMeta(filepath);
-  return postToBuffer(meta, opts);
+  const result = await postToBuffer(meta, opts);
+  if (result !== null) stampBuffered(filepath);
+  return result;
+}
+
+/**
+ * Work through the pre-Buffer backlog: publish the oldest `count` posts that
+ * have never been sent (no `buffered: true` in frontmatter), oldest first,
+ * shareNow (direct control of cadence — not left to Buffer's own schedule).
+ * Stamps each on success. Returns the filenames actually published.
+ */
+export async function backfillBuffered({ count = 2 } = {}) {
+  const files = fs
+    .readdirSync(POSTS_DIR)
+    .filter((f) => f.endsWith(".md"))
+    .sort(); // date-prefixed filenames ⇒ lexicographic sort is chronological
+  const candidates = files.filter((f) => !isBuffered(path.join(POSTS_DIR, f)));
+
+  if (!candidates.length) {
+    console.log("Buffer backfill: no unbuffered backlog posts remaining.");
+    return [];
+  }
+
+  const published = [];
+  for (const file of candidates.slice(0, count)) {
+    const filepath = path.join(POSTS_DIR, file);
+    const meta = readPostMeta(filepath);
+    const result = await postToBuffer(meta, { now: true });
+    if (result === null) break; // no token / no channels — stop, don't stamp
+    stampBuffered(filepath);
+    published.push(file);
+  }
+  return published;
 }
 
 // --- CLI ---------------------------------------------------------------
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
-  const dripIndex = args.indexOf("--drip");
+  const backfillIndex = args.indexOf("--backfill");
 
-  if (dripIndex !== -1) {
-    const countArg = args[dripIndex + 1];
-    const count = countArg && !countArg.startsWith("--") ? parseInt(countArg, 10) : 1;
-    publishQueueDrip({ count })
+  if (backfillIndex !== -1) {
+    const countArg = args[backfillIndex + 1];
+    const count = countArg && !countArg.startsWith("--") ? parseInt(countArg, 10) : 2;
+    backfillBuffered({ count })
       .then(() => process.exit(0))
       .catch((e) => {
         console.error(e.message || e);
@@ -299,7 +261,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const target = args.find((a) => !a.startsWith("--"));
     if (!target) {
       console.error("Usage: node scripts/buffer.mjs [--now] <path-to-post.md>");
-      console.error("       node scripts/buffer.mjs --drip [count]");
+      console.error("       node scripts/buffer.mjs --backfill [count]");
       process.exit(1);
     }
     bufferPostFromFile(target, { now })

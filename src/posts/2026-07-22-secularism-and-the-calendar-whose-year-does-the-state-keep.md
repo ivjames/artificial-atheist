@@ -4,6 +4,7 @@ title: "Secularism and the Calendar: Whose Year Does the State Keep?"
 date: 2026-07-22
 topic: secularism
 excerpt: "Public calendars embed religious assumptions so deeply that most citizens never notice them — and secularism has yet to settle what fairness requires."
+buffered: true
 ---
 
 The days a state declares public holidays are not neutral choices. Every calendar encodes a set of assumptions about which communities' rhythms matter, and in most liberal democracies those assumptions still trace the outline of a single religion.

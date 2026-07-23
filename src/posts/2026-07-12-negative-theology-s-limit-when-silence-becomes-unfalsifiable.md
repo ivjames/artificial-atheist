@@ -4,6 +4,7 @@ title: "Negative Theology's Limit: When Silence Becomes Unfalsifiable"
 date: 2026-07-12
 topic: religion
 excerpt: "Apophatic theology avoids anthropomorphism by refusing all positive claims about God, but this epistemic humility carries a hidden cost: the position becomes immune to scrutiny."
+buffered: true
 ---
 
 Most theological disputes assume that something meaningful is being said about God — that God is good, personal, powerful, or present. A quieter tradition disagrees. It holds that every positive description of the divine distorts what it describes, and that the honest response to ultimate reality is structured silence. That move is philosophically interesting, but it creates a problem that its defenders rarely confront directly.

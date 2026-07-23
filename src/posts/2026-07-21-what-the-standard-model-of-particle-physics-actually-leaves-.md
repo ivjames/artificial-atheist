@@ -4,6 +4,7 @@ title: "What the Standard Model of Particle Physics Actually Leaves Open"
 date: 2026-07-21
 topic: science
 excerpt: "The Standard Model is the most precisely tested theory in science, yet it leaves several fundamental questions entirely unanswered."
+buffered: true
 ---
 
 The Standard Model of particle physics is one of the most successful scientific theories ever constructed. It has predicted experimental results to more than ten decimal places, and yet physicists are the first to say it is incomplete.

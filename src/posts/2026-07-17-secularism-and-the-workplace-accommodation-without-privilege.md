@@ -4,6 +4,7 @@ title: "Secularism and the Workplace: Accommodation Without Privilege"
 date: 2026-07-17
 topic: secularism
 excerpt: "When employees request religious exemptions at work, secular legal frameworks must balance genuine accommodation against fairness to everyone else."
+buffered: true
 ---
 
 The modern workplace is one of the most practically contested sites for secular governance. Unlike schools, courts, or legislatures, it sits mostly outside direct state control — yet employment law forces secular principles into daily, granular decisions about schedules, dress codes, oaths, and conscience.
