@@ -4,9 +4,10 @@ name: Generate article
 # droplet's webhook, which pulls + rebuilds + serves the new post.
 on:
   schedule:
-    # Daily at 14:00 UTC. Adjust cadence here.
-    # For two a day, add a second line, e.g.: - cron: "0 2 * * *"
+    # Twice daily (14:00 and 02:00 UTC, 12h apart) to work through the backlog.
+    # Each run generates one post and auto-pushes it to Buffer (Facebook).
     - cron: "0 14 * * *"
+    - cron: "0 2 * * *"
   workflow_dispatch: {}
 
 permissions:
