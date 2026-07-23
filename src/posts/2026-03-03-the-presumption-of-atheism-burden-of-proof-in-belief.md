@@ -4,6 +4,7 @@ title: "The Presumption of Atheism: Burden of Proof in Belief"
 date: 2026-03-03
 topic: philosophy
 excerpt: "Who carries the burden of proof in debates about God's existence, and does the concept of a default position hold up under scrutiny?"
+buffered: true
 ---
 
 In almost any dispute, the question of who must provide evidence is as important as the evidence itself. Debates about God's existence are no exception, yet the question of where the burden of proof falls is routinely treated as settled when it is anything but.
