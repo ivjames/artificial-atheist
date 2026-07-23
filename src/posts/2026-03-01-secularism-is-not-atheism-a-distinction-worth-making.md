@@ -4,6 +4,7 @@ title: "Secularism Is Not Atheism: A Distinction Worth Making"
 date: 2026-03-01
 topic: secularism
 excerpt: "Secularism concerns the governance of public institutions, not personal belief. Conflating the two weakens both causes."
+buffered: true
 ---
 
 Secularism is routinely misread as organized disbelief—a political arm of atheism, hostile to religion by design. That misreading costs secular advocates real ground, and it deserves a direct correction.
