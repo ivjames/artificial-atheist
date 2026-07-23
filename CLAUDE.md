@@ -43,7 +43,13 @@ NO local node/npm — all builds run on the droplet or in GitHub Actions, never 
   default; BUFFER_NOW=1 publishes immediately. Targets BUFFER_PROFILE_IDS if set,
   else every connected Facebook profile. Manual re-share: `npm run buffer -- <post.md>`
   locally, or the "Share to Buffer" GitHub Action. Secret: BUFFER_ACCESS_TOKEN;
-  optional repo var: BUFFER_PROFILE_IDS.
+  optional repo var: BUFFER_PROFILE_IDS. Because posts are queued (not
+  shareNow) and Buffer's own posting schedule decides when the queue drains,
+  a backlog can build up there. `publishQueueDrip()` (`node scripts/buffer.mjs
+  --drip [count]`) pops the oldest queued post per channel and publishes it
+  immediately via editPost/shareNow; the "Drip-publish from Buffer queue"
+  workflow (buffer-drip.yml) runs it twice daily (06:00 + 18:00 UTC) to work
+  through the backlog at 2 posts/day.
 - scripts/generate.mjs — scheduled article generator. scripts/illustrate.mjs — AI art.
   Test mode: `npm run generate:test` (AA_PROVIDER=mock + --dry-run) runs the full
   parse/write pipeline offline — no API key, no cost, writes to gitignored drafts/,
