@@ -4,7 +4,6 @@ title: "What the Base Rate Fallacy Costs Us in Medicine"
 date: 2026-07-19
 topic: science
 excerpt: "Ignoring how common a condition is before interpreting a test result leads to systematic errors in diagnosis—and understanding why is straightforward."
-buffered: true
 ---
 
 Probability is not intuitive. When a doctor orders a diagnostic test, or a patient reads that a screening caught something, the number that matters most is almost always the one that goes unmentioned: how common is this condition in the first place?

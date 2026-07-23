@@ -4,7 +4,6 @@ title: "What the Central Dogma of Molecular Biology Actually Says"
 date: 2026-07-15
 topic: science
 excerpt: "Francis Crick's 'central dogma' is one of the most cited and most misunderstood ideas in modern biology — here is what it actually claims."
-buffered: true
 ---
 
 Few phrases in science get invoked as confidently and misread as persistently as the "central dogma of molecular biology." Getting it right matters, both for understanding life and for evaluating the many claims — from creationists, from epigenetics enthusiasts, and occasionally from scientists themselves — that it has been overthrown.

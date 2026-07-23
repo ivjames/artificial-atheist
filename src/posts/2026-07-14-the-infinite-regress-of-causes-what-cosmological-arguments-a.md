@@ -4,7 +4,6 @@ title: "The Infinite Regress of Causes: What Cosmological Arguments Actually Nee
 date: 2026-07-14
 topic: philosophy
 excerpt: "Cosmological arguments don't fail for lack of ambition—they fail because the move from 'causes exist' to 'a first cause exists' is harder than it looks."
-buffered: true
 ---
 
 Every version of the cosmological argument begins with something ordinary—motion, contingency, causation—and tries to end with God. The gap between those two points is where most of the philosophical work quietly goes missing.

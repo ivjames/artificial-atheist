@@ -4,7 +4,6 @@ title: "Moral Realism: Are Ethical Facts Part of the Furniture of the World?"
 date: 2026-07-18
 topic: philosophy
 excerpt: "Moral realism holds that some ethical claims are objectively true. The debate over whether that is coherent has direct consequences for secular ethics."
-buffered: true
 ---
 
 The question of whether moral facts exist independently of human minds is not merely academic. How you answer it shapes what you think secular ethics can actually claim — and what religious ethics is really doing when it appeals to God as the source of moral truth.
