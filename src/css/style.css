@@ -141,6 +141,8 @@ a { color: inherit; }
 }
 .subnav a:hover { color: var(--text); }
 .subnav a i { font-size: 15px; }
+/* Full-width zero-height flex item: forces the nav to wrap to a new line here. */
+.subnav-break { flex-basis: 100%; height: 0; }
 
 /* ===================== Ticker ===================== */
 .ticker {
