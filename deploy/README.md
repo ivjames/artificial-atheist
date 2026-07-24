@@ -26,6 +26,7 @@ Nginx acts as a reverse proxy, routing requests to the appropriate backend based
 | `/api` | Next.js (8060) | API endpoints |
 | `/_next` | Next.js (8060) | Next.js assets (CSS, JS, images) |
 | `/result` | Next.js (8060) | Quiz result page |
+| `/unavailable` | Next.js (8060) | Region-gate "not available" page |
 | Everything else | Static files | Served from `_site/` |
 
 > **`/admin` is NOT proxied.** The existing Artificial Atheist admin dashboard
@@ -66,6 +67,36 @@ NEXT_PUBLIC_SITE_URL=https://artificialatheist.com npm run start
 ```
 
 This ensures client-side code uses correct absolute URLs and OG tags reflect the canonical domain.
+
+### Region gate (GDPR sidestep) — GeoIP2
+
+The chat app declines the chat surface to EU/EEA + UK visitors so no
+special-category (religion/belief) conversation data from GDPR-jurisdiction
+users is collected. Its middleware reads the visitor country from the
+`X-Country-Code` header, which nginx produces via the GeoIP2 module.
+
+Setup lives in **`nginx-geoip2.conf`** (install steps in that file's header):
+install `libnginx-mod-http-geoip2` + the MaxMind GeoLite2-Country DB, load the
+module, drop the snippet into `/etc/nginx/conf.d/`, then in
+`nginx-artificialatheist.com.conf` **change the region-gate line from
+`proxy_set_header X-Country-Code "";` to `proxy_set_header X-Country-Code
+$geoip2_country_code;`** and reload.
+
+The vhost ships that header set to `""`, which strips any client-supplied
+`X-Country-Code` (so a visitor can't spoof `X-Country-Code: US`) and makes the
+gate **fail closed** — nobody reaches the chat until GeoIP2 supplies a real
+country. So wire GeoIP2 (and confirm the `curl -H` tests below) **before**
+flipping `CHAT_ENABLED=true`. See `GO-LIVE-RUNBOOK.md` for the full sequence.
+
+Verify the header is flowing (after setup):
+
+```bash
+# From the droplet, hit the app directly with a spoofed country header:
+curl -s -o /dev/null -w '%{http_code}\n' -H 'X-Country-Code: US' http://127.0.0.1:8060/signup   # 200
+curl -s -o /dev/null -w '%{http_code}\n' -H 'X-Country-Code: DE' http://127.0.0.1:8060/signup   # 307 → /unavailable
+# Through nginx, GeoIP2 sets the header from your real IP:
+curl -sI https://artificialatheist.com/signup | grep -i location   # EU IP → /unavailable
+```
 
 ## Migration Note
 
