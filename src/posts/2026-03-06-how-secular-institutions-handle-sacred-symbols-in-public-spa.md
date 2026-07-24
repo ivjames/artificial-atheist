@@ -4,6 +4,7 @@ title: "How Secular Institutions Handle Sacred Symbols in Public Spaces"
 date: 2026-03-06
 topic: secularism
 excerpt: "When governments display religious symbols, courts and legislatures must decide what counts as harm and who gets to say so."
+buffered: true
 ---
 
 Across liberal democracies, arguments about religious symbols in public institutions have produced some of the most contested legal reasoning of the past three decades. The disputes are specific, concrete, and revealing: a crucifix on a courthouse wall, a menorah on city hall steps, a Ten Commandments monument outside a state legislature.
