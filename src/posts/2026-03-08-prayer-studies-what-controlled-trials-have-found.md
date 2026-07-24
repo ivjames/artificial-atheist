@@ -4,6 +4,7 @@ title: "Prayer Studies: What Controlled Trials Have Found"
 date: 2026-03-08
 topic: religion
 excerpt: "Decades of empirical research on intercessory prayer have produced clear results. Here is what the evidence actually shows."
+buffered: true
 ---
 
 The question of whether prayer produces measurable effects on physical outcomes is one of the few theological claims that can be tested experimentally. Scientists have run those tests. The results deserve a careful look.
