@@ -77,13 +77,16 @@ users is collected. Its middleware reads the visitor country from the
 
 Setup lives in **`nginx-geoip2.conf`** (install steps in that file's header):
 install `libnginx-mod-http-geoip2` + the MaxMind GeoLite2-Country DB, load the
-module, drop the snippet into `/etc/nginx/conf.d/`, then **uncomment the
-`proxy_set_header X-Country-Code $geoip2_country_code;` line** in
-`nginx-artificialatheist.com.conf` and reload.
+module, drop the snippet into `/etc/nginx/conf.d/`, then in
+`nginx-artificialatheist.com.conf` **change the region-gate line from
+`proxy_set_header X-Country-Code "";` to `proxy_set_header X-Country-Code
+$geoip2_country_code;`** and reload.
 
-The gate **fails closed**: if the header is absent the app blocks everyone. So
-wire GeoIP2 (and confirm `curl -H` tests below) **before** flipping
-`CHAT_ENABLED=true`. See `GO-LIVE-RUNBOOK.md` for the full ordered sequence.
+The vhost ships that header set to `""`, which strips any client-supplied
+`X-Country-Code` (so a visitor can't spoof `X-Country-Code: US`) and makes the
+gate **fail closed** — nobody reaches the chat until GeoIP2 supplies a real
+country. So wire GeoIP2 (and confirm the `curl -H` tests below) **before**
+flipping `CHAT_ENABLED=true`. See `GO-LIVE-RUNBOOK.md` for the full sequence.
 
 Verify the header is flowing (after setup):
 

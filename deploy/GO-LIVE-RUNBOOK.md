@@ -82,7 +82,11 @@ sudo cp /var/www/artificial-atheist/deploy/nginx-geoip2.conf /etc/nginx/conf.d/g
 sudo cp /var/www/artificial-atheist/deploy/nginx-artificialatheist.com.conf \
         /etc/nginx/sites-available/artificialatheist.com
 
-# 2c. Uncomment this line in that vhost's proxy block:
+# 2c. In that vhost's proxy block, change the region-gate line from
+#       proxy_set_header X-Country-Code "";          # ships like this: strips
+#                                                    # spoofed client headers,
+#                                                    # fails the gate closed
+#     to
 #       proxy_set_header X-Country-Code $geoip2_country_code;
 
 sudo nginx -t && sudo systemctl reload nginx
