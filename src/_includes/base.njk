@@ -111,6 +111,7 @@
     <nav class="subnav" aria-label="Topics">
       <div class="subnav-inner">
         {% for item in site.nav %}
+        {% if item.label == "News" %}<span class="subnav-break" aria-hidden="true"></span>{% endif %}
         <a href="{{ item.url }}"><i class="ti {{ item.icon }}"></i> {{ item.label }}</a>
         {% endfor %}
       </div>
