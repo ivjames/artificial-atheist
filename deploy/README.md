@@ -1,79 +1,113 @@
-# Deployment: Artificial Atheist + AtheismIQ Shared Domain
+# Deployment: Artificial Atheist (unified Next.js app)
 
-This directory contains deployment documentation and configuration for running the Artificial Atheist static site alongside the AtheismIQ Next.js application on a shared domain.
+The whole site is now ONE Next.js 15 application (App Router, React 19, Prisma +
+PostgreSQL) that serves everything: the publication (home, articles, topics,
+about, faq, search, debate explainer), the AtheismIQ quiz, and the debate-chat +
+credits + article-review surfaces. There is no longer a static Eleventy `_site`
+root and no path-based split between two backends — that glue is gone.
 
 ## Architecture
 
-Both the static Eleventy site and the Next.js app are served under the same domain: `https://artificialatheist.com`
+- **One Next server** on `127.0.0.1:8060`, run as a persistent service
+  (pm2 app or systemd unit, both named `artificial-atheist`).
+- **nginx** is a thin TLS-terminating reverse proxy: it terminates HTTPS,
+  redirects www → non-www, and proxies *all* paths to the Next app. Config:
+  `nginx-artificialatheist.com.conf`.
+- **PostgreSQL** runs locally on the droplet; the app reads `DATABASE_URL` from
+  its `.env`. Quiz/chat/credit/pipeline data lives there.
+- Live at `https://artificialatheist.com` (NON-www canonical). Droplet "Lab980",
+  165.22.128.19. Webroot / clone: `/var/www/artificial-atheist`.
 
-- **Static site** (Eleventy): Home page, articles, about, FAQ — all pre-built to `_site/` via `npm run build`
-- **Next.js app** (AtheismIQ): Debate chat, quiz, leaderboard, account pages — running as a separate process on `127.0.0.1:8060`
+> The AtheismIQ quiz used to be a separate app at `atheismiq.lab980.com/quiz`
+> (later path-proxied under the main domain). It now lives at `/quiz` in this one
+> app — update any old bookmarks or marketing links.
 
-Nginx acts as a reverse proxy, routing requests to the appropriate backend based on URL path.
+## Deploy flow
 
-## Routing Rules
+Repo-root `./deploy.sh` is fired by the droplet webhook on push to `main`
+(or run by hand from `/var/www/artificial-atheist`). It:
 
-| Path Prefix | Backend | Purpose |
-|---|---|---|
-| `/chat`, `/age` | Next.js (8060) | Adults-only debate agent + age gate |
-| `/signup` | Next.js (8060) | Contact gate (magic-link email) |
-| `/quiz` | Next.js (8060) | Atheism IQ quiz |
-| `/leaderboard` | Next.js (8060) | Quiz leaderboard |
-| `/account` | Next.js (8060) | User account (balance, consent, deletion) |
-| `/pricing` | Next.js (8060) | Credit packs / checkout |
-| `/review` | Next.js (8060) | Article-review queue (admin-token gated) |
-| `/terms`, `/privacy` | Next.js (8060) | Terms / Privacy pages |
-| `/api` | Next.js (8060) | API endpoints |
-| `/_next` | Next.js (8060) | Next.js assets (CSS, JS, images) |
-| `/result` | Next.js (8060) | Quiz result page |
-| `/unavailable` | Next.js (8060) | Region-gate "not available" page |
-| Everything else | Static files | Served from `_site/` |
-
-> **`/admin` is NOT proxied.** The existing Artificial Atheist admin dashboard
-> (`tools/admin`, basic-auth) already owns `/admin/`. The Next.js article-review
-> queue lives at **`/review`** to avoid the collision. The nginx config matches
-> each prefix with or without a trailing slash, because the app's internal
-> redirects use no trailing slash (e.g. `redirect("/signup")`).
+1. `git fetch` + `git reset --hard origin/main`
+2. `npm ci`
+3. `npm run db:deploy` — `prisma migrate deploy && prisma db seed` (idempotent;
+   never wipes results). **Never run `db:reset` on the droplet.**
+4. `npm run build` — `prisma generate && next build`. **Not destructive:** it
+   writes to `.next`; the running server keeps serving the previous build until
+   restarted, so a failed build leaves the live site untouched.
+5. Restart the `artificial-atheist` service (systemd `restart`, else `pm2 reload`).
 
 ## Setup
 
 ### Prerequisites
 
-- Nginx installed and running on the droplet (Lab980, 165.22.128.19)
-- Eleventy static site built to `/var/www/artificial-atheist/_site/`
-- Next.js app running on `127.0.0.1:8060`
+- nginx installed and running on the droplet (Lab980, 165.22.128.19).
+- Node 20+ and PostgreSQL running locally.
+- Repo cloned to `/var/www/artificial-atheist` with a filled-in `.env`.
+- The app registered as a service (see below).
 
-### Nginx Configuration
+### Environment (`.env` in the app dir)
 
-Replace your existing server block for `artificialatheist.com` with the configuration in `nginx-artificialatheist.com.conf`.
+The app + Prisma read the app's `.env`. Required:
 
-Typically this lives in:
-- `/etc/nginx/sites-available/artificialatheist.com`
-- `/etc/nginx/sites-enabled/artificialatheist.com` (symlink)
-
-After updating, validate and reload:
-
-```bash
-sudo nginx -t
-sudo systemctl reload nginx
+```
+DATABASE_URL=postgresql://…            # local Postgres
+NEXT_PUBLIC_SITE_URL=https://artificialatheist.com
+SESSION_SECRET=$(openssl rand -base64 32)
+ANTHROPIC_API_KEY=…                    # articles, debate agent, moderation
+PORT=8060
+CHAT_ENABLED=false                     # stays false until the go-live runbook clears
+PAYMENTS_PROVIDER=stripe               # + STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET at launch
 ```
 
-### Next.js Environment
+Optional / launch-time: `MISTRAL_API_KEY` (EU model slot), `SMTP_URL` +
+`EMAIL_FROM` (magic-link email), `ADMIN_TOKEN` (`/review/pipeline`),
+`GEO_GATE_ENABLED`, `GEO_ALLOWED_COUNTRIES`. See `LAUNCH-BLOCKERS.md`.
 
-The Next.js app must be started with:
+### Service (pick one)
+
+**systemd (recommended):**
 
 ```bash
-NEXT_PUBLIC_SITE_URL=https://artificialatheist.com npm run start
+sudo cp deploy/artificial-atheist.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now artificial-atheist
+sudo systemctl status artificial-atheist    # logs: journalctl -u artificial-atheist -f
 ```
 
-This ensures client-side code uses correct absolute URLs and OG tags reflect the canonical domain.
+**pm2:**
+
+```bash
+cd /var/www/artificial-atheist
+pm2 start deploy/ecosystem.config.js && pm2 save
+```
+
+`deploy.sh` restarts whichever it finds (systemd unit first, else `pm2 reload`).
+
+### nginx (thin reverse proxy)
+
+Install the vhost, then validate and reload:
+
+```bash
+sudo cp deploy/nginx-artificialatheist.com.conf \
+        /etc/nginx/sites-available/artificialatheist.com
+sudo ln -sf /etc/nginx/sites-available/artificialatheist.com \
+            /etc/nginx/sites-enabled/artificialatheist.com
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+The vhost proxies everything to `nextjs_backend` (127.0.0.1:8060), passes
+`X-Forwarded-Proto`/`Host`, and includes WebSocket upgrade headers. If you still
+run the standalone `tools/admin` dashboard (a separate node process, basic-auth),
+add a `location /admin { proxy_pass … }` block *above* `location /` so it isn't
+swallowed by the app — the Next-side article-review queue lives at `/review`, so
+there's no collision.
 
 ### Region gate (GDPR sidestep) — GeoIP2
 
-The chat app declines the chat surface to EU/EEA + UK visitors so no
-special-category (religion/belief) conversation data from GDPR-jurisdiction
-users is collected. Its middleware reads the visitor country from the
-`X-Country-Code` header, which nginx produces via the GeoIP2 module.
+The app declines the chat surface to EU/EEA + UK visitors so no special-category
+(religion/belief) conversation data from GDPR-jurisdiction users is collected. It
+reads the visitor country ONLY from the `X-Country-Code` header, which nginx
+produces via the GeoIP2 module.
 
 Setup lives in **`nginx-geoip2.conf`** (install steps in that file's header):
 install `libnginx-mod-http-geoip2` + the MaxMind GeoLite2-Country DB, load the
@@ -85,72 +119,64 @@ $geoip2_country_code;`** and reload.
 The vhost ships that header set to `""`, which strips any client-supplied
 `X-Country-Code` (so a visitor can't spoof `X-Country-Code: US`) and makes the
 gate **fail closed** — nobody reaches the chat until GeoIP2 supplies a real
-country. So wire GeoIP2 (and confirm the `curl -H` tests below) **before**
-flipping `CHAT_ENABLED=true`. See `GO-LIVE-RUNBOOK.md` for the full sequence.
+country. Wire GeoIP2 (and confirm the `curl -H` tests below) **before** flipping
+`CHAT_ENABLED=true`. See `GO-LIVE-RUNBOOK.md` for the full sequence.
 
 Verify the header is flowing (after setup):
 
 ```bash
-# From the droplet, hit the app directly with a spoofed country header:
+# Hit the app directly with a spoofed country header:
 curl -s -o /dev/null -w '%{http_code}\n' -H 'X-Country-Code: US' http://127.0.0.1:8060/signup   # 200
 curl -s -o /dev/null -w '%{http_code}\n' -H 'X-Country-Code: DE' http://127.0.0.1:8060/signup   # 307 → /unavailable
 # Through nginx, GeoIP2 sets the header from your real IP:
 curl -sI https://artificialatheist.com/signup | grep -i location   # EU IP → /unavailable
 ```
 
-## Migration Note
+## Health checks
 
-Previously, the AtheismIQ quiz was hosted at `atheismiq.lab980.com` (separate subdomain). With this routing, it now lives at `https://artificialatheist.com/quiz/` under the main site domain. Update any bookmarks, marketing links, or documentation accordingly.
+After a deploy, confirm the one server is serving each surface:
 
-## Health Checks
+```bash
+curl -sI https://artificialatheist.com/            | head -1   # home → 200
+curl -sI https://artificialatheist.com/posts/<slug>/ | head -1 # an article → 200
+curl -sI https://artificialatheist.com/quiz/       | head -1   # quiz → 200
+curl -s  https://artificialatheist.com/feed.xml    | head -1   # RSS → XML
+curl -sI https://www.artificialatheist.com/ | grep -i location # www → 301 to non-www
+```
 
-To verify both backends are functioning:
+Duplicate-slug guard before any post-touching push (a dup collides in
+`generateStaticParams` and fails the build):
 
-1. Static site: `curl https://artificialatheist.com/` — should return HTML
-2. Next.js: `curl https://artificialatheist.com/quiz/` — should return HTML with Next.js metadata
-3. API: `curl https://artificialatheist.com/api/health` — should return appropriate status from Next.js
-4. Assets: `curl https://artificialatheist.com/_next/static/...` — should return CSS/JS (check actual path in browser dev tools)
+```bash
+ls src/posts/ | sed -E 's/^[0-9]{4}-[0-9]{2}-[0-9]{2}-//' | sort | uniq -d   # must print nothing
+```
 
 ## Troubleshooting
 
-### 503 Service Unavailable on `/chat/` or `/quiz/`
+### 502 / connection refused
 
-Next.js app is not running. Start it:
-
-```bash
-NEXT_PUBLIC_SITE_URL=https://artificialatheist.com npm run start
-```
-
-### WebSocket Timeouts on Debate Chat
-
-Check that the nginx config includes WebSocket upgrade headers in the `/chat/` location block:
-
-```nginx
-proxy_http_version 1.1;
-proxy_set_header Upgrade $http_upgrade;
-proxy_set_header Connection "upgrade";
-```
-
-### Static Assets Return 404
-
-Ensure the Eleventy build succeeded and `_site/` is populated:
+The Next service isn't running. Check and restart:
 
 ```bash
-ls -la /var/www/artificial-atheist/_site/index.html
+sudo systemctl status artificial-atheist    # or: pm2 status
+sudo systemctl restart artificial-atheist   # or: pm2 reload artificial-atheist
+journalctl -u artificial-atheist -f         # tail logs
 ```
 
-If missing, rebuild locally or via GitHub Actions, then pull on the droplet:
+### Build failed on deploy
 
-```bash
-cd /var/www/artificial-atheist
-git pull
-npm install
-npm run build
-```
+`next build` is non-destructive, so the old build keeps serving — the site stays
+up. Re-run `./deploy.sh` after fixing, or inspect: `npm run build` in the app dir.
+Most common cause is a duplicate slug (see the guard above) or a failed Prisma
+migration.
 
-### Mixed Content (HTTPS → HTTP Proxying)
+### WebSocket timeouts on debate chat
 
-The nginx config includes `proxy_set_header X-Forwarded-Proto https;` so the Next.js app sees the original HTTPS scheme. If the app generates HTTP links, check that:
+Confirm the `location /` block in the vhost carries the upgrade headers
+(`proxy_http_version 1.1;`, `Upgrade $http_upgrade;`, `Connection
+$aa_connection_upgrade;`) — they ship in the current config.
 
-1. `NEXT_PUBLIC_SITE_URL=https://...` is set
-2. The app uses `req.headers['x-forwarded-proto']` or similar to detect the original scheme
+### Mixed content (HTTPS → HTTP proxying)
+
+The vhost sets `proxy_set_header X-Forwarded-Proto $scheme;` so the app sees the
+original HTTPS scheme. Also confirm `NEXT_PUBLIC_SITE_URL=https://…` is set.
