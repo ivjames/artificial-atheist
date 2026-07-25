@@ -8,9 +8,16 @@ import { ModelProviderError } from "./types";
 
 // Anthropic-backed provider (Slot A standard/premium, Slot B writer, Slot C
 // scrub — whichever slots are configured to it). The static system prompt is
-// sent with a cache_control breakpoint so a cache HIT bills the ~1,500-token
-// persona at the discounted rate (§8/§10). The growing message history is not
-// cached here — its short TTL makes it unreliable across a slow debate (§8).
+// sent with a cache_control breakpoint so a cache HIT bills the persona at the
+// discounted rate (§8/§10). The growing message history is not cached here —
+// its short TTL makes it unreliable across a slow debate (§8).
+//
+// CAVEAT: the breakpoint only actually caches when the prefix exceeds the
+// model's minimum cacheable length — 1024 tokens on Sonnet, 4096 on Haiku 4.5
+// (the standard slot). Below that it's a no-op (no error; usage.cache_read_
+// input_tokens stays 0). The current personas are ~700 tokens, so nothing
+// caches today (see lib/agent/persona.ts). The marker is harmless and starts
+// paying off automatically once a system prompt here grows past the minimum.
 let client: Anthropic | null = null;
 
 function getClient(): Anthropic {

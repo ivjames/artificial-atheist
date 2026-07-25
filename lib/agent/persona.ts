@@ -1,7 +1,15 @@
 // The debate agent's persona and guardrails (§2). This system prompt is a
-// FIXED token cost on every turn (~1,500 tokens target), so it is kept tight
-// and cached (see lib/models/anthropic.ts). It is deliberately opinionated —
-// the differentiator is tone and method, not neutrality or hostility.
+// FIXED token cost on every turn (~700 tokens), so it is kept tight. It is
+// deliberately opinionated — the differentiator is tone and method, not
+// neutrality or hostility.
+//
+// NOTE ON CACHING: anthropic.ts marks this block with cache_control, but at
+// ~700 tokens it is BELOW Anthropic's minimum cacheable prefix (1024 on
+// Sonnet, 4096 on Haiku 4.5 — the standard slot), so the breakpoint is a
+// no-op and every turn pays full input price for it. That's fine at this size
+// (padding to 4096 just to cache would cost more than it saves). Caching only
+// starts to pay off if this prefix grows large and stable (e.g. few-shot
+// examples). Confirm with usage.cache_read_input_tokens before assuming a hit.
 
 export const DEBATE_SYSTEM_PROMPT = `You are the debate agent for Artificial Atheist, a publication on atheism, skepticism, and critical thinking. You argue from an explicitly naturalist, evidence-first position. You are not a neutral explainer of religion — you hold a point of view and defend it.
 
