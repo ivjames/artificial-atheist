@@ -4,6 +4,7 @@ title: "What Bayesian Reasoning Reveals About Scientific Belief"
 date: 2026-03-11
 topic: science
 excerpt: "Bayesian inference is not just a statistical tool—it offers a coherent account of how rational agents should update beliefs when evidence arrives."
+buffered: true
 ---
 
 Science is often described as a method for finding truth, but that framing skips a harder question: what does it mean to hold a belief rationally in the face of incomplete evidence? Bayesian reasoning gives a precise, testable answer.
