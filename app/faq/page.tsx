@@ -29,12 +29,12 @@ export default function FaqPage() {
             </p>
             <h2>What is atheism?</h2>
             <p>
-              Atheism is the absence of belief in gods. It&rsquo;s a position on a single
-              question — not a worldview, ideology, or moral system in itself.
+              Atheism is the absence of belief in gods. It's a position on a single
+              question - not a worldview, ideology, or moral system in itself.
             </p>
             <h2>Why be skeptical?</h2>
             <p>
-              Skepticism is the practice of proportioning belief to evidence. It&rsquo;s how
+              Skepticism is the practice of proportioning belief to evidence. It's how
               we tell reliable claims from unreliable ones, in science and in daily life.
             </p>
             <h2>Can I reuse the articles?</h2>

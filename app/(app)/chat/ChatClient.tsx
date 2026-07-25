@@ -280,7 +280,7 @@ export default function ChatClient({
   const fmtTok = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
   // Profit margin = profit / revenue. Undefined without revenue (0 turns).
   const fmtMargin = (revenueUsd: number, profitUsd: number) =>
-    revenueUsd > 0 ? `${((profitUsd / revenueUsd) * 100).toFixed(0)}%` : "—";
+    revenueUsd > 0 ? `${((profitUsd / revenueUsd) * 100).toFixed(0)}%` : "-";
   const profitClass = (n: number) =>
     n >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-red-600 dark:text-red-500";
 
@@ -433,8 +433,8 @@ export default function ChatClient({
           {refEcon.refInputTokens > 0 ? (
             <div className="mt-1.5 border-t border-amber-400/20 pt-1.5 text-[10px] text-slate-400 dark:border-amber-500/20">
               includes {fmtTok(refEcon.refInputTokens)} article-reference tokens
-              ({fmtUsd(refEcon.refCostUsd)}) — platform overhead, folded into cost but
-              not counted against the visitor&rsquo;s tokens or budget
+              ({fmtUsd(refEcon.refCostUsd)}) - platform overhead, folded into cost but
+              not counted against the visitor's tokens or budget
             </div>
           ) : null}
         </div>

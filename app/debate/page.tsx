@@ -27,13 +27,13 @@ export default function DebatePage() {
             <p>
               The Debate Agent is an AI designed to engage adults (18+) in rigorous,
               evidence-based philosophical argument. It argues from a naturalist,
-              evidence-first position via Socratic questioning — exploring the logical
+              evidence-first position via Socratic questioning - exploring the logical
               coherence and empirical grounding of your claims rather than asserting
               conclusions.
             </p>
             <h2>Who this is for</h2>
             <p>
-              This tool is restricted to adults 18 and older. If you&rsquo;re under 18, try
+              This tool is restricted to adults 18 and older. If you're under 18, try
               the <Link href="/quiz/">Atheism IQ Quiz</Link> instead.
             </p>
             <h2>How it works</h2>
@@ -41,7 +41,7 @@ export default function DebatePage() {
               After signing up, you get a few free messages to start a debate. Beyond that,
               conversations are metered by credits. Each exchange costs credits based on the
               complexity and length of the response. You can purchase more credits as needed,
-              or use the free messages to explore the agent&rsquo;s reasoning style first.
+              or use the free messages to explore the agent's reasoning style first.
             </p>
             <h2>Get started</h2>
             <p>Ready to test your ideas?</p>
