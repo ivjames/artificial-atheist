@@ -369,6 +369,86 @@ export function withDials(
   return { ...persona, dials: { ...persona.dials, ...overrides } };
 }
 
+// --- Scoring the debate agent's behavior -----------------------------------
+// Cheap, deterministic heuristics over the AGENT's replies in a transcript.
+// These are eval signals, not verdicts — they surface the failure modes the
+// debate persona is explicitly tuned against (see lib/agent/persona.ts):
+// soliciting further engagement, stacking questions, and rambling length.
+
+export type AgentMetrics = {
+  agentTurns: number;
+  agentAvgChars: number;
+  agentAvgWords: number;
+  // Replies that END by drumming up further engagement — the persona's
+  // number-one "never do this" rule. The heuristic scans the reply's tail.
+  hookViolations: number;
+  // Replies that end on a question mark (allowed only if it's a substantive
+  // Socratic challenge — flagged here for a human to eyeball).
+  trailingQuestions: number;
+  // Replies containing more than one question (rule: at most one).
+  multiQuestionTurns: number;
+};
+
+// Engagement-hook phrasings the persona is told never to end on. Matched
+// against the tail of a reply so a mid-reply "let me know" doesn't false-fire.
+const ENGAGEMENT_HOOK_PATTERNS: RegExp[] = [
+  /want to (?:dig|go|explore) (?:deeper|further|into)/i,
+  /what else is on your mind/i,
+  /let me know if you(?:'d| would)? like/i,
+  /shall we (?:keep going|continue|go on)/i,
+  /(?:anything|what) else (?:you(?:'d| would)? like|would you like) to/i,
+  /feel free to (?:ask|share|bring)/i,
+  /(?:happy|glad) to (?:keep going|continue|discuss (?:this )?further|dig in)/i,
+  /if you(?:'d| would)? like to (?:continue|keep going|explore|dig|hear more)/i,
+  /where (?:would you like|do you want) to (?:go|take this)/i,
+  /(?:got|have) (?:any )?(?:other|more) (?:questions|thoughts)/i,
+];
+
+export function emptyAgentMetrics(): AgentMetrics {
+  return {
+    agentTurns: 0,
+    agentAvgChars: 0,
+    agentAvgWords: 0,
+    hookViolations: 0,
+    trailingQuestions: 0,
+    multiQuestionTurns: 0,
+  };
+}
+
+// Score just the agent's side of a conversation.
+export function scoreAgentTurns(replies: string[]): AgentMetrics {
+  const n = replies.length;
+  if (n === 0) return emptyAgentMetrics();
+
+  let chars = 0;
+  let words = 0;
+  let hooks = 0;
+  let trailingQ = 0;
+  let multiQ = 0;
+
+  for (const raw of replies) {
+    const t = raw.trim();
+    chars += t.length;
+    words += t.split(/\s+/).filter(Boolean).length;
+
+    const qMarks = (t.match(/\?/g) || []).length;
+    if (qMarks > 1) multiQ++;
+    if (/\?["')\]]*\s*$/.test(t)) trailingQ++;
+
+    const tail = t.slice(-220);
+    if (ENGAGEMENT_HOOK_PATTERNS.some((re) => re.test(tail))) hooks++;
+  }
+
+  return {
+    agentTurns: n,
+    agentAvgChars: Math.round(chars / n),
+    agentAvgWords: Math.round(words / n),
+    hookViolations: hooks,
+    trailingQuestions: trailingQ,
+    multiQuestionTurns: multiQ,
+  };
+}
+
 // The instruction that seeds the very first adversary turn (and stays at the
 // head of the adversary's view of the conversation). An optional seed pins the
 // opening to a specific argument or a verbatim opener.

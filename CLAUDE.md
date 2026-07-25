@@ -111,6 +111,28 @@ reference the corpus:
 - `tools/admin/` — the old standalone admin dashboard (separate node process,
   basic-auth at /admin/). Independent of the Next app; run it separately if wanted.
 
+## Adversary eval harness (debate-agent stress test)
+- `lib/agent/adversary.ts` — the debate agent's opponent: a simulated apologist
+  persona library. "Mental capacities" are modelled as composable DIALS
+  (sophistication 1-5, verbosity, hostility, argument focus) plus a curated
+  persona spectrum (professor→seeker→mystic→everyman→zealot→galloper→oneliner)
+  and an apologetics ARGUMENTS catalog. Also holds `scoreAgentTurns` — pure
+  heuristics over the agent's replies (engagement-hook endings, multi-question
+  turns, length) that quantify the persona rules in `persona.ts`.
+- `scripts/adversary.ts` (`npm run adversary`) — self-play harness: pits the
+  apologist against the REAL debate agent (persona + model router, NOT the live
+  chat/credits/DB path) for N rounds. Real Claude by default
+  (ADVERSARY_PROVIDER/ADVERSARY_MODEL env); `--mock` for offline wiring checks,
+  `--no-db` to skip persistence. CLI: `--persona <name|all>`, `--turns`,
+  `--tier`, `--seed`, and dial overrides. Writes a markdown transcript to the
+  gitignored `drafts/adversary/` AND persists each run to the `AdversaryRun`
+  table (best-effort; DB is droplet-local, so run it there).
+- `lib/adversaryRuns.ts` — read model + `aggregateStats` for the runs.
+- **Review surface:** `/review/adversary` (admin-token gated, reuses the pipeline
+  auth cookie; NOT gated on CHAT_ENABLED since it's an operator/eval tool). Shows
+  aggregate + per-persona stats and every transcript. This is how you review the
+  chats/stats from a browser instead of SSHing to read the markdown.
+
 ## Conventions
 - Concise, blunt, analytical communication. Minimize formatting fluff.
 - Verify changes by building (`npm run build`) and checking output; don't assume.

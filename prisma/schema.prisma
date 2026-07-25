@@ -246,3 +246,33 @@ model ArticleDraft {
   @@index([status])
   @@index([topic])
 }
+
+// Adversarial eval run — one apologist-vs-agent conversation produced by
+// scripts/adversary.ts, persisted so it can be reviewed at /review/adversary.
+// This is an operator/eval tool, NOT part of the live app. `transcript` and
+// `metrics` are JSON-encoded strings (the codebase stores JSON in TEXT columns
+// rather than using a native json type). `runStamp` groups the personas from a
+// single `--persona all` invocation.
+model AdversaryRun {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  persona        String
+  label          String
+  tier           String // standard|premium
+  adversaryModel String
+  sophistication Int
+  verbosity      String
+  hostility      String
+  focus          String
+  turns          Int
+  seed           String?
+  inputTokens    Int      @default(0)
+  outputTokens   Int      @default(0)
+  transcript     String // JSON-encoded { speaker, content, inTok, outTok }[]
+  metrics        String // JSON-encoded AgentMetrics (see lib/agent/adversary.ts)
+  runStamp       String // groups personas run together in one invocation
+
+  @@index([persona])
+  @@index([createdAt])
+  @@index([runStamp])
+}
