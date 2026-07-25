@@ -6,9 +6,11 @@ import {
   buildAdversaryPrompt,
   withDials,
   openerInstruction,
+  scoreAgentTurns,
   ARGUMENTS,
   argumentKeys,
 } from "@/lib/agent/adversary";
+import { aggregateStats, type ParsedRun } from "@/lib/adversaryRuns";
 
 // The adversary persona library is pure (no model calls), so it's fully unit
 // testable. These guard the invariants the harness relies on and the safety
@@ -97,5 +99,115 @@ describe("argument catalog", () => {
       expect(a.gloss, key).toBeTruthy();
       expect(a.opener, key).toBeTruthy();
     }
+  });
+});
+
+describe("scoreAgentTurns", () => {
+  it("returns zeros for an empty transcript", () => {
+    const m = scoreAgentTurns([]);
+    expect(m.agentTurns).toBe(0);
+    expect(m.agentAvgWords).toBe(0);
+  });
+
+  it("flags engagement hooks at the end of a reply", () => {
+    const m = scoreAgentTurns([
+      "The Kalam smuggles in its conclusion. Want to dig deeper?",
+      "That's a category error. Let me know if you'd like more.",
+      "Evidence, not assertion, carries the burden here.", // clean
+    ]);
+    expect(m.hookViolations).toBe(2);
+    expect(m.agentTurns).toBe(3);
+  });
+
+  it("does not flag a mid-reply 'let me know' that ends cleanly", () => {
+    const m = scoreAgentTurns([
+      "You claim design; let me know which constant you mean, because the physics doesn't support fine-tuning as stated and the multiverse remains live.",
+    ]);
+    expect(m.hookViolations).toBe(0);
+  });
+
+  it("counts trailing and multi-question replies", () => {
+    const m = scoreAgentTurns([
+      "What grounds that claim?", // trailing question, single
+      "Is it necessary? Or merely asserted?", // trailing + multi
+      "No question here.",
+    ]);
+    expect(m.trailingQuestions).toBe(2);
+    expect(m.multiQuestionTurns).toBe(1);
+  });
+});
+
+describe("aggregateStats", () => {
+  const mkRun = (over: Partial<ParsedRun>): ParsedRun =>
+    ({
+      id: over.id ?? "x",
+      createdAt: new Date("2026-07-25T00:00:00Z"),
+      persona: over.persona ?? "professor",
+      label: over.label ?? "The trained apologist",
+      tier: "standard",
+      adversaryModel: "anthropic:claude-sonnet-4-5",
+      sophistication: 5,
+      verbosity: "medium",
+      hostility: "civil",
+      focus: "mixed",
+      turns: 2,
+      seed: null,
+      runStamp: "2026-07-25_00-00-00",
+      inputTokens: over.inputTokens ?? 100,
+      outputTokens: over.outputTokens ?? 50,
+      transcript: [],
+      metrics:
+        over.metrics ??
+        {
+          agentTurns: 2,
+          agentAvgChars: 200,
+          agentAvgWords: 40,
+          hookViolations: 1,
+          trailingQuestions: 1,
+          multiQuestionTurns: 0,
+        },
+    }) as ParsedRun;
+
+  it("sums tokens/violations and weights avg words by agent turns", () => {
+    const runs = [
+      mkRun({
+        persona: "professor",
+        metrics: {
+          agentTurns: 4,
+          agentAvgChars: 0,
+          agentAvgWords: 50,
+          hookViolations: 2,
+          trailingQuestions: 0,
+          multiQuestionTurns: 1,
+        },
+      }),
+      mkRun({
+        persona: "oneliner",
+        label: "The one-line gotcha",
+        metrics: {
+          agentTurns: 1,
+          agentAvgChars: 0,
+          agentAvgWords: 100,
+          hookViolations: 0,
+          trailingQuestions: 0,
+          multiQuestionTurns: 0,
+        },
+      }),
+    ];
+    const s = aggregateStats(runs);
+    expect(s.runs).toBe(2);
+    expect(s.agentTurns).toBe(5);
+    expect(s.hookViolations).toBe(2);
+    expect(s.multiQuestionTurns).toBe(1);
+    // weighted: (50*4 + 100*1) / 5 = 60
+    expect(s.avgAgentWords).toBe(60);
+    expect(s.byPersona).toHaveLength(2);
+  });
+
+  it("handles an empty run set", () => {
+    const s = aggregateStats([]);
+    expect(s.runs).toBe(0);
+    expect(s.avgAgentWords).toBe(0);
+    expect(s.byPersona).toEqual([]);
   });
 });

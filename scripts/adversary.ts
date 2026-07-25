@@ -37,14 +37,17 @@ import {
   buildAdversaryPrompt,
   withDials,
   openerInstruction,
+  scoreAgentTurns,
   ARGUMENTS,
   type AdversaryPersona,
   type AdversaryDials,
+  type AgentMetrics,
   type Sophistication,
   type Verbosity,
   type Hostility,
   type ArgumentFocus,
 } from "@/lib/agent/adversary";
+import { prisma } from "@/lib/prisma";
 import { maxOutputTokens } from "@/lib/config";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -58,6 +61,7 @@ type Options = {
   turns: number; // rounds (one adversary + one agent = a round)
   tier: "standard" | "premium";
   mock: boolean;
+  noDb: boolean; // skip persisting to the DB (transcript file still written)
   seed?: string;
   dials: Partial<AdversaryDials>;
 };
@@ -73,6 +77,7 @@ function parseArgs(argv: string[]): Options {
     turns: 4,
     tier: "standard",
     mock: false,
+    noDb: false,
     dials: {},
   };
   for (let i = 0; i < argv.length; i++) {
@@ -92,6 +97,9 @@ function parseArgs(argv: string[]): Options {
         break;
       case "--mock":
         opts.mock = true;
+        break;
+      case "--no-db":
+        opts.noDb = true;
         break;
       case "--seed":
         opts.seed = next();
@@ -146,7 +154,8 @@ Usage: npm run adversary -- [options]
       --verbosity <${VERBOSITIES.join("|")}>
       --hostility <${HOSTILITIES.join("|")}>
       --argument <key|mixed> override argument focus
-      --mock                 no API calls (wiring check)
+      --mock                 no API calls (wiring check; skips DB write)
+      --no-db                don't persist to the DB (transcript file only)
   -h, --help
 
 Personas: ${PERSONAS.map((p) => p.name).join(", ")}
@@ -271,10 +280,18 @@ async function runConversation(
 const stamp = () =>
   new Date().toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
 
+// Score the agent's side of a finished conversation.
+function agentMetrics(lines: Line[]): AgentMetrics {
+  return scoreAgentTurns(
+    lines.filter((l) => l.speaker === "agent").map((l) => l.content),
+  );
+}
+
 function writeTranscript(
   persona: AdversaryPersona,
   opts: Options,
   lines: Line[],
+  metrics: AgentMetrics,
   runStamp: string,
 ): { file: string; inTok: number; outTok: number } {
   const d = persona.dials;
@@ -300,6 +317,10 @@ focus: ${d.focus}
 turns: ${opts.turns}
 ${opts.seed ? `seed: "${opts.seed.replace(/"/g, "'")}"\n` : ""}input_tokens: ${inTok}
 output_tokens: ${outTok}
+agent_avg_words: ${metrics.agentAvgWords}
+hook_violations: ${metrics.hookViolations}
+trailing_questions: ${metrics.trailingQuestions}
+multi_question_turns: ${metrics.multiQuestionTurns}
 run: ${runStamp}
 ---
 
@@ -312,6 +333,41 @@ ${body}
   const file = path.join(OUT_DIR, `${runStamp}-${persona.name}.md`);
   fs.writeFileSync(file, md, "utf8");
   return { file, inTok, outTok };
+}
+
+// Persist a finished run so it shows up at /review/adversary. Best-effort: the
+// DB only lives on the droplet, so a run from a machine that can't reach it
+// (or a --no-db / --mock run) just skips this — the transcript file is always
+// written regardless.
+async function persistRun(
+  persona: AdversaryPersona,
+  opts: Options,
+  lines: Line[],
+  metrics: AgentMetrics,
+  runStamp: string,
+): Promise<void> {
+  const d = persona.dials;
+  const inTok = lines.reduce((s, l) => s + l.inTok, 0);
+  const outTok = lines.reduce((s, l) => s + l.outTok, 0);
+  await prisma.adversaryRun.create({
+    data: {
+      persona: persona.name,
+      label: persona.label,
+      tier: opts.tier,
+      adversaryModel: `${ADVERSARY_PROVIDER}:${ADVERSARY_MODEL}`,
+      sophistication: d.sophistication,
+      verbosity: d.verbosity,
+      hostility: d.hostility,
+      focus: d.focus,
+      turns: opts.turns,
+      seed: opts.seed ?? null,
+      inputTokens: inTok,
+      outputTokens: outTok,
+      transcript: JSON.stringify(lines),
+      metrics: JSON.stringify(metrics),
+      runStamp,
+    },
+  });
 }
 
 // --- main ------------------------------------------------------------------
@@ -354,23 +410,45 @@ async function main(): Promise<void> {
     console.log(`▶ ${persona.name} — ${persona.label} (soph ${persona.dials.sophistication}, ${persona.dials.verbosity}, ${persona.dials.hostility}, ${persona.dials.focus})`);
     try {
       const lines = await runConversation(persona, opts);
-      const { file, inTok, outTok } = writeTranscript(persona, opts, lines, runStamp);
+      const metrics = agentMetrics(lines);
+      const { file, inTok, outTok } = writeTranscript(persona, opts, lines, metrics, runStamp);
       totalIn += inTok;
       totalOut += outTok;
       written.push(file);
-      console.log(`  → drafts/adversary/${path.basename(file)}  (${inTok} in / ${outTok} out tokens)\n`);
+
+      // Persist for the /review/adversary surface (best-effort; not in mock).
+      let saved = "";
+      if (!opts.mock && !opts.noDb) {
+        try {
+          await persistRun(persona, opts, lines, metrics, runStamp);
+          saved = ", saved to DB";
+        } catch (e) {
+          saved = `, DB save skipped (${(e as Error).message})`;
+        }
+      }
+
+      console.log(
+        `  → drafts/adversary/${path.basename(file)}  (${inTok} in / ${outTok} out tokens; ${metrics.hookViolations} hook, ${metrics.multiQuestionTurns} multi-Q${saved})\n`,
+      );
     } catch (e) {
       console.error(`  FAILED: ${(e as Error).message}\n`);
     }
   }
 
   console.log(`Done. ${written.length} transcript(s) in drafts/adversary/.`);
+  if (!opts.mock && !opts.noDb) {
+    console.log(`Review them at /review/adversary (admin-gated).`);
+  }
   if (!opts.mock) {
     console.log(`Tokens across the run: ${totalIn} in / ${totalOut} out (both sides).`);
   }
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await prisma.$disconnect().catch(() => {});
+  });
