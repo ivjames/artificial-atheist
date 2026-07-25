@@ -67,6 +67,30 @@ node/npm — all builds run on the droplet or in GitHub Actions, never locally.
 - **DB migrations:** `npm run db:deploy` (migrate deploy + idempotent seed) runs on
   every deploy and never wipes results. Never run `db:reset` on the droplet.
 
+## Article read model (markdown → DB mirror)
+Markdown in `src/posts/` stays the source of truth (authoring, generator, and
+static rendering are unchanged). On deploy, `scripts/sync-articles.ts`
+(`npm run articles:sync`, called by `deploy.sh` after the build) mirrors the
+published posts into the Prisma `Article` table so dynamic surfaces can
+reference the corpus:
+- `lib/articles.ts` — DB query helpers (get/list/search/relatedForLabels).
+- `/api/articles?q=…` / `?topic=…` — read-only corpus search endpoint.
+- **Cross-references:** a post's `related:` front-matter (YAML list or
+  comma-separated slugs) becomes both the on-page "Related reading" links
+  (`lib/posts.ts` `relatedPosts`, rendered statically — no DB needed) and the
+  `Article.references` self-relation in the DB. No `related:` → falls back to
+  same-topic.
+- **Quiz** result page shows DB-backed "Keep reading" articles matched to the
+  quiz's categories (`relatedForLabels`).
+- **Chat** injects a short article "reference library" (top corpus matches for
+  the visitor's message) as an un-cached context block so the agent can cite
+  real posts by URL — never fabricated (`lib/agent/persona.ts`
+  `articleReferenceBlock`, wired in `lib/agent/chat.ts`). The cached persona
+  prefix is untouched, so prompt caching still hits.
+- The sync is idempotent and prunes removed posts (guarded against an empty
+  read). Run on the droplet (DB is local); the Actions generator can't reach it,
+  which is why sync lives in `deploy.sh`, not the generate workflow.
+
 ## Article pipeline (unchanged workflow, new image path)
 - `scripts/generate.mjs` — scheduled article generator (writes markdown to
   `src/posts/`, calls illustrate + buffer). `npm run generate:test` runs it offline

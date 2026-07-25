@@ -190,6 +190,35 @@ model Message {
   @@index([threadId])
 }
 
+// Published article, mirrored from the markdown in src/posts. Markdown remains
+// the source of truth (authoring + static rendering are unchanged); this table
+// is a read model synced on deploy (scripts/sync-articles.ts) so dynamic
+// surfaces — the quiz, the debate chat, and the articles themselves — can
+// reference the corpus relationally. Never authored here; always overwritten
+// by the sync.
+model Article {
+  id          String   @id @default(cuid())
+  slug        String   @unique // filename minus the YYYY-MM-DD- prefix
+  title       String
+  topic       String // taxonomy key: science|philosophy|secularism|religion|news
+  excerpt     String   @default("")
+  image       String? // /images/posts/<slug>.png when illustrated
+  url         String // /posts/<slug>/
+  bodyText    String   @default("") // plaintext body for search / citation
+  wordCount   Int      @default(0)
+  readingMins Int      @default(1)
+  publishedAt DateTime
+  syncedAt    DateTime @default(now())
+
+  // Article → article references. Populated from each post's `related:`
+  // front-matter (a list of slugs); implicit many-to-many self-relation.
+  references   Article[] @relation("ArticleRefs")
+  referencedBy Article[] @relation("ArticleRefs")
+
+  @@index([topic])
+  @@index([publishedAt])
+}
+
 // Article pipeline (§5). A topic becomes eligible only when it has drawn
 // questions from >= threshold DISTINCT users (counted, not questions). Every
 // draft passes Slot C scrub + permanent human review before publish.

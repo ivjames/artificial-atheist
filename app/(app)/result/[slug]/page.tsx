@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { parseOptions, parseSources, scoreLabel } from "@/lib/quiz";
+import { relatedForLabels } from "@/lib/articles";
 import ScoreRing from "@/components/ScoreRing";
 import ShareBar from "@/components/ShareBar";
 import ClaimName from "@/components/ClaimName";
@@ -47,6 +48,15 @@ export default async function ResultPage({
   if (!result) notFound();
 
   const shareUrl = `${siteUrl}/result/${slug}`;
+
+  // DB-backed "keep reading": articles matched to the topics this quiz touched
+  // (falls back to the latest posts), so the quiz funnels into the publication.
+  const labels = [
+    ...new Set(
+      result.answers.map((a) => a.question.category).filter(Boolean),
+    ),
+  ];
+  const reading = await relatedForLabels(labels, 3);
 
   return (
     <div className="animate-fade-in-up">
@@ -132,6 +142,27 @@ export default async function ResultPage({
           })}
         </div>
       </section>
+
+      {reading.length > 0 && (
+        <section className="mt-8">
+          <h2 className="mb-3 px-1 text-sm font-semibold uppercase tracking-wide text-slate-400">
+            Keep reading
+          </h2>
+          <div className="flex flex-col gap-3">
+            {reading.map((a) => (
+              <a key={a.slug} href={a.url} className="card block p-5 transition hover:border-brand-400">
+                <span className="text-xs font-semibold uppercase tracking-wide text-brand-600 dark:text-brand-300">
+                  {a.topic}
+                </span>
+                <p className="mt-1 font-display text-lg font-medium">{a.title}</p>
+                {a.excerpt && (
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{a.excerpt}</p>
+                )}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="mt-8 flex justify-center gap-3">
         <Link href="/quiz" className="btn-primary">

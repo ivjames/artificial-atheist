@@ -35,7 +35,12 @@ export const mistralProvider: ModelProvider = {
           max_tokens: req.maxTokens,
           temperature: req.temperature ?? 0.7,
           messages: [
-            { role: "system", content: req.system },
+            {
+              role: "system",
+              content: req.context
+                ? `${req.system}\n\n${req.context}`
+                : req.system,
+            },
             ...req.messages.map((m) => ({ role: m.role, content: m.content })),
           ],
         }),

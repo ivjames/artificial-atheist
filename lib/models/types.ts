@@ -11,6 +11,10 @@ export type CompletionRequest = {
   messages: ChatTurn[];
   maxTokens: number;
   temperature?: number;
+  // Optional per-turn context (e.g. an article reference library). Sent as a
+  // separate, NON-cached system segment so it doesn't invalidate the cached
+  // static persona prefix.
+  context?: string;
 };
 
 export type CompletionResult = {

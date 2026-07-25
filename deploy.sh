@@ -32,6 +32,12 @@ echo "==> Building the Next app"
 # restarted below. A failed build therefore leaves the live site untouched.
 npm run build
 
+echo "==> Syncing articles (markdown → Article read-model table)"
+# Markdown stays the source of truth; this mirrors the published posts into the
+# DB so the quiz/chat/API can reference them. Idempotent. Runs here (droplet)
+# because the DB is local — the GitHub Actions generator can't reach it.
+npm run articles:sync
+
 echo "==> Restarting $SERVICE"
 if command -v systemctl >/dev/null && systemctl list-unit-files | grep -q "^${SERVICE}.service"; then
   sudo systemctl restart "$SERVICE"

@@ -2,7 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import MarkdownIt from "markdown-it";
-import { readingTime } from "@/lib/dates";
+// Relative (not "@/lib/dates") so this module is importable by plain tsx
+// scripts (scripts/sync-articles.ts) that don't resolve the "@/" alias.
+import { readingTime } from "./dates";
 
 // Article store for the publication surface. Articles remain plain markdown
 // files in `src/posts/` (the scheduled generate/illustrate/buffer pipeline
@@ -19,7 +21,9 @@ export type Post = {
   image?: string; // /images/posts/<slug>.png when illustrated
   buffered?: boolean;
   html: string; // rendered article body
+  text: string; // plaintext body (tags stripped) for search / word count
   readingMins: number;
+  related: string[]; // explicit cross-references (slugs) from `related:` front-matter
 };
 
 const POSTS_DIR = path.join(process.cwd(), "src", "posts");
@@ -52,9 +56,22 @@ function loadAll(): Post[] {
     if (!data.title || !data.date) continue;
 
     const slug = toSlug(file);
-    // Front-matter `date` is date-only; force UTC so it never shifts a day.
-    const date = new Date(`${String(data.date).slice(0, 10)}T00:00:00Z`);
+    // Front-matter `date` is date-only. gray-matter/js-yaml parses an unquoted
+    // `2026-07-25` into a Date (already UTC midnight); a quoted value stays a
+    // string we parse as UTC. Handle both so the date never shifts a day.
+    const date =
+      data.date instanceof Date
+        ? data.date
+        : new Date(`${String(data.date).slice(0, 10)}T00:00:00Z`);
 
+    // `related:` may be a YAML list or a comma-separated string of slugs.
+    const related: string[] = Array.isArray(data.related)
+      ? data.related.map((s: unknown) => String(s).trim()).filter(Boolean)
+      : typeof data.related === "string"
+        ? data.related.split(",").map((s) => s.trim()).filter(Boolean)
+        : [];
+
+    const html = md.render(content);
     posts.push({
       slug,
       url: `/posts/${slug}/`,
@@ -64,8 +81,10 @@ function loadAll(): Post[] {
       excerpt: String(data.excerpt || ""),
       image: data.image ? String(data.image) : undefined,
       buffered: Boolean(data.buffered),
-      html: md.render(content),
+      html,
+      text: html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
       readingMins: readingTime(content),
+      related,
     });
   }
 
@@ -86,10 +105,32 @@ export function getPostsByTopic(topic: string): Post[] {
   return loadAll().filter((p) => p.topic === key);
 }
 
+// Cross-references for an article. Explicit `related:` slugs win (in order,
+// deduped, self excluded); if fewer than `n`, top up with same-topic posts.
+// This is what the article page renders statically — no DB needed at build.
 export function relatedPosts(post: Post, n = 3): Post[] {
-  return getPostsByTopic(post.topic)
-    .filter((p) => p.slug !== post.slug)
-    .slice(0, n);
+  const all = loadAll();
+  const bySlug = new Map(all.map((p) => [p.slug, p]));
+  const picked: Post[] = [];
+  const seen = new Set<string>([post.slug]);
+
+  for (const slug of post.related) {
+    const ref = bySlug.get(slug);
+    if (ref && !seen.has(ref.slug)) {
+      picked.push(ref);
+      seen.add(ref.slug);
+    }
+    if (picked.length >= n) return picked;
+  }
+
+  for (const p of all) {
+    if (picked.length >= n) break;
+    if (p.topic === post.topic && !seen.has(p.slug)) {
+      picked.push(p);
+      seen.add(p.slug);
+    }
+  }
+  return picked;
 }
 
 export function topicCount(topic: string): number {

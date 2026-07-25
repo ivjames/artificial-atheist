@@ -10,8 +10,10 @@ import {
   DEBATE_SYSTEM_PROMPT,
   looksLikeMinor,
   minorRedirectMessage,
+  articleReferenceBlock,
 } from "@/lib/agent/persona";
-import { threadTokenBudget, maxOutputTokens } from "@/lib/config";
+import { searchArticles } from "@/lib/articles";
+import { threadTokenBudget, maxOutputTokens, SITE_URL } from "@/lib/config";
 import { turnEconomics, type TurnEconomics } from "@/lib/pricing";
 import {
   costForTier,
@@ -111,10 +113,24 @@ export async function sendChatMessage(
   ];
   const slot = thread.tier === "premium" ? ("premium" as const) : ("standard" as const);
 
+  // Article reference library for this turn — best-effort: surface a few
+  // published articles relevant to the visitor's message so the agent can cite
+  // them. Non-fatal if the lookup fails; passed as un-cached context so it
+  // doesn't invalidate the cached persona.
+  let context: string | undefined;
+  try {
+    const refs = await searchArticles(content, 3);
+    const block = articleReferenceBlock(refs, SITE_URL);
+    if (block) context = block;
+  } catch {
+    /* article refs are a nicety, never block the debate on them */
+  }
+
   let completion;
   try {
     completion = await callSlot(slot, {
       system: DEBATE_SYSTEM_PROMPT,
+      context,
       messages,
       maxTokens: maxOutputTokens,
     });

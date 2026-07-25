@@ -44,3 +44,22 @@ export function looksLikeMinor(text: string): boolean {
 export function minorRedirectMessage(quizUrl: string): string {
   return `It sounds like you might be under 18. This debate space is for adults, but you'll probably enjoy the Atheism IQ quiz — it covers a lot of the same ground. You can find it here: ${quizUrl}`;
 }
+
+// Build the per-turn "reference library" block from Artificial Atheist articles
+// the corpus search surfaced for the visitor's message. Passed to the model as
+// a separate, un-cached context segment (not the cached persona), so the agent
+// can cite real published articles by their exact URL. Empty string when there
+// are no relevant articles (no block is sent).
+export function articleReferenceBlock(
+  articles: { title: string; url: string; excerpt: string; topic: string }[],
+  siteUrl: string,
+): string {
+  if (!articles.length) return "";
+  const lines = articles
+    .map((a) => {
+      const abs = `${siteUrl}${a.url}`;
+      return `- "${a.title}" (${a.topic}) — ${abs}${a.excerpt ? ` — ${a.excerpt}` : ""}`;
+    })
+    .join("\n");
+  return `REFERENCE LIBRARY — published Artificial Atheist articles that may be relevant to this exchange. You MAY cite or link one when it genuinely strengthens or sources a point, using its exact URL. Do NOT invent articles or URLs, do not cite one that doesn't fit, and never let citing replace making your own argument.\n${lines}`;
+}

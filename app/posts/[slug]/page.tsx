@@ -126,7 +126,9 @@ export default async function ArticlePage({
 
         {related.length > 0 && (
           <div className="related">
-            <div className="eyebrow">More in {tp.name}</div>
+            <div className="eyebrow">
+              {post.related.length > 0 ? "Related reading" : `More in ${tp.name}`}
+            </div>
             <div className="cards">
               {related.map((p) => (
                 <PostCard key={p.slug} post={p} />

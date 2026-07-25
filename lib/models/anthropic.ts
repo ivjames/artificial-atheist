@@ -43,6 +43,11 @@ export const anthropicProvider: ModelProvider = {
             text: req.system,
             cache_control: { type: "ephemeral" },
           },
+          // Per-turn context (e.g. article references) as a second, un-cached
+          // block, so the static persona above still gets a cache hit.
+          ...(req.context
+            ? [{ type: "text" as const, text: req.context }]
+            : []),
         ],
         messages: req.messages.map((m) => ({
           role: m.role,
