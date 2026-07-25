@@ -62,6 +62,12 @@ type Options = {
   tier: "standard" | "premium";
   mock: boolean;
   noDb: boolean; // skip persisting to the DB (transcript file still written)
+  // How many personas (independent conversations) to run at once. A single
+  // conversation is inherently sequential — the agent answers the apologist and
+  // vice versa — so this only parallelizes across personas (`--persona all`).
+  // Keep it modest: each round fires 2 model calls, so N concurrent personas
+  // means up to 2N in flight, which can hit Anthropic rate limits.
+  concurrency: number;
   seed?: string;
   dials: Partial<AdversaryDials>;
 };
@@ -78,6 +84,7 @@ function parseArgs(argv: string[]): Options {
     tier: "standard",
     mock: false,
     noDb: false,
+    concurrency: 1,
     dials: {},
   };
   for (let i = 0; i < argv.length; i++) {
@@ -100,6 +107,10 @@ function parseArgs(argv: string[]): Options {
         break;
       case "--no-db":
         opts.noDb = true;
+        break;
+      case "--concurrency":
+      case "-c":
+        opts.concurrency = Math.max(1, parseInt(next(), 10) || 1);
         break;
       case "--seed":
         opts.seed = next();
@@ -148,6 +159,8 @@ Usage: npm run adversary -- [options]
 
   -p, --persona <name|all>   persona to run (default: professor)
   -t, --turns <n>            rounds to run (default: 4)
+  -c, --concurrency <n>      personas to run in parallel (default: 1;
+                             only affects --persona all — watch rate limits)
       --tier <standard|premium>
       --seed "<text>"        pin the opening argument
   -s, --sophistication <1-5> override reasoning level
@@ -233,6 +246,7 @@ function mockAgent(round: number): string {
 async function runConversation(
   persona: AdversaryPersona,
   opts: Options,
+  quiet: boolean,
 ): Promise<Line[]> {
   const system = buildAdversaryPrompt(persona);
   const opener = openerInstruction(opts.seed);
@@ -256,7 +270,7 @@ async function runConversation(
         outTok: adv.outTok,
       });
     }
-    process.stdout.write(`  round ${round + 1}: adversary… `);
+    if (!quiet) process.stdout.write(`  round ${round + 1}: adversary… `);
 
     // Agent turn.
     if (opts.mock) {
@@ -270,7 +284,7 @@ async function runConversation(
         outTok: agent.outTok,
       });
     }
-    process.stdout.write(`agent ✓\n`);
+    if (!quiet) process.stdout.write(`agent ✓\n`);
   }
   return lines;
 }
@@ -370,6 +384,67 @@ async function persistRun(
   });
 }
 
+// --- concurrency -----------------------------------------------------------
+
+type PersonaResult = { ok: boolean; file?: string; inTok: number; outTok: number };
+
+// Run one persona end to end: converse, score, write the transcript, persist.
+// `quiet` suppresses per-round progress (used when several run in parallel, so
+// their output doesn't interleave into noise — one summary line each instead).
+async function runPersona(
+  persona: AdversaryPersona,
+  opts: Options,
+  runStamp: string,
+  quiet: boolean,
+): Promise<PersonaResult> {
+  const dial = `soph ${persona.dials.sophistication}, ${persona.dials.verbosity}, ${persona.dials.hostility}, ${persona.dials.focus}`;
+  console.log(`▶ ${persona.name} — ${persona.label} (${dial})`);
+  try {
+    const lines = await runConversation(persona, opts, quiet);
+    const metrics = agentMetrics(lines);
+    const { file, inTok, outTok } = writeTranscript(persona, opts, lines, metrics, runStamp);
+
+    // Persist for the /review/adversary surface (best-effort; not in mock).
+    let saved = "";
+    if (!opts.mock && !opts.noDb) {
+      try {
+        await persistRun(persona, opts, lines, metrics, runStamp);
+        saved = ", saved to DB";
+      } catch (e) {
+        saved = `, DB save skipped (${(e as Error).message})`;
+      }
+    }
+
+    console.log(
+      `✓ ${persona.name} → drafts/adversary/${path.basename(file)}  (${inTok} in / ${outTok} out tokens; ${metrics.hookViolations} hook, ${metrics.multiQuestionTurns} multi-Q${saved})`,
+    );
+    return { ok: true, file, inTok, outTok };
+  } catch (e) {
+    console.error(`✗ ${persona.name} FAILED: ${(e as Error).message}`);
+    return { ok: false, inTok: 0, outTok: 0 };
+  }
+}
+
+// Run fn over items with at most `limit` in flight at once, preserving the
+// input order in the returned results.
+async function mapPool<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      const idx = next++;
+      if (idx >= items.length) return;
+      results[idx] = await fn(items[idx], idx);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
 // --- main ------------------------------------------------------------------
 
 async function main(): Promise<void> {
@@ -397,45 +472,25 @@ async function main(): Promise<void> {
   // Apply any CLI dial overrides on top of each persona.
   personas = personas.map((p) => withDials(p, opts.dials));
 
+  // Effective concurrency can't exceed the number of personas (one persona =
+  // one sequential conversation, nothing to parallelize within it).
+  const concurrency = Math.min(opts.concurrency, personas.length);
+
   const runStamp = stamp();
   console.log(
-    `Adversary eval — ${personas.length} persona(s), ${opts.turns} rounds, tier=${opts.tier}, model=${opts.mock ? "mock" : `${ADVERSARY_PROVIDER}:${ADVERSARY_MODEL}`}\n`,
+    `Adversary eval — ${personas.length} persona(s), ${opts.turns} rounds, tier=${opts.tier}, ` +
+      `concurrency=${concurrency}, model=${opts.mock ? "mock" : `${ADVERSARY_PROVIDER}:${ADVERSARY_MODEL}`}\n`,
   );
 
-  let totalIn = 0;
-  let totalOut = 0;
-  const written: string[] = [];
+  const results = await mapPool(personas, concurrency, (persona) =>
+    runPersona(persona, opts, runStamp, concurrency > 1),
+  );
 
-  for (const persona of personas) {
-    console.log(`▶ ${persona.name} — ${persona.label} (soph ${persona.dials.sophistication}, ${persona.dials.verbosity}, ${persona.dials.hostility}, ${persona.dials.focus})`);
-    try {
-      const lines = await runConversation(persona, opts);
-      const metrics = agentMetrics(lines);
-      const { file, inTok, outTok } = writeTranscript(persona, opts, lines, metrics, runStamp);
-      totalIn += inTok;
-      totalOut += outTok;
-      written.push(file);
+  const written = results.filter((r) => r.ok);
+  const totalIn = results.reduce((s, r) => s + r.inTok, 0);
+  const totalOut = results.reduce((s, r) => s + r.outTok, 0);
 
-      // Persist for the /review/adversary surface (best-effort; not in mock).
-      let saved = "";
-      if (!opts.mock && !opts.noDb) {
-        try {
-          await persistRun(persona, opts, lines, metrics, runStamp);
-          saved = ", saved to DB";
-        } catch (e) {
-          saved = `, DB save skipped (${(e as Error).message})`;
-        }
-      }
-
-      console.log(
-        `  → drafts/adversary/${path.basename(file)}  (${inTok} in / ${outTok} out tokens; ${metrics.hookViolations} hook, ${metrics.multiQuestionTurns} multi-Q${saved})\n`,
-      );
-    } catch (e) {
-      console.error(`  FAILED: ${(e as Error).message}\n`);
-    }
-  }
-
-  console.log(`Done. ${written.length} transcript(s) in drafts/adversary/.`);
+  console.log(`\nDone. ${written.length} transcript(s) in drafts/adversary/.`);
   if (!opts.mock && !opts.noDb) {
     console.log(`Review them at /review/adversary (admin-gated).`);
   }

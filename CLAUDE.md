@@ -124,7 +124,9 @@ reference the corpus:
   chat/credits/DB path) for N rounds. Real Claude by default
   (ADVERSARY_PROVIDER/ADVERSARY_MODEL env); `--mock` for offline wiring checks,
   `--no-db` to skip persistence. CLI: `--persona <name|all>`, `--turns`,
-  `--tier`, `--seed`, and dial overrides. Writes a markdown transcript to the
+  `--tier`, `--seed`, `--concurrency <n>` (run personas in parallel — only
+  affects `--persona all`; a single conversation is inherently sequential;
+  watch Anthropic rate limits), and dial overrides. Writes a markdown transcript to the
   gitignored `drafts/adversary/` AND persists each run to the `AdversaryRun`
   table (best-effort; DB is droplet-local, so run it there).
 - `lib/adversaryRuns.ts` — read model + `aggregateStats` for the runs.
