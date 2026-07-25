@@ -2,11 +2,16 @@ export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
 import { adminToken, isAdminAuthed } from "../pipeline/auth";
-import { listRuns, aggregateStats, type ParsedRun } from "@/lib/adversaryRuns";
+import { listRuns, aggregateStats, runCostUsd, type ParsedRun } from "@/lib/adversaryRuns";
 import { loginWithToken, logoutAdmin, deleteRun, clearAllRuns } from "./actions";
 
 function fmtDate(d: Date): string {
   return new Date(d).toISOString().replace("T", " ").slice(0, 16) + " UTC";
+}
+
+// Sub-dollar amounts need cents-of-a-cent to be legible; larger totals don't.
+function fmtUsd(n: number): string {
+  return "$" + (n < 1 ? n.toFixed(4) : n.toFixed(2));
 }
 
 // A small labelled number tile for the stats strip.
@@ -41,6 +46,7 @@ function RunCard({ run }: { run: ParsedRun }) {
       <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
         <span>{run.turns} rounds</span>
         <span>{run.inputTokens} in / {run.outputTokens} out tok</span>
+        <span className="font-medium">{fmtUsd(runCostUsd(run))}</span>
         <span>~{m.agentAvgWords} words/reply</span>
         <span className={m.hookViolations ? "font-semibold text-amber-600 dark:text-amber-400" : ""}>
           {m.hookViolations} engagement-hook{m.hookViolations === 1 ? "" : "s"}
@@ -174,6 +180,7 @@ export default async function AdversaryReviewPage({
               <Stat label="Replies ending on a ?" value={stats.trailingQuestions} />
               <Stat label="Input tokens" value={stats.inputTokens.toLocaleString()} />
               <Stat label="Output tokens" value={stats.outputTokens.toLocaleString()} />
+              <Stat label="Total cost" value={fmtUsd(stats.costUsd)} hint="provider list prices" />
             </div>
 
             {stats.byPersona.length > 1 ? (

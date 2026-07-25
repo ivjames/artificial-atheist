@@ -10,7 +10,7 @@ import {
   ARGUMENTS,
   argumentKeys,
 } from "@/lib/agent/adversary";
-import { aggregateStats, type ParsedRun } from "@/lib/adversaryRuns";
+import { aggregateStats, runCostUsd, type ParsedRun } from "@/lib/adversaryRuns";
 
 // The adversary persona library is pure (no model calls), so it's fully unit
 // testable. These guard the invariants the harness relies on and the safety
@@ -137,37 +137,68 @@ describe("scoreAgentTurns", () => {
   });
 });
 
-describe("aggregateStats", () => {
-  const mkRun = (over: Partial<ParsedRun>): ParsedRun =>
-    ({
-      id: over.id ?? "x",
-      createdAt: new Date("2026-07-25T00:00:00Z"),
-      persona: over.persona ?? "professor",
-      label: over.label ?? "The trained apologist",
+const mkRun = (over: Partial<ParsedRun>): ParsedRun =>
+  ({
+    id: over.id ?? "x",
+    createdAt: new Date("2026-07-25T00:00:00Z"),
+    persona: over.persona ?? "professor",
+    label: over.label ?? "The trained apologist",
+    tier: over.tier ?? "standard",
+    adversaryModel: over.adversaryModel ?? "anthropic:claude-sonnet-4-5",
+    sophistication: 5,
+    verbosity: "medium",
+    hostility: "civil",
+    focus: "mixed",
+    turns: 2,
+    seed: null,
+    runStamp: "2026-07-25_00-00-00",
+    inputTokens: over.inputTokens ?? 100,
+    outputTokens: over.outputTokens ?? 50,
+    transcript: over.transcript ?? [],
+    metrics:
+      over.metrics ??
+      {
+        agentTurns: 2,
+        agentAvgChars: 200,
+        agentAvgWords: 40,
+        hookViolations: 1,
+        trailingQuestions: 1,
+        multiQuestionTurns: 0,
+      },
+  }) as ParsedRun;
+
+describe("runCostUsd", () => {
+  it("splits combined tokens per model and costs each side", () => {
+    // standard tier → agent on Haiku 4.5 ($1/$5); adversary on Sonnet 4.5 ($3/$15).
+    const run = mkRun({
       tier: "standard",
       adversaryModel: "anthropic:claude-sonnet-4-5",
-      sophistication: 5,
-      verbosity: "medium",
-      hostility: "civil",
-      focus: "mixed",
-      turns: 2,
-      seed: null,
-      runStamp: "2026-07-25_00-00-00",
-      inputTokens: over.inputTokens ?? 100,
-      outputTokens: over.outputTokens ?? 50,
-      transcript: [],
-      metrics:
-        over.metrics ??
-        {
-          agentTurns: 2,
-          agentAvgChars: 200,
-          agentAvgWords: 40,
-          hookViolations: 1,
-          trailingQuestions: 1,
-          multiQuestionTurns: 0,
-        },
-    }) as ParsedRun;
+      transcript: [
+        { speaker: "adversary", content: "", inTok: 1000, outTok: 200 },
+        { speaker: "agent", content: "", inTok: 2000, outTok: 300 },
+      ],
+    });
+    // agent (haiku):  2000*1 + 300*5  = 3500 → $0.0035
+    // adversary (sonnet): 1000*3 + 200*15 = 6000 → $0.0060
+    expect(runCostUsd(run)).toBeCloseTo(0.0095, 6);
+  });
 
+  it("costs the agent side at premium (Sonnet) rates on --tier premium", () => {
+    const run = mkRun({
+      tier: "premium",
+      adversaryModel: "anthropic:claude-sonnet-4-5",
+      transcript: [{ speaker: "agent", content: "", inTok: 1000, outTok: 100 }],
+    });
+    // agent (sonnet): 1000*3 + 100*15 = 4500 → $0.0045
+    expect(runCostUsd(run)).toBeCloseTo(0.0045, 6);
+  });
+
+  it("is zero when the transcript has no tokens", () => {
+    expect(runCostUsd(mkRun({}))).toBe(0);
+  });
+});
+
+describe("aggregateStats", () => {
   it("sums tokens/violations and weights avg words by agent turns", () => {
     const runs = [
       mkRun({

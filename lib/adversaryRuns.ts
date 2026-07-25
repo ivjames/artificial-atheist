@@ -8,6 +8,8 @@ import {
   emptyAgentMetrics,
   type AgentMetrics,
 } from "@/lib/agent/adversary";
+import { modelForSlot } from "@/lib/models/router";
+import { modelCostUsd } from "@/lib/pricing";
 
 export type TranscriptLine = {
   speaker: "adversary" | "agent";
@@ -37,6 +39,30 @@ export function parseRun(run: AdversaryRun): ParsedRun {
   };
 }
 
+// Real provider cost of a run in USD. The run stores COMBINED tokens, so we
+// split them back out via the transcript (each line carries its speaker +
+// tokens) and cost each side at its own model's rate: the agent ran on the
+// tier's slot model, the apologist on run.adversaryModel (stored as
+// "provider:model"). Same method the CLI uses at report time (lib/pricing.ts).
+export function runCostUsd(run: ParsedRun): number {
+  const agentModel = modelForSlot(run.tier === "premium" ? "premium" : "standard").model;
+  const advModel = run.adversaryModel.includes(":")
+    ? run.adversaryModel.slice(run.adversaryModel.indexOf(":") + 1)
+    : run.adversaryModel;
+
+  let agIn = 0, agOut = 0, advIn = 0, advOut = 0;
+  for (const l of run.transcript) {
+    if (l.speaker === "agent") {
+      agIn += l.inTok;
+      agOut += l.outTok;
+    } else {
+      advIn += l.inTok;
+      advOut += l.outTok;
+    }
+  }
+  return modelCostUsd(agentModel, agIn, agOut) + modelCostUsd(advModel, advIn, advOut);
+}
+
 export async function listRuns(limit = 200): Promise<ParsedRun[]> {
   const rows = await prisma.adversaryRun.findMany({
     orderBy: { createdAt: "desc" },
@@ -60,6 +86,7 @@ export type AggregateStats = {
   agentTurns: number;
   inputTokens: number;
   outputTokens: number;
+  costUsd: number; // real provider cost across all runs
   avgAgentWords: number;
   hookViolations: number;
   trailingQuestions: number;
@@ -76,6 +103,7 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
     agentTurns: 0,
     inputTokens: 0,
     outputTokens: 0,
+    costUsd: 0,
     avgAgentWords: 0,
     hookViolations: 0,
     trailingQuestions: 0,
@@ -91,6 +119,7 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
     agg.agentTurns += m.agentTurns;
     agg.inputTokens += r.inputTokens;
     agg.outputTokens += r.outputTokens;
+    agg.costUsd += runCostUsd(r);
     agg.hookViolations += m.hookViolations;
     agg.trailingQuestions += m.trailingQuestions;
     agg.multiQuestionTurns += m.multiQuestionTurns;
