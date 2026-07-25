@@ -71,6 +71,8 @@ export default function ChatClient({
   // Session total — accumulates across every conversation this session; never
   // reset by navigation.
   const [econTotal, setEconTotal] = useState<EconTotals>(ZERO_ECON);
+  // Money columns: dollars, or common-size percentages of revenue. Default $.
+  const [econUnit, setEconUnit] = useState<"usd" | "pct">("usd");
   const [pending, startTransition] = useTransition();
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -278,9 +280,12 @@ export default function ChatClient({
 
   const fmtUsd = (n: number) => `$${n.toFixed(Math.abs(n) >= 0.01 ? 4 : 6)}`;
   const fmtTok = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
-  // Profit margin = profit / revenue. Undefined without revenue (0 turns).
-  const fmtMargin = (revenueUsd: number, profitUsd: number) =>
-    revenueUsd > 0 ? `${((profitUsd / revenueUsd) * 100).toFixed(0)}%` : "-";
+  const fmtPct = (value: number, base: number) =>
+    base > 0 ? `${((value / base) * 100).toFixed(0)}%` : "-";
+  // A money cell: dollars, or a common-size percentage of revenue when the
+  // toggle is set to "%". Revenue itself reads 100% in that mode.
+  const fmtMoney = (value: number, revenueUsd: number) =>
+    econUnit === "usd" ? fmtUsd(value) : fmtPct(value, revenueUsd);
   const profitClass = (n: number) =>
     n >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-red-600 dark:text-red-500";
 
@@ -291,6 +296,7 @@ export default function ChatClient({
     e: {
       inputTokens: number;
       outputTokens: number;
+      refInputTokens: number;
       costUsd: number;
       revenueUsd: number;
       profitUsd: number;
@@ -301,20 +307,16 @@ export default function ChatClient({
       <span className="text-right tabular-nums">
         {fmtTok(e.inputTokens)}/{fmtTok(e.outputTokens)}
       </span>
-      <span className="text-right tabular-nums">{fmtUsd(e.costUsd)}</span>
-      <span className="text-right tabular-nums">{fmtUsd(e.revenueUsd)}</span>
+      <span className="text-right tabular-nums">{fmtTok(e.refInputTokens)}</span>
+      <span className="text-right tabular-nums">{fmtMoney(e.costUsd, e.revenueUsd)}</span>
+      <span className="text-right tabular-nums">{fmtMoney(e.revenueUsd, e.revenueUsd)}</span>
       <span className={`text-right tabular-nums ${profitClass(e.profitUsd)}`}>
-        {fmtUsd(e.profitUsd)}
-      </span>
-      <span className={`text-right tabular-nums ${profitClass(e.profitUsd)}`}>
-        {fmtMargin(e.revenueUsd, e.profitUsd)}
+        {fmtMoney(e.profitUsd, e.revenueUsd)}
       </span>
     </>
   );
 
   const showEcon = previewMode && (lastEcon !== null || threadEcon.turns > 0 || econTotal.turns > 0);
-  // Reference-library overhead to footnote (prefer the conversation total).
-  const refEcon = threadEcon.turns > 0 ? threadEcon : econTotal;
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
@@ -401,18 +403,40 @@ export default function ChatClient({
 
       {showEcon ? (
         <div className="mt-2 rounded-lg border border-dashed border-amber-400/60 px-3 py-2 text-[11px] text-slate-500 dark:border-amber-500/40 dark:text-slate-400">
-          <div className="mb-1.5 flex items-baseline justify-between">
+          <div className="mb-1.5 flex items-baseline justify-between gap-2">
             <span className="text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-500">
               Preview economics
             </span>
-            {lastEcon ? (
-              <span className="font-mono text-[10px] text-slate-400">{lastEcon.model}</span>
-            ) : null}
+            <div className="flex items-center gap-2">
+              {lastEcon ? (
+                <span className="font-mono text-[10px] text-slate-400">{lastEcon.model}</span>
+              ) : null}
+              <div className="flex overflow-hidden rounded border border-amber-400/40 text-[10px] font-semibold">
+                {(["usd", "pct"] as const).map((u) => (
+                  <button
+                    key={u}
+                    type="button"
+                    onClick={() => setEconUnit(u)}
+                    aria-pressed={econUnit === u}
+                    className={`px-1.5 py-0.5 ${
+                      econUnit === u
+                        ? "bg-amber-400/20 text-amber-600 dark:text-amber-500"
+                        : "text-slate-400 hover:text-slate-500"
+                    }`}
+                  >
+                    {u === "usd" ? "$" : "%"}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-x-4 gap-y-1 font-mono">
             <span className="text-[10px] uppercase tracking-wide text-slate-400" />
             <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
               in/out
+            </span>
+            <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
+              ref
             </span>
             <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
               cost
@@ -423,18 +447,10 @@ export default function ChatClient({
             <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
               profit
             </span>
-            <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
-              margin
-            </span>
             {lastEcon ? econRow("last turn", lastEcon) : null}
             {threadEcon.turns > 0 ? econRow(`conversation (${threadEcon.turns})`, threadEcon) : null}
             {econTotal.turns > 0 ? econRow(`session (${econTotal.turns})`, econTotal) : null}
           </div>
-          {refEcon.refInputTokens > 0 ? (
-            <div className="mt-1.5 border-t border-amber-400/20 pt-1.5 text-right text-[10px] text-slate-400 dark:border-amber-500/20">
-              + {fmtTok(refEcon.refInputTokens)} ref tokens ({fmtUsd(refEcon.refCostUsd)})
-            </div>
-          ) : null}
         </div>
       ) : null}
       </div>
