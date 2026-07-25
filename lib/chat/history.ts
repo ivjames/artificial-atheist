@@ -109,6 +109,7 @@ export async function getThreadForUser(
           content: true,
           model: true,
           inputTokens: true,
+          refInputTokens: true,
           outputTokens: true,
         },
       },
@@ -138,19 +139,41 @@ export async function getThreadForUser(
 // is written), so credits = tier cost × assistant turns.
 export function threadEconomics(
   tier: string,
-  msgs: { role: string; model: string | null; inputTokens: number; outputTokens: number }[],
+  msgs: {
+    role: string;
+    model: string | null;
+    inputTokens: number;
+    refInputTokens?: number;
+    outputTokens: number;
+  }[],
 ): EconTotals {
   let turns = 0;
   let inputTokens = 0;
   let outputTokens = 0;
+  let refInputTokens = 0;
   let costUsd = 0;
+  let refCostUsd = 0;
   for (const m of msgs) {
     if (m.role !== "assistant") continue;
     turns += 1;
     inputTokens += m.inputTokens;
     outputTokens += m.outputTokens;
-    costUsd += modelCostUsd(m.model ?? "", m.inputTokens, m.outputTokens);
+    const ref = m.refInputTokens ?? 0;
+    refInputTokens += ref;
+    const thisRefCost = modelCostUsd(m.model ?? "", ref, 0);
+    refCostUsd += thisRefCost;
+    // Real total cost = conversation tokens + the reference-library overhead.
+    costUsd += modelCostUsd(m.model ?? "", m.inputTokens, m.outputTokens) + thisRefCost;
   }
   const revenueUsd = turns * costForTier(tier) * creditUnitPriceUsd();
-  return { turns, inputTokens, outputTokens, costUsd, revenueUsd, profitUsd: revenueUsd - costUsd };
+  return {
+    turns,
+    inputTokens,
+    outputTokens,
+    refInputTokens,
+    costUsd,
+    refCostUsd,
+    revenueUsd,
+    profitUsd: revenueUsd - costUsd,
+  };
 }
