@@ -357,52 +357,9 @@ export default function ChatClient({
         </div>
       </div>
 
-      {/* Input at the TOP so it's always in view — no hunting to the bottom. */}
-      <form
-        className="mb-3 flex gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          submit();
-        }}
-      >
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              submit();
-            }
-          }}
-          disabled={locked || readOnly || pending || banner?.kind === "capped"}
-          placeholder={
-            locked || readOnly ? "This conversation has ended." : "Type your argument…"
-          }
-          rows={2}
-          aria-label="Message"
-          className="flex-1 resize-none rounded-xl border border-slate-300 bg-white p-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900"
-        />
-        <button type="submit" className="btn-primary self-end" disabled={sendDisabled}>
-          {pending ? "Sending…" : "Send"}
-        </button>
-      </form>
-
-      {banner ? <StatusBanner banner={banner} onStartFreshThread={startFreshThread} /> : null}
-
-      <div ref={listRef} className="card flex-1 space-y-3 overflow-y-auto p-4 sm:p-6">
-        {messages.length === 0 ? (
-          <p className="text-sm text-slate-400">
-            Make a claim or ask a question — the agent argues from an evidence-first,
-            naturalist position.
-          </p>
-        ) : null}
-        {messages.map((m) => (
-          <MessageBubble key={m.id} message={m} onRetry={m.failed ? () => retry(m) : undefined} />
-        ))}
-      </div>
-
+      {/* Preview economics up top; the composer lives at the bottom like a real chat. */}
       {showEcon ? (
-        <div className="mt-2 rounded-lg border border-dashed border-amber-400/60 px-3 py-2 text-[11px] text-slate-500 dark:border-amber-500/40 dark:text-slate-400">
+        <div className="mb-3 rounded-lg border border-dashed border-amber-400/60 px-3 py-2 text-[11px] text-slate-500 dark:border-amber-500/40 dark:text-slate-400">
           <div className="mb-1.5 flex items-baseline justify-between gap-2">
             <span className="text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-500">
               Preview economics
@@ -453,6 +410,50 @@ export default function ChatClient({
           </div>
         </div>
       ) : null}
+
+      {banner ? <StatusBanner banner={banner} onStartFreshThread={startFreshThread} /> : null}
+
+      <div ref={listRef} className="card flex-1 space-y-3 overflow-y-auto p-4 sm:p-6">
+        {messages.length === 0 ? (
+          <p className="text-sm text-slate-400">
+            Make a claim or ask a question — the agent argues from an evidence-first,
+            naturalist position.
+          </p>
+        ) : null}
+        {messages.map((m) => (
+          <MessageBubble key={m.id} message={m} onRetry={m.failed ? () => retry(m) : undefined} />
+        ))}
+      </div>
+
+      {/* Composer at the bottom so it reads like a chat. */}
+      <form
+        className="mt-3 flex gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          submit();
+        }}
+      >
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              submit();
+            }
+          }}
+          disabled={locked || readOnly || pending || banner?.kind === "capped"}
+          placeholder={
+            locked || readOnly ? "This conversation has ended." : "Type your argument…"
+          }
+          rows={2}
+          aria-label="Message"
+          className="flex-1 resize-none rounded-xl border border-slate-300 bg-white p-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900"
+        />
+        <button type="submit" className="btn-primary self-end" disabled={sendDisabled}>
+          {pending ? "Sending…" : "Send"}
+        </button>
+      </form>
       </div>
     </div>
   );
