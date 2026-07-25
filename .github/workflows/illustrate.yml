@@ -38,10 +38,10 @@ jobs:
 
       - name: Commit any new illustrations
         run: |
-          if [ -n "$(git status --porcelain src/posts src/images/posts)" ]; then
+          if [ -n "$(git status --porcelain src/posts public/images/posts)" ]; then
             git config user.name "Artificial Atheist Bot"
             git config user.email "bot@artificialatheist.com"
-            git add src/posts src/images/posts
+            git add src/posts public/images/posts
             git commit -m "Backfill illustrations for posts missing art"
             git push
           else

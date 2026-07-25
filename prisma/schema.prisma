@@ -1,0 +1,215 @@
+// Prisma schema for AtheismIQ — SQLite for zero-setup local/dev runs.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// A quiz question. `options` is a JSON-encoded string[] (SQLite has no arrays).
+// Content is placeholder for now and will be swapped later.
+model Question {
+  id           String   @id @default(cuid())
+  text         String
+  options      String // JSON-encoded string[]
+  correctIndex Int
+  category     String   @default("General")
+  difficulty   String   @default("Easy") // Easy | Medium | Hard
+  explanation  String? // short blurb shown inline in answer review
+  detail       String? // longer write-up shown in the "Read more" modal
+  sources      String? // JSON-encoded [{ label, url }] for the modal
+  createdAt    DateTime @default(now())
+
+  answers Answer[]
+}
+
+// A completed quiz attempt. `slug` is the shareable URL key.
+model Result {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  displayName String? // set when the player claims a leaderboard spot
+  category    String?
+  difficulty  String?
+  score       Int
+  total       Int
+  // Player "type" captured by the pre-quiz intake, as independent flags.
+  atheist     Boolean? // true = does not believe a god exists (false = theist)
+  agnostic    Boolean? // true = thinks it can't be known for certain (false = gnostic)
+  createdAt   DateTime @default(now())
+
+  answers Answer[]
+
+  @@index([score])
+  @@index([atheist, agnostic])
+}
+
+// One answer within a Result (drives the answer-review screen).
+model Answer {
+  id            String @id @default(cuid())
+  resultId      String
+  questionId    String
+  selectedIndex Int
+  isCorrect     Boolean
+
+  result   Result   @relation(fields: [resultId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@index([resultId])
+}
+
+// ===========================================================================
+// Debate chat agent + credit system + article pipeline
+// (ArtificialAtheist integration — concept spec v1.1).
+//
+// LEGAL GATE: everything below is dark behind CHAT_ENABLED and must NOT collect
+// real emails or conversations until the §6 consent/privacy review is signed
+// off. See LAUNCH-BLOCKERS.md. Religion/belief is special-category data.
+// ===========================================================================
+
+// A registered adult visitor, keyed to email (no passwords — magic-link auth).
+// Under-18 visitors never reach signup (they are diverted to the quiz), so no
+// minor contact data is ever stored here (§4a / §6).
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  emailVerifiedAt DateTime?
+  ageConfirmedAt  DateTime? // 18+ self-declaration recorded at signup
+  createdAt       DateTime  @default(now())
+  deletedAt       DateTime? // right-to-erasure soft delete; content is purged
+
+  consents    Consent[]
+  ledger      CreditEntry[]
+  threads     Thread[]
+  loginTokens LoginToken[]
+  purchases   Purchase[]
+
+  @@index([email])
+}
+
+// One-time magic-link token. Only the SHA-256 hash of the emitted token is
+// stored, never the raw value.
+model LoginToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Unbundled, specific, revocable consent (§6). `terms` is required to use the
+// service; `article_use` is OPTIONAL and must never gate access. Revocation
+// pulls the user's material from the article queue.
+model Consent {
+  id        String    @id @default(cuid())
+  userId    String
+  kind      String // "terms" | "article_use"
+  grantedAt DateTime  @default(now())
+  revokedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, kind])
+}
+
+// Append-only credit ledger. Balance = sum(amount) over the (non-deleted) user.
+// `kind` separates free grants from paid packs so they can be reasoned about
+// (refunds, abuse clawbacks) independently.
+model CreditEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int // +grant / -spend, in credits
+  kind      String // "free_grant" | "purchase" | "spend" | "refund" | "adjust"
+  reason    String?
+  threadId  String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// A credit-pack purchase. `provider` abstracts Stripe vs the dev stub so the
+// payment vendor can be swapped without touching the ledger (§7).
+model Purchase {
+  id          String   @id @default(cuid())
+  userId      String
+  provider    String // "stripe" | "stub"
+  providerRef String?  @unique // stripe checkout session / payment-intent id
+  packId      String
+  credits     Int
+  amountCents Int
+  currency    String   @default("usd")
+  status      String   @default("pending") // pending | paid | failed | refunded
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// A single debate thread. Carries the per-thread token budget (§4 thread cap)
+// so accumulated context can't silently drain a balance.
+model Thread {
+  id           String    @id @default(cuid())
+  userId       String
+  tier         String    @default("standard") // "standard" (Haiku) | "premium" (Sonnet)
+  topic        String? // assigned by the tagging step (§5)
+  tokenBudget  Int // per-thread cap in tokens
+  inputTokens  Int       @default(0)
+  outputTokens Int       @default(0)
+  closedAt     DateTime? // set when the cap is hit or the user closes it
+  createdAt    DateTime  @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@index([userId])
+  @@index([topic])
+}
+
+model Message {
+  id           String   @id @default(cuid())
+  threadId     String
+  role         String // "user" | "assistant"
+  content      String
+  model        String? // model id that produced an assistant turn
+  inputTokens  Int      @default(0)
+  outputTokens Int      @default(0)
+  redacted     Boolean  @default(false) // excluded from pipeline use after erasure
+  createdAt    DateTime @default(now())
+
+  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+}
+
+// Article pipeline (§5). A topic becomes eligible only when it has drawn
+// questions from >= threshold DISTINCT users (counted, not questions). Every
+// draft passes Slot C scrub + permanent human review before publish.
+model ArticleDraft {
+  id            String   @id @default(cuid())
+  topic         String
+  status        String   @default("queued") // queued|drafting|scrubbing|review|approved|rejected|published
+  distinctUsers Int      @default(0)
+  sourceUserIds String? // JSON string[] of contributing user ids (for erasure)
+  draftMarkdown String?
+  scrubMarkdown String?
+  scrubNotes    String? // Slot C residual-PII flags for the human reviewer
+  title         String?
+  excerpt       String?
+  aaTopic       String? // maps to an artificialatheist.com topic taxonomy key
+  reviewedBy    String?
+  publishedSlug String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+  @@index([topic])
+}

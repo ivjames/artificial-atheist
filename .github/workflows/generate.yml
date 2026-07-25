@@ -57,10 +57,10 @@ jobs:
             git config user.name "Artificial Atheist Bot"
             git config user.email "bot@artificialatheist.com"
             # Stage the post AND its illustration together: illustrate.mjs writes
-            # the PNG to src/images/posts and stamps an `image:` frontmatter line,
-            # so committing only src/posts would push a reference to an image that
-            # was never committed (broken hero on the live site).
-            git add src/posts src/images/posts
+            # the PNG to public/images/posts and stamps an `image:` frontmatter
+            # line, so committing only src/posts would push a reference to an image
+            # that was never committed (broken hero on the live site).
+            git add src/posts public/images/posts
             git commit -m "Add article: $(git status --porcelain src/posts | head -1 | sed 's/^...//')"
             git push
           else

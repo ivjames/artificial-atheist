@@ -1,9 +1,29 @@
+# dependencies
 node_modules/
-_site/
-_site.new/
-_site.prev/
-.DS_Store
-*.log
+
+# next.js
+/.next
+/out
+next-env.d.ts
+/build
+*.tsbuildinfo
+
+# env
 .env
+.env*.local
+
+# database (dev)
+*.db
+*.db-journal
+prisma/dev.db*
+
+# article pipeline staging (published posts are committed under src/posts)
 drafts/
 data/
+/pipeline-output
+
+# misc
+.DS_Store
+*.pem
+*.log
+npm-debug.log*

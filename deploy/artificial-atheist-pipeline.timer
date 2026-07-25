@@ -1,0 +1,17 @@
+# Runs the article-pipeline clustering pass on a schedule (spec §5 asks for the
+# cluster job to be scheduled). Default: once daily at 08:00 (server time), with
+# a small randomized delay so it doesn't collide with other cron-like jobs.
+# Tune OnCalendar to your volume — clustering is cheap (a couple of DB queries);
+# drafting/scrubbing (when PIPELINE_AUTODRAFT=1) costs a little model spend.
+
+[Unit]
+Description=Schedule for the Artificial Atheist article pipeline
+
+[Timer]
+OnCalendar=*-*-* 08:00:00
+RandomizedDelaySec=300
+Persistent=true
+Unit=artificial-atheist-pipeline.service
+
+[Install]
+WantedBy=timers.target
