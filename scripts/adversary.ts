@@ -28,7 +28,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { providerFor } from "@/lib/models/router";
-import { callSlot } from "@/lib/models/router";
+import { callSlot, modelForSlot } from "@/lib/models/router";
+import { modelCostUsd } from "@/lib/pricing";
 import type { ChatRole, ChatTurn } from "@/lib/models/types";
 import { DEBATE_SYSTEM_PROMPT } from "@/lib/agent/persona";
 import {
@@ -386,7 +387,23 @@ async function persistRun(
 
 // --- concurrency -----------------------------------------------------------
 
-type PersonaResult = { ok: boolean; file?: string; inTok: number; outTok: number };
+// Token tallies keyed by the model that produced them, so cost can be computed
+// per model (the two sides usually run on different-priced models).
+type Tally = { in: number; out: number };
+type ModelTallies = Record<string, Tally>;
+type PersonaResult = {
+  ok: boolean;
+  file?: string;
+  inTok: number;
+  outTok: number;
+  byModel: ModelTallies;
+};
+
+function addTally(into: ModelTallies, model: string, inTok: number, outTok: number): void {
+  const t = (into[model] ??= { in: 0, out: 0 });
+  t.in += inTok;
+  t.out += outTok;
+}
 
 // Run one persona end to end: converse, score, write the transcript, persist.
 // `quiet` suppresses per-round progress (used when several run in parallel, so
@@ -404,6 +421,14 @@ async function runPersona(
     const metrics = agentMetrics(lines);
     const { file, inTok, outTok } = writeTranscript(persona, opts, lines, metrics, runStamp);
 
+    // Attribute each turn's tokens to the model that produced it: the agent
+    // side runs on the tier's slot model, the apologist on ADVERSARY_MODEL.
+    const agentModel = modelForSlot(opts.tier).model;
+    const byModel: ModelTallies = {};
+    for (const l of lines) {
+      addTally(byModel, l.speaker === "agent" ? agentModel : ADVERSARY_MODEL, l.inTok, l.outTok);
+    }
+
     // Persist for the /review/adversary surface (best-effort; not in mock).
     let saved = "";
     if (!opts.mock && !opts.noDb) {
@@ -418,10 +443,10 @@ async function runPersona(
     console.log(
       `✓ ${persona.name} → drafts/adversary/${path.basename(file)}  (${inTok} in / ${outTok} out tokens; ${metrics.hookViolations} hook, ${metrics.multiQuestionTurns} multi-Q${saved})`,
     );
-    return { ok: true, file, inTok, outTok };
+    return { ok: true, file, inTok, outTok, byModel };
   } catch (e) {
     console.error(`✗ ${persona.name} FAILED: ${(e as Error).message}`);
-    return { ok: false, inTok: 0, outTok: 0 };
+    return { ok: false, inTok: 0, outTok: 0, byModel: {} };
   }
 }
 
@@ -495,7 +520,29 @@ async function main(): Promise<void> {
     console.log(`Review them at /review/adversary (admin-gated).`);
   }
   if (!opts.mock) {
+    // Merge every persona's per-model tallies and cost each model at the
+    // project's own list prices (lib/pricing.ts). The two sides usually run on
+    // different-priced models, so the total is a sum of per-model costs — not
+    // one blended rate. Caching gives no discount at this prompt size.
+    const grand: ModelTallies = {};
+    for (const r of results) {
+      for (const [model, t] of Object.entries(r.byModel)) {
+        addTally(grand, model, t.in, t.out);
+      }
+    }
+
+    let totalCost = 0;
+    const rows = Object.entries(grand)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([model, t]) => {
+        const cost = modelCostUsd(model, t.in, t.out);
+        totalCost += cost;
+        return `    ${model.padEnd(20)} ${t.in} in / ${t.out} out   $${cost.toFixed(4)}`;
+      });
+
     console.log(`Tokens across the run: ${totalIn} in / ${totalOut} out (both sides).`);
+    console.log(`Cost: $${totalCost.toFixed(4)} (provider list prices; no cache discount at this prompt size)`);
+    for (const row of rows) console.log(row);
   }
 }
 
