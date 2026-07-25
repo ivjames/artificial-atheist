@@ -43,27 +43,37 @@ export function creditUnitPriceUsd(): number {
 
 export type TurnEconomics = {
   model: string;
-  inputTokens: number;
+  inputTokens: number; // CONVERSATION input tokens (persona + history + message)
   outputTokens: number;
-  costUsd: number; // real provider cost of this turn
+  refInputTokens: number; // platform-injected article-reference tokens
+  costUsd: number; // real provider cost of this turn (conversation + references)
+  refCostUsd: number; // the reference-library share of costUsd
   creditsCharged: number;
   revenueUsd: number; // credits charged × per-credit price
   profitUsd: number; // revenue − cost
 };
 
+// Conversation input tokens and the platform-injected reference tokens are
+// passed separately: the visitor's token counter and thread budget see only
+// the conversation, while cost/profit still reflect the true total spend (the
+// reference library is a real, if small, provider cost).
 export function turnEconomics(
   model: string,
   inputTokens: number,
   outputTokens: number,
+  refInputTokens: number,
   creditsCharged: number,
 ): TurnEconomics {
-  const costUsd = modelCostUsd(model, inputTokens, outputTokens);
+  const refCostUsd = modelCostUsd(model, refInputTokens, 0);
+  const costUsd = modelCostUsd(model, inputTokens, outputTokens) + refCostUsd;
   const revenueUsd = creditsCharged * creditUnitPriceUsd();
   return {
     model,
     inputTokens,
     outputTokens,
+    refInputTokens,
     costUsd,
+    refCostUsd,
     creditsCharged,
     revenueUsd,
     profitUsd: revenueUsd - costUsd,

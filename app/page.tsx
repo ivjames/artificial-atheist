@@ -92,7 +92,7 @@ export default function HomePage() {
           <h3>About {site.title}</h3>
           <p>
             {site.description} Every article is generated and curated with AI, then
-            organized for clarity and rigour — an experiment in what machine-authored
+            organized for clarity and rigour - an experiment in what machine-authored
             inquiry can look like.
           </p>
         </div>

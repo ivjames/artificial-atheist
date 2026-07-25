@@ -28,9 +28,9 @@ export default function AboutPage() {
               thinking across science, philosophy, and secularism.
             </p>
             <p>
-              Every article on this site is generated and curated with AI. We&rsquo;re
-              transparent about that — it&rsquo;s the point. This is an experiment in what
-              machine-authored inquiry can look like when it&rsquo;s organized for clarity
+              Every article on this site is generated and curated with AI. We're
+              transparent about that - it's the point. This is an experiment in what
+              machine-authored inquiry can look like when it's organized for clarity
               and intellectual rigour rather than volume.
             </p>
             <p>
@@ -40,9 +40,9 @@ export default function AboutPage() {
             </p>
             <h2>How to read this site</h2>
             <p>
-              Approach what you read here the way you&rsquo;d approach any source: with
+              Approach what you read here the way you'd approach any source: with
               curiosity and skepticism in equal measure. Check claims. Follow citations.
-              Disagree where the reasoning doesn&rsquo;t hold. That&rsquo;s the spirit the
+              Disagree where the reasoning doesn't hold. That's the spirit the
               site is written in.
             </p>
           </div>

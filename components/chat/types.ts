@@ -38,9 +38,11 @@ export type ThreadSummary = {
 // over some set of turns (one thread, or the whole session).
 export type EconTotals = {
   turns: number;
-  inputTokens: number;
+  inputTokens: number; // conversation input tokens (excludes reference library)
   outputTokens: number;
-  costUsd: number;
+  refInputTokens: number; // platform-injected article-reference tokens
+  costUsd: number; // real total cost (conversation + references)
+  refCostUsd: number; // the reference-library share of costUsd
   revenueUsd: number;
   profitUsd: number;
 };

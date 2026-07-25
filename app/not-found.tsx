@@ -17,7 +17,7 @@ export default function NotFound() {
               margin: "0.5rem 0 1rem",
             }}
           >
-            I don&rsquo;t believe this page exists
+            I don't believe this page exists
           </h1>
           <p style={{ color: "var(--text-soft)", maxWidth: "52ch", margin: "0 auto 2rem" }}>
             The link may be broken or the article may have moved. Try searching, or browse by

@@ -67,7 +67,7 @@ export default function SearchClient() {
       />
       <div className="search-results">
         {q.trim().length >= 2 && results.length === 0 && loaded && (
-          <p className="search-empty">No articles match &ldquo;{q.trim()}&rdquo;.</p>
+          <p className="search-empty">No articles match "{q.trim()}".</p>
         )}
         {results.map((e) => (
           <Link className="list-item" href={e.url} key={e.url}>

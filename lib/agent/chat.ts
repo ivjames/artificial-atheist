@@ -125,6 +125,10 @@ export async function sendChatMessage(
   } catch {
     /* article refs are a nicety, never block the debate on them */
   }
+  // Estimate the reference-library token cost (~4 chars/token) so it can be
+  // tracked separately from the conversation — it's platform overhead the
+  // visitor never typed, so it must not inflate their token counter or budget.
+  const estRefTokens = context ? Math.ceil(context.length / 4) : 0;
 
   let completion;
   try {
@@ -156,7 +160,12 @@ export async function sendChatMessage(
   }
 
   // (f) Persist both turns and update thread usage / closure atomically.
-  const newInputTokens = thread.inputTokens + completion.inputTokens;
+  // Split the billed input into conversation vs. reference-library tokens: the
+  // thread budget (and the visitor's counter) count only the conversation; the
+  // reference overhead is tracked separately and folded into cost/profit.
+  const refInputTokens = Math.min(estRefTokens, completion.inputTokens);
+  const convInputTokens = completion.inputTokens - refInputTokens;
+  const newInputTokens = thread.inputTokens + convInputTokens;
   const newOutputTokens = thread.outputTokens + completion.outputTokens;
   const closed = newInputTokens + newOutputTokens >= thread.tokenBudget;
 
@@ -170,7 +179,8 @@ export async function sendChatMessage(
         role: "assistant",
         content: completion.text,
         model: completion.model,
-        inputTokens: completion.inputTokens,
+        inputTokens: convInputTokens,
+        refInputTokens,
         outputTokens: completion.outputTokens,
       },
     }),
@@ -190,12 +200,13 @@ export async function sendChatMessage(
     assistant: completion.text,
     balance,
     closed,
-    inputTokens: completion.inputTokens,
+    inputTokens: convInputTokens,
     outputTokens: completion.outputTokens,
     economics: turnEconomics(
       completion.model,
-      completion.inputTokens,
+      convInputTokens,
       completion.outputTokens,
+      refInputTokens,
       cost,
     ),
   };

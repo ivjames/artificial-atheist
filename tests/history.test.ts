@@ -141,6 +141,17 @@ describe("threadEconomics", () => {
     expect(e.revenueUsd).toBeCloseTo(0.3, 10);
   });
 
+  it("tracks reference-library tokens separately and folds their cost into the total", () => {
+    // Haiku $1/M in. Conversation 1000 in / 0 out = $0.001; refs 400 = $0.0004.
+    const e = threadEconomics("standard", [
+      { role: "assistant", model: "claude-haiku-4-5", inputTokens: 1000, refInputTokens: 400, outputTokens: 0 },
+    ]);
+    expect(e.inputTokens).toBe(1000); // conversation only — refs excluded
+    expect(e.refInputTokens).toBe(400);
+    expect(e.refCostUsd).toBeCloseTo(0.0004, 10);
+    expect(e.costUsd).toBeCloseTo(0.0014, 10); // conversation + reference cost
+  });
+
   it("is all-zero for a thread with no assistant turns", () => {
     const e = threadEconomics("standard", [
       { role: "user", model: null, inputTokens: 0, outputTokens: 0 },
@@ -149,7 +160,9 @@ describe("threadEconomics", () => {
       turns: 0,
       inputTokens: 0,
       outputTokens: 0,
+      refInputTokens: 0,
       costUsd: 0,
+      refCostUsd: 0,
       revenueUsd: 0,
       profitUsd: 0,
     });

@@ -15,7 +15,9 @@ const ZERO_ECON: EconTotals = {
   turns: 0,
   inputTokens: 0,
   outputTokens: 0,
+  refInputTokens: 0,
   costUsd: 0,
+  refCostUsd: 0,
   revenueUsd: 0,
   profitUsd: 0,
 };
@@ -26,7 +28,9 @@ function addEcon(t: EconTotals, e: TurnEconomics): EconTotals {
     turns: t.turns + 1,
     inputTokens: t.inputTokens + e.inputTokens,
     outputTokens: t.outputTokens + e.outputTokens,
+    refInputTokens: t.refInputTokens + e.refInputTokens,
     costUsd: t.costUsd + e.costUsd,
+    refCostUsd: t.refCostUsd + e.refCostUsd,
     revenueUsd: t.revenueUsd + e.revenueUsd,
     profitUsd: t.profitUsd + e.profitUsd,
   };
@@ -274,23 +278,43 @@ export default function ChatClient({
 
   const fmtUsd = (n: number) => `$${n.toFixed(Math.abs(n) >= 0.01 ? 4 : 6)}`;
   const fmtTok = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
+  // Profit margin = profit / revenue. Undefined without revenue (0 turns).
+  const fmtMargin = (revenueUsd: number, profitUsd: number) =>
+    revenueUsd > 0 ? `${((profitUsd / revenueUsd) * 100).toFixed(0)}%` : "-";
   const profitClass = (n: number) =>
     n >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-red-600 dark:text-red-500";
 
-  // One accumulated-totals line (this conversation / session) in the preview
-  // economics readout.
-  const totalsRow = (label: string, e: EconTotals) => (
-    <div>
-      <span className="text-amber-600 dark:text-amber-500">
-        {label} ({e.turns})
-      </span>{" "}
-      {fmtTok(e.inputTokens)} in / {fmtTok(e.outputTokens)} out · cost {fmtUsd(e.costUsd)} · rev{" "}
-      {fmtUsd(e.revenueUsd)} ·{" "}
-      <span className={profitClass(e.profitUsd)}>profit {fmtUsd(e.profitUsd)}</span>
-    </div>
+  // One row of the preview economics table. Accepts either a single turn or an
+  // accumulated total (both share the numeric fields used here).
+  const econRow = (
+    label: string,
+    e: {
+      inputTokens: number;
+      outputTokens: number;
+      costUsd: number;
+      revenueUsd: number;
+      profitUsd: number;
+    },
+  ) => (
+    <>
+      <span className="text-slate-500 dark:text-slate-300">{label}</span>
+      <span className="text-right tabular-nums">
+        {fmtTok(e.inputTokens)}/{fmtTok(e.outputTokens)}
+      </span>
+      <span className="text-right tabular-nums">{fmtUsd(e.costUsd)}</span>
+      <span className="text-right tabular-nums">{fmtUsd(e.revenueUsd)}</span>
+      <span className={`text-right tabular-nums ${profitClass(e.profitUsd)}`}>
+        {fmtUsd(e.profitUsd)}
+      </span>
+      <span className={`text-right tabular-nums ${profitClass(e.profitUsd)}`}>
+        {fmtMargin(e.revenueUsd, e.profitUsd)}
+      </span>
+    </>
   );
 
   const showEcon = previewMode && (lastEcon !== null || threadEcon.turns > 0 || econTotal.turns > 0);
+  // Reference-library overhead to footnote (prefer the conversation total).
+  const refEcon = threadEcon.turns > 0 ? threadEcon : econTotal;
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
@@ -376,20 +400,41 @@ export default function ChatClient({
       </div>
 
       {showEcon ? (
-        <div className="mt-2 rounded-lg border border-dashed border-amber-400/60 px-3 py-2 font-mono text-[11px] leading-relaxed text-slate-500 dark:border-amber-500/40 dark:text-slate-400">
-          {lastEcon ? (
-            <div>
-              <span className="text-amber-600 dark:text-amber-500">last turn</span>{" "}
-              {fmtTok(lastEcon.inputTokens)} in / {fmtTok(lastEcon.outputTokens)} out ·
-              cost {fmtUsd(lastEcon.costUsd)} · rev {fmtUsd(lastEcon.revenueUsd)} ·{" "}
-              <span className={profitClass(lastEcon.profitUsd)}>
-                profit {fmtUsd(lastEcon.profitUsd)}
-              </span>{" "}
-              · {lastEcon.model}
+        <div className="mt-2 rounded-lg border border-dashed border-amber-400/60 px-3 py-2 text-[11px] text-slate-500 dark:border-amber-500/40 dark:text-slate-400">
+          <div className="mb-1.5 flex items-baseline justify-between">
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-500">
+              Preview economics
+            </span>
+            {lastEcon ? (
+              <span className="font-mono text-[10px] text-slate-400">{lastEcon.model}</span>
+            ) : null}
+          </div>
+          <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-x-4 gap-y-1 font-mono">
+            <span className="text-[10px] uppercase tracking-wide text-slate-400" />
+            <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
+              in/out
+            </span>
+            <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
+              cost
+            </span>
+            <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
+              rev
+            </span>
+            <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
+              profit
+            </span>
+            <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
+              margin
+            </span>
+            {lastEcon ? econRow("last turn", lastEcon) : null}
+            {threadEcon.turns > 0 ? econRow(`conversation (${threadEcon.turns})`, threadEcon) : null}
+            {econTotal.turns > 0 ? econRow(`session (${econTotal.turns})`, econTotal) : null}
+          </div>
+          {refEcon.refInputTokens > 0 ? (
+            <div className="mt-1.5 border-t border-amber-400/20 pt-1.5 text-right text-[10px] text-slate-400 dark:border-amber-500/20">
+              + {fmtTok(refEcon.refInputTokens)} ref tokens ({fmtUsd(refEcon.refCostUsd)})
             </div>
           ) : null}
-          {threadEcon.turns > 0 ? totalsRow("this conversation", threadEcon) : null}
-          {econTotal.turns > 0 ? totalsRow("session", econTotal) : null}
         </div>
       ) : null}
       </div>
