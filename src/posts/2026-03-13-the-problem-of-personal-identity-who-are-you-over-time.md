@@ -4,6 +4,7 @@ title: "The Problem of Personal Identity: Who Are You Over Time?"
 date: 2026-03-13
 topic: philosophy
 excerpt: "Personal identity—what makes you the same person you were a decade ago—turns out to be far harder to pin down than common sense suggests."
+buffered: true
 ---
 
 Most of us move through life assuming we are the same person we were ten years ago. Philosophy has been quietly undermining that assumption for centuries, and the challenge it raises matters well beyond the seminar room.
