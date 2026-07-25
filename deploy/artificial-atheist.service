@@ -1,0 +1,28 @@
+# systemd unit for the AtheismIQ Next.js server.
+# Adjust User/paths to match your lab980 layout, then:
+#   sudo cp deploy/artificial-atheist.service /etc/systemd/system/artificial-atheist.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now artificial-atheist
+#   sudo systemctl status artificial-atheist   # logs: journalctl -u artificial-atheist -f
+#
+# Next.js + Prisma read the app's .env for DATABASE_URL / NEXT_PUBLIC_SITE_URL.
+
+[Unit]
+Description=Artificial Atheist (Next.js)
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+# --- adjust to your convention ---
+User=deploy
+WorkingDirectory=/var/www/artificial-atheist
+Environment=NODE_ENV=production
+Environment=PORT=8060
+# npm must be on PATH for the unit; use an absolute path if you use nvm.
+ExecStart=/usr/bin/npm run start
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

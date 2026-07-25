@@ -34,7 +34,16 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import site from "../src/_data/site.js";
+
+// Canonical site URL for building the article/image links Buffer posts to
+// Facebook. Env-overridable; the fallback is the production canonical (matches
+// lib/config.ts's SITE_URL default, the single source of truth in the app).
+const site = {
+  url:
+    process.env.SITE_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://artificialatheist.com",
+};
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const POSTS_DIR = path.join(__dirname, "..", "src", "posts");

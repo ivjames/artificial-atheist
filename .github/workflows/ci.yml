@@ -1,8 +1,12 @@
 name: CI build check
 
-# Catches broken builds and duplicate slugs before they reach the droplet
-# (a failed build there empties _site and 403s the live site). No secrets:
-# this only builds the static site; article generation is a separate workflow.
+# Catches broken builds and duplicate slugs before they reach the droplet.
+# The site is now a single Next.js app (publication + quiz + debate). The
+# publication pages are statically generated from src/posts markdown at build
+# time, so a duplicate slug or a broken article still fails the build here.
+# No secrets needed: dynamic (DB-backed) pages are server-rendered on demand,
+# not prerendered, so `next build` needs no real database — a dummy
+# DATABASE_URL is enough for `prisma generate` and client instantiation.
 on:
   pull_request: {}
   push:
@@ -12,6 +16,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://user:pass@localhost:5432/db
+      NEXT_PUBLIC_SITE_URL: https://artificialatheist.com
+      SESSION_SECRET: ci-placeholder-secret-ci-placeholder-secret
+      CHAT_ENABLED: "false"
     steps:
       - uses: actions/checkout@v5
 
@@ -26,7 +35,7 @@ jobs:
         run: |
           dupes=$(ls src/posts/ | sed -E 's/^[0-9]{4}-[0-9]{2}-[0-9]{2}-//' | sort | uniq -d)
           if [ -n "$dupes" ]; then
-            echo "Duplicate slugs would cause a fatal DuplicatePermalinkOutputError:" >&2
+            echo "Duplicate slugs would collide on /posts/<slug>/:" >&2
             echo "$dupes" >&2
             exit 1
           fi
@@ -34,5 +43,5 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Assert the build produced a homepage
-        run: test -f _site/index.html || { echo "Build produced no _site/index.html" >&2; exit 1; }
+      - name: Assert the build produced output
+        run: test -d .next || { echo "Build produced no .next output" >&2; exit 1; }

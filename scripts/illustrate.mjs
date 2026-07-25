@@ -24,7 +24,9 @@ import { generate as llm } from "./providers.mjs";
 
 const ROOT = process.cwd();
 const POSTS_DIR = path.join(ROOT, "src", "posts");
-const IMG_DIR = path.join(ROOT, "src", "images", "posts");
+// Illustrations are served by Next from public/ (public/images/posts/<slug>.png
+// → /images/posts/<slug>.png). The web path in front-matter is unchanged.
+const IMG_DIR = path.join(ROOT, "public", "images", "posts");
 const IMG_MODEL = process.env.AA_IMAGE_MODEL || "gpt-image-1-mini";
 const IMG_SIZE = process.env.AA_IMAGE_SIZE || "1536x864"; // 16:9 wide banner
 

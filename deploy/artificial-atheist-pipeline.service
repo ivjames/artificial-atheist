@@ -1,0 +1,26 @@
+# systemd oneshot unit that runs the article-pipeline clustering pass (§5).
+# Paired with artificial-atheist-pipeline.timer. Adjust User/paths to match your lab980
+# layout (same as deploy/artificial-atheist.service).
+#
+#   sudo cp deploy/artificial-atheist-pipeline.{service,timer} /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now artificial-atheist-pipeline.timer
+#   systemctl list-timers artificial-atheist-pipeline.timer   # confirm next run
+#   journalctl -u artificial-atheist-pipeline.service -f       # logs
+#
+# Reads the app's .env for DATABASE_URL + provider keys. `auto` always clusters;
+# it also drafts+scrubs queued drafts only if PIPELINE_AUTODRAFT is set in .env.
+# Publishing is always human-gated at /review/pipeline.
+
+[Unit]
+Description=Artificial Atheist article pipeline (cluster + optional draft)
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=oneshot
+User=deploy
+WorkingDirectory=/var/www/artificial-atheist
+Environment=NODE_ENV=production
+# npm must be on PATH; use an absolute path if you use nvm.
+ExecStart=/usr/bin/npm run pipeline:auto
