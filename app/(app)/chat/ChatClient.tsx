@@ -431,10 +431,8 @@ export default function ChatClient({
             {econTotal.turns > 0 ? econRow(`session (${econTotal.turns})`, econTotal) : null}
           </div>
           {refEcon.refInputTokens > 0 ? (
-            <div className="mt-1.5 border-t border-amber-400/20 pt-1.5 text-[10px] text-slate-400 dark:border-amber-500/20">
-              includes {fmtTok(refEcon.refInputTokens)} article-reference tokens
-              ({fmtUsd(refEcon.refCostUsd)}) - platform overhead, folded into cost but
-              not counted against the visitor's tokens or budget
+            <div className="mt-1.5 border-t border-amber-400/20 pt-1.5 text-right text-[10px] text-slate-400 dark:border-amber-500/20">
+              + {fmtTok(refEcon.refInputTokens)} ref tokens ({fmtUsd(refEcon.refCostUsd)})
             </div>
           ) : null}
         </div>
