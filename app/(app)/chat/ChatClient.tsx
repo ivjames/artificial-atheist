@@ -278,6 +278,9 @@ export default function ChatClient({
 
   const fmtUsd = (n: number) => `$${n.toFixed(Math.abs(n) >= 0.01 ? 4 : 6)}`;
   const fmtTok = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
+  // Profit margin = profit / revenue. Undefined without revenue (0 turns).
+  const fmtMargin = (revenueUsd: number, profitUsd: number) =>
+    revenueUsd > 0 ? `${((profitUsd / revenueUsd) * 100).toFixed(0)}%` : "—";
   const profitClass = (n: number) =>
     n >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-red-600 dark:text-red-500";
 
@@ -302,6 +305,9 @@ export default function ChatClient({
       <span className="text-right tabular-nums">{fmtUsd(e.revenueUsd)}</span>
       <span className={`text-right tabular-nums ${profitClass(e.profitUsd)}`}>
         {fmtUsd(e.profitUsd)}
+      </span>
+      <span className={`text-right tabular-nums ${profitClass(e.profitUsd)}`}>
+        {fmtMargin(e.revenueUsd, e.profitUsd)}
       </span>
     </>
   );
@@ -403,7 +409,7 @@ export default function ChatClient({
               <span className="font-mono text-[10px] text-slate-400">{lastEcon.model}</span>
             ) : null}
           </div>
-          <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-4 gap-y-1 font-mono">
+          <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-x-4 gap-y-1 font-mono">
             <span className="text-[10px] uppercase tracking-wide text-slate-400" />
             <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
               in/out
@@ -416,6 +422,9 @@ export default function ChatClient({
             </span>
             <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
               profit
+            </span>
+            <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
+              margin
             </span>
             {lastEcon ? econRow("last turn", lastEcon) : null}
             {threadEcon.turns > 0 ? econRow(`conversation (${threadEcon.turns})`, threadEcon) : null}
