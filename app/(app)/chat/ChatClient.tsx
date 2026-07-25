@@ -313,9 +313,6 @@ export default function ChatClient({
       <span className={`text-right tabular-nums ${profitClass(e.profitUsd)}`}>
         {fmtMoney(e.profitUsd, e.revenueUsd)}
       </span>
-      <span className={`text-right tabular-nums ${profitClass(e.profitUsd)}`}>
-        {fmtPct(e.profitUsd, e.revenueUsd)}
-      </span>
     </>
   );
 
@@ -433,7 +430,7 @@ export default function ChatClient({
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] gap-x-4 gap-y-1 font-mono">
+          <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-x-4 gap-y-1 font-mono">
             <span className="text-[10px] uppercase tracking-wide text-slate-400" />
             <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
               in/out
@@ -449,9 +446,6 @@ export default function ChatClient({
             </span>
             <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
               profit
-            </span>
-            <span className="text-right text-[10px] uppercase tracking-wide text-slate-400">
-              margin
             </span>
             {lastEcon ? econRow("last turn", lastEcon) : null}
             {threadEcon.turns > 0 ? econRow(`conversation (${threadEcon.turns})`, threadEcon) : null}
