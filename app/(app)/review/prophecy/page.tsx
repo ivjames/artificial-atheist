@@ -1,0 +1,253 @@
+export const dynamic = "force-dynamic";
+
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { adminToken, isAdminAuthed } from "../pipeline/auth";
+import { bootstrapDatasetsAction, loadClaimDraftsAction, loginWithToken, logoutAdmin } from "./actions";
+import { ErrorBanner, NoticeBanner, qp } from "./shared";
+
+// A small labelled number tile for the stats strip.
+function Stat({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
+  return (
+    <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+      <div className="text-2xl font-bold tabular-nums">{value}</div>
+      <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        {label}
+      </div>
+      {hint ? <div className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">{hint}</div> : null}
+    </div>
+  );
+}
+
+function BreakdownCard({
+  title,
+  rows,
+}: {
+  title: string;
+  rows: Array<{ key: string; count: number }>;
+}) {
+  return (
+    <div className="card p-5">
+      <h2 className="text-sm font-bold">{title}</h2>
+      {rows.length === 0 ? (
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Nothing yet.</p>
+      ) : (
+        <dl className="mt-2 flex flex-col gap-1">
+          {rows.map((r) => (
+            <div key={r.key} className="flex items-center justify-between gap-3 text-sm">
+              <dt className="text-slate-600 dark:text-slate-300">{r.key.replace(/_/g, " ")}</dt>
+              <dd className="font-semibold tabular-nums">{r.count}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </div>
+  );
+}
+
+// Result banner for the draft-loader action. The ?draftload= param is either
+// "missing" (rendered as an ErrorBanner by the page) or five comma-separated
+// counts: claimsCreated,claimsSkipped,mappingsCreated,mappingsSkipped,errors.
+function DraftloadBanner({ value }: { value: string }) {
+  const parts = value.split(",");
+  if (parts.length !== 5 || parts.some((p) => !/^\d+$/.test(p))) return null;
+  const [claimsCreated, claimsSkipped, mappingsCreated, mappingsSkipped, errorCount] = parts;
+  return (
+    <NoticeBanner>
+      AI claim drafts loaded: {claimsCreated} claim{claimsCreated === "1" ? "" : "s"} created,{" "}
+      {claimsSkipped} skipped; {mappingsCreated} mapping{mappingsCreated === "1" ? "" : "s"}{" "}
+      created, {mappingsSkipped} skipped; {errorCount} error{errorCount === "1" ? "" : "s"}
+      {errorCount !== "0" ? " (details in the server log)" : ""}.
+    </NoticeBanner>
+  );
+}
+
+// Result banner for the corpus bootstrap. Six comma-separated counts:
+// listsCreated,entriesCreated,entriesSkipped,claimsCreated,mappingsCreated,errors.
+function BootstrapBanner({ value }: { value: string }) {
+  const parts = value.split(",");
+  if (parts.length !== 6 || parts.some((p) => !/^\d+$/.test(p))) return null;
+  const [lists, entriesCreated, entriesSkipped, claims, mappings, errorCount] = parts;
+  return (
+    <NoticeBanner>
+      Corpus bootstrap: {lists} source list{lists === "1" ? "" : "s"} created; {entriesCreated}{" "}
+      entr{entriesCreated === "1" ? "y" : "ies"} imported, {entriesSkipped} already present;{" "}
+      {claims} claim{claims === "1" ? "" : "s"} and {mappings} mapping
+      {mappings === "1" ? "" : "s"} created; {errorCount} error
+      {errorCount === "1" ? "" : "s"}
+      {errorCount !== "0" ? " (details in the server log)" : ""}. Review the drafts at{" "}
+      <a className="underline" href="/review/prophecy/claims/?status=draft">
+        claims → draft
+      </a>
+      .
+    </NoticeBanner>
+  );
+}
+
+const LINKS: Array<{ href: string; title: string; blurb: string }> = [
+  {
+    href: "/review/prophecy/sources/",
+    title: "Sources",
+    blurb: "Bibliographic sources — books, articles, primary texts.",
+  },
+  {
+    href: "/review/prophecy/lists/",
+    title: "Source lists & import",
+    blurb: "Published prophecy lists, CSV/JSON import, entry→claim mapping.",
+  },
+  {
+    href: "/review/prophecy/claims/",
+    title: "Claims",
+    blurb: "Normalized claims — search, create, moderate, merge.",
+  },
+  {
+    href: "/review/prophecy/export/",
+    title: "Export JSON",
+    blurb: "Download the claims corpus as JSON.",
+  },
+  {
+    href: "/review/prophecy/export/?format=csv",
+    title: "Export CSV",
+    blurb: "Download the claims corpus as CSV.",
+  },
+];
+
+export default async function ProphecyDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  // Operator tool — independent of CHAT_ENABLED, but no token = no surface.
+  if (!adminToken()) notFound();
+
+  const sp = await searchParams;
+  const error = qp(sp.error);
+  const draftload = qp(sp.draftload);
+  const bootstrap = qp(sp.bootstrap);
+  const authed = await isAdminAuthed();
+
+  if (!authed) {
+    return (
+      <div className="card mx-auto mt-10 max-w-sm p-8">
+        <h1 className="text-xl font-bold">Admin sign-in</h1>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          Enter the admin token to reach the prophecy analysis admin.
+        </p>
+        {error ? (
+          <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
+            Wrong token.
+          </p>
+        ) : null}
+        <form action={loginWithToken} className="mt-6 flex flex-col gap-3">
+          <input
+            type="password"
+            name="token"
+            required
+            placeholder="Admin token"
+            className="rounded-xl border border-slate-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 dark:border-slate-700"
+          />
+          <button type="submit" className="btn-primary py-2.5">
+            Sign in
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  const [claimsByStatus, claimCount, listCount, entriesByMapping, entryCount, evalCount, sourceCount] =
+    await Promise.all([
+      prisma.prophecyClaim.groupBy({ by: ["status"], _count: { _all: true } }),
+      prisma.prophecyClaim.count(),
+      prisma.prophecySourceList.count(),
+      prisma.prophecySourceListEntry.groupBy({ by: ["mappingStatus"], _count: { _all: true } }),
+      prisma.prophecySourceListEntry.count(),
+      prisma.prophecyEvaluation.count(),
+      prisma.prophecySource.count(),
+    ]);
+
+  const statusRows = claimsByStatus
+    .map((r) => ({ key: r.status, count: r._count._all }))
+    .sort((a, b) => b.count - a.count);
+  const mappingRows = entriesByMapping
+    .map((r) => ({ key: r.mappingStatus, count: r._count._all }))
+    .sort((a, b) => b.count - a.count);
+
+  return (
+    <div className="mx-auto mt-8 flex max-w-3xl flex-col gap-8">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Prophecy analysis — admin</h1>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+            Source lists preserved verbatim, normalized claims, entry→claim mapping, moderation,
+            and corpus export. Nothing here publishes to the site.
+          </p>
+        </div>
+        <form action={logoutAdmin}>
+          <button type="submit" className="btn-ghost shrink-0 px-3 py-1.5 text-xs">
+            Sign out
+          </button>
+        </form>
+      </div>
+
+      {error ? <ErrorBanner code={error} /> : null}
+      {draftload === "missing" ? <ErrorBanner code="draftload_missing" /> : null}
+      {draftload && draftload !== "missing" ? <DraftloadBanner value={draftload} /> : null}
+      {bootstrap ? <BootstrapBanner value={bootstrap} /> : null}
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+        <Stat label="Claims" value={claimCount} />
+        <Stat label="Source lists" value={listCount} />
+        <Stat label="List entries" value={entryCount} />
+        <Stat label="Evaluations" value={evalCount} />
+        <Stat label="Sources" value={sourceCount} />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <BreakdownCard title="Claims by status" rows={statusRows} />
+        <BreakdownCard title="Entries by mapping status" rows={mappingRows} />
+      </div>
+
+      <section className="card p-5">
+        <h2 className="text-sm font-bold">Data</h2>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <strong>Start here on a fresh install.</strong> One click imports every committed
+          dataset under its correct slug and then loads the AI-drafted claims on top — no manual
+          list creation, no pasting. Everything is idempotent: existing lists, entries, claims and
+          mappings are skipped, never overwritten, so re-running is always safe.
+        </p>
+        <form action={bootstrapDatasetsAction} className="mt-3">
+          <button type="submit" className="btn-primary px-4 py-2 text-sm">
+            Import all datasets + claim drafts
+          </button>
+        </form>
+        <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+          Or load only the claim drafts, if the source lists are already imported:
+        </p>
+        <form action={loadClaimDraftsAction} className="mt-2">
+          <button type="submit" className="btn-ghost px-4 py-2 text-sm">
+            Load AI claim drafts (claims-draft-v1)
+          </button>
+        </form>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-bold">Work areas</h2>
+        <div className="mt-3 flex flex-col gap-3">
+          {LINKS.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="card flex flex-wrap items-center justify-between gap-3 p-4 hover:border-brand-400"
+            >
+              <div>
+                <p className="text-sm font-semibold">{l.title}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{l.blurb}</p>
+              </div>
+              <span className="text-sm font-semibold text-brand-600">→</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}

@@ -1,0 +1,45 @@
+{
+  "note": "Machine-readable index of the committed prophecy datasets. Slugs are IDENTIFIERS — claims-draft-v1.json references its lists by these exact strings, so changing one orphans every mapping that points at it. claimedCount is the total the SOURCE advertises (null when it states none); the actual entry count is whatever its .json contains, and the two differing is a finding, not an error to fix. Consumed by lib/prophecy/bootstrap.ts.",
+  "datasets": [
+    {
+      "slug": "324-outoftheoverflow-2008",
+      "file": "324-outoftheoverflow-2008.json",
+      "title": "324 prophecies fulfilled by Jesus (outoftheoverflow.com, 2008)",
+      "claimedCount": 324,
+      "url": "https://outoftheoverflow.com/2008/10/20/324-prophecies-fulfilled-by-jesus/",
+      "description": "Blog copy dated 2008-10-20, compiler unattributed. Entry numbers are ordinals assigned at import — the source list is unnumbered. Retrieved 2026-07-26."
+    },
+    {
+      "slug": "356-accordingtothescriptures",
+      "file": "356-accordingtothescriptures.json",
+      "title": "356 Prophecies Fulfilled in Jesus Christ (accordingtothescriptures.org)",
+      "claimedCount": 356,
+      "url": "https://www.accordingtothescriptures.org/prophecy/353prophecies.html",
+      "description": "The URL says 353 and the page says 356 — the list grew in place, which is the origin of the circulating 351/353/356 variants. Entry numbers are the source's own. Retrieved 2026-07-26."
+    },
+    {
+      "slug": "301-aboutbibleprophecy",
+      "file": "301-aboutbibleprophecy.json",
+      "title": "301 Prophecies Fulfilled by Jesus (Ray Konig, aboutbibleprophecy.com)",
+      "claimedCount": 301,
+      "url": "https://www.aboutbibleprophecy.com/301-prophecies-fulfilled-by-jesus.htm",
+      "description": "Authored, in-copyright work by Ray Konig; index chart lines only, no article prose. Entry numbers are the source's own 1-301. Retrieved 2026-07-26."
+    },
+    {
+      "slug": "70-about-jesus",
+      "file": "70-about-jesus.json",
+      "title": "Chart of Old Testament prophecies fulfilled by Jesus (about-jesus.org)",
+      "claimedCount": 70,
+      "url": "https://www.about-jesus.org/complete-chart-prophecies-jesus.htm",
+      "description": "Also Ray Konig. Entry numbers are the chart's own printed row numbers. Retrieved 2026-07-26."
+    },
+    {
+      "slug": "jewishvoice-messianic",
+      "file": "jewishvoice-messianic.json",
+      "title": "Messianic Prophecies (jewishvoice.org)",
+      "claimedCount": null,
+      "url": "https://www.jewishvoice.org/article/messianic-prophecies",
+      "description": "Jewish Voice Ministries International. Short curated list; the source states no total, so claimedCount is deliberately null. Entry numbers are the source's own 1-15. Retrieved 2026-07-26."
+    }
+  ]
+}

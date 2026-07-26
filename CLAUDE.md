@@ -111,6 +111,53 @@ reference the corpus:
 - `tools/admin/` — the old standalone admin dashboard (separate node process,
   basic-auth at /admin/). Independent of the Next app; run it separately if wanted.
 
+## Prophecy analysis module (structured prophecy-claims knowledge base)
+- Spec: `PROPHECY-HANDOFF.md`; integration plan + audit: `PROPHECY-PLAN.md`.
+- Schema: `Prophecy*` models in `prisma/schema.prisma` (religion-neutral;
+  source lists preserved verbatim, normalized claims mapped many-to-many,
+  interpretations/fulfillments/evidence/objections/resolutions/evaluations
+  kept as separate records; polymorphic targetType/targetId for evidence,
+  citations, evaluations, revisions — app-layer integrity).
+- Controlled vocabularies: `lib/prophecy/vocab.ts` (pure data), upserted
+  idempotently on every deploy by `prisma/seed-prophecy.ts` via `seed.ts`.
+- Data layer: `lib/prophecy/import.ts` (CSV/JSON, idempotent re-import),
+  `claims.ts` (create/map/merge-with-provenance/search + revision snapshots),
+  `export.ts` (JSON/CSV).
+- Admin surface: `/review/prophecy` (same `aa_admin` cookie as the pipeline
+  queue; NOT gated on CHAT_ENABLED). Dashboard, sources, source lists +
+  paste-import + entry→claim mapping, claims search/status/merge, export.
+- Tests: `tests/prophecy-vocab.test.ts` (pure) + `tests/prophecy-domain.test.ts`
+  (pure + DB-integration gated on DATABASE_URL).
+- Datasets (`data/prophecy/<slug>.{json,md}`, verbatim entries + provenance;
+  `data/*` stays gitignored except `data/prophecy/`): `324-outoftheoverflow-2008`
+  (claims 324, contains 315), `356-accordingtothescriptures` (URL says 353,
+  page says 356 — the list grew in place; source of the 351/353/356 variants),
+  `301-aboutbibleprophecy` (Ray Konig index lines only — copyright),
+  `70-about-jesus` (also Konig), `jewishvoice-messianic` (15, no claimed total).
+  Each .md has the droplet import walkthrough; imports are idempotent.
+- AI normalization draft: `data/prophecy/claims-draft-v1.json` — 546 neutral
+  claims + 1,080 entry mappings covering all 1,057 entries (per-passage-group;
+  cross-passage merging left to humans). Provenance meta (model/promptVersion/
+  generatedAt) is mandatory; loads as status=draft via the dashboard's "Load AI
+  claim drafts" button (`lib/prophecy/draftload.ts`, idempotent, never touches
+  human-edited claims). Spot-check at /review/prophecy/claims/?status=draft.
+- Public surface (Phase 4): `app/(app)/prophecy/` — landing, claims index
+  (search + category/subject filters + pagination), claim detail (verbatim
+  source entries grouped by list with matchType/confidence/rationale, related
+  claims, AI-drafted/human-reviewed provenance), source-list index + detail
+  (claimed-vs-actual counts). Read model `lib/prophecy/public.ts` filters
+  `status="published"` in EVERY query — unpublished claims 404 and are never
+  linked; entries stay visible as provenance. No auth, no client components.
+  `tests/prophecy-public.test.ts` pins the draft-invisibility rules.
+  **Nav entry is still deliberately absent** from `lib/site.ts` until real
+  claims are published — add it there when you're ready to surface it.
+- Status: Phases 0–4 built. AI-drafted normalization awaits human review.
+  Droplet steps after deploy: paste-import each list at /review/prophecy/lists/,
+  click "Load AI claim drafts", then spot-check at
+  /review/prophecy/claims/?status=draft and publish what passes (nothing shows
+  publicly until you do). Next: cross-passage merges, evaluations/objections
+  (Phase 5), optional AI assist (Phase 6).
+
 ## Adversary eval harness (debate-agent stress test)
 - `lib/agent/adversary.ts` — the debate agent's opponent: a simulated apologist
   persona library. "Mental capacities" are modelled as composable DIALS
