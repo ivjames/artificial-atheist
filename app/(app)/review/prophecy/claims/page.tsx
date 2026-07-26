@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/prisma";
 import { MODERATION_STATES } from "@/lib/prophecy/vocab";
-import { searchClaims } from "@/lib/prophecy/claims";
+import { countClaims, searchClaims } from "@/lib/prophecy/claims";
 import {
   CATEGORY_TERMS,
   ErrorBanner,
@@ -39,12 +39,32 @@ export default async function ProphecyClaimsPage({
   const categoryRaw = qp(sp.category);
   const category = CATEGORY_TERMS.some((t) => t.key === categoryRaw) ? categoryRaw : "";
 
-  const results = (await searchClaims(prisma, {
+  // Paginated: the corpus runs to hundreds of claims after a draft load, so an
+  // unpaged cap silently hid everything past the first screenful.
+  const PER_PAGE = 50;
+  const pageRaw = Number.parseInt(qp(sp.page) || "1", 10);
+  const page = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
+  const filters = {
     q: q || undefined,
     status: status || undefined,
     categoryKey: category || undefined,
-    take: 50,
-  })) as unknown as ClaimRow[];
+  };
+
+  const [results, total] = (await Promise.all([
+    searchClaims(prisma, { ...filters, take: PER_PAGE, skip: (page - 1) * PER_PAGE }),
+    countClaims(prisma, filters),
+  ])) as unknown as [ClaimRow[], number];
+
+  const lastPage = Math.max(1, Math.ceil(total / PER_PAGE));
+  const pageHref = (n: number) => {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (status) params.set("status", status);
+    if (category) params.set("category", category);
+    if (n > 1) params.set("page", String(n));
+    const qs = params.toString();
+    return `/review/prophecy/claims/${qs ? `?${qs}` : ""}`;
+  };
 
   // Mapped-entry counts, independent of whatever searchClaims includes.
   const ids = results.map((c) => c.id);
@@ -103,7 +123,13 @@ export default async function ProphecyClaimsPage({
       </section>
 
       <section>
-        <h2 className="text-lg font-bold">Results ({results.length})</h2>
+        <h2 className="text-lg font-bold">
+          Results ({total.toLocaleString()}
+          {total > PER_PAGE
+            ? ` — showing ${(page - 1) * PER_PAGE + 1}-${(page - 1) * PER_PAGE + results.length}`
+            : ""}
+          )
+        </h2>
         <div className="mt-3 flex flex-col gap-3">
           {results.length === 0 ? (
             <p className="text-sm text-slate-500 dark:text-slate-400">No claims match.</p>
@@ -132,6 +158,28 @@ export default async function ProphecyClaimsPage({
             ))
           )}
         </div>
+
+        {lastPage > 1 ? (
+          <div className="mt-4 flex items-center justify-between text-sm">
+            {page > 1 ? (
+              <a href={pageHref(page - 1)} className="btn-ghost px-3 py-1.5 text-xs">
+                ← Previous
+              </a>
+            ) : (
+              <span />
+            )}
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Page {page} of {lastPage}
+            </span>
+            {page < lastPage ? (
+              <a href={pageHref(page + 1)} className="btn-ghost px-3 py-1.5 text-xs">
+                Next →
+              </a>
+            ) : (
+              <span />
+            )}
+          </div>
+        ) : null}
       </section>
 
       <section className="card p-6">

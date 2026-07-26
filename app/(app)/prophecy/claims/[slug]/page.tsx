@@ -37,6 +37,8 @@ export default async function PublicClaimPage({ params }: { params: Promise<{ sl
     if (bucket) bucket.push(m);
     else byList.set(key, [m]);
   }
+  // createdBy is "ai:<id>" for machine-drafted wording. The flag is all the page
+  // needs — the specific generator is internal provenance, not site copy.
   const aiDrafted = (claim.createdBy ?? "").startsWith("ai:");
 
   return (
@@ -176,11 +178,15 @@ export default async function PublicClaimPage({ params }: { params: Promise<{ sl
             {claim.updatedAt.toISOString().slice(0, 10)} · {claim.revisions.length} revision
             {claim.revisions.length === 1 ? "" : "s"}
           </p>
+          {/* State only what the record actually establishes. The claim's
+              wording has a known author (a model, or an editor); the depth of
+              any subsequent human review is NOT tracked per claim, so this must
+              not imply one. */}
           <p>
             {aiDrafted
-              ? "Normalized wording was AI-drafted from the source entries, then reviewed and published by an editor."
-              : "Written and published by an editor."}{" "}
-            The source entries above are unedited.
+              ? "Claim wording was drafted by an AI model from the source entries below."
+              : "Claim wording written by an editor."}{" "}
+            The source entries are reproduced unedited.
           </p>
         </div>
       </section>
