@@ -194,12 +194,16 @@ body {
 .footer-links a { font-size: 11px; color: var(--footer-mute); text-decoration: none; letter-spacing: 0.06em; text-transform: uppercase; }
 .footer-links a:hover { color: var(--footer-text); }
 
-/* Logged-in / app-surface submenu (components/AccountMenu). Sits above the
-   main footer row; only rendered once the chat surface is live. */
+/* App-surface submenu (components/AccountMenu). Sits above the main footer row.
+   Holds up to two groups — Account (logged-in user routes) and Review (operator
+   routes) — each shown only when its gate is satisfied. */
 .account-menu {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 1.25rem;
+  display: flex; align-items: flex-start; flex-wrap: wrap; gap: 1.25rem 2.5rem;
   max-width: 1080px; margin: 0 auto; padding: 1rem 1.5rem 0;
   border-bottom: 1px solid #2A2830;
+}
+.account-menu-group {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 1.25rem;
 }
 .account-menu-label {
   font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
