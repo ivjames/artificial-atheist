@@ -4,6 +4,7 @@ import Link from "next/link";
 import "./globals.css";
 import "./publication.css";
 import HeaderControls from "@/components/HeaderControls";
+import AccountMenu from "@/components/AccountMenu";
 import { CHAT_ENABLED, SITE_URL } from "@/lib/config";
 import { site, nav } from "@/lib/site";
 import { getAllPosts } from "@/lib/posts";
@@ -135,6 +136,7 @@ export default function RootLayout({
         <main>{children}</main>
 
         <footer className="footer">
+          <AccountMenu chatEnabled={CHAT_ENABLED} />
           <div className="footer-inner">
             <div className="footer-left">
               <span className="footer-name">{site.title}</span>
