@@ -128,10 +128,15 @@ reference the corpus:
   paste-import + entry→claim mapping, claims search/status/merge, export.
 - Tests: `tests/prophecy-vocab.test.ts` (pure) + `tests/prophecy-domain.test.ts`
   (pure + DB-integration gated on DATABASE_URL).
-- Status: Phases 0–2 (admin-first editorial core) done. Next per handoff:
-  Phase 3 ingest one identified "324 prophecies" list via the importer (never
-  hard-coded seeds), then public browsing (Phase 4; nav entry waits for this),
-  editorial analysis, optional AI assist. Public routes don't exist yet.
+- First dataset: `data/prophecy/324-outoftheoverflow-2008.{json,md}` — one
+  clearly identified copy of the circulating "324 prophecies" list (315 actual
+  entries, verbatim; provenance + droplet import walkthrough in the .md).
+  `data/*` stays gitignored except `data/prophecy/`.
+- Status: Phases 0–2 done; Phase 3 dataset prepared and import-verified
+  (droplet ingest is an operator step: paste the JSON at /review/prophecy).
+  Next: normalization/mapping editorial work, then public browsing (Phase 4;
+  nav entry waits for this), editorial analysis, optional AI assist. Public
+  routes don't exist yet.
 
 ## Adversary eval harness (debate-agent stress test)
 - `lib/agent/adversary.ts` — the debate agent's opponent: a simulated apologist

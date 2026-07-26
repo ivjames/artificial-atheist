@@ -19,7 +19,10 @@ prisma/dev.db*
 
 # article pipeline staging (published posts are committed under src/posts)
 drafts/
-data/
+data/*
+# ...but prophecy source-list datasets ARE committed (verbatim provenance —
+# see PROPHECY-HANDOFF.md; the importer ingests these on the droplet).
+!data/prophecy/
 /pipeline-output
 
 # misc
