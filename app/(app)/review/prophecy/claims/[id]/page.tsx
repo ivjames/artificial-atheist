@@ -3,7 +3,12 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { MODERATION_STATES } from "@/lib/prophecy/vocab";
-import { DIMENSION_KIND_LABELS, claimEvaluations } from "@/lib/prophecy/evaluations";
+import {
+  DIMENSION_KIND_LABELS,
+  SUMMARY_FORMULA,
+  claimEvaluations,
+  summarizeClaimScores,
+} from "@/lib/prophecy/evaluations";
 import {
   CATEGORY_TERMS,
   ErrorBanner,
@@ -263,15 +268,38 @@ export default async function ProphecyClaimDetailPage({
       {evaluations.length > 0 ? (
         <section>
           <h2 className="text-lg font-bold">Evaluations ({evaluations.length})</h2>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-            Component scores per dimension, each with its rationale and reviewer. They are
-            deliberately <em>not</em> averaged into a single number — a composite would hide
-            exactly the dimension a reader needs to check.{" "}
+
+          {/* Summary first, so the shape of the assessment is visible before
+              23 rows of detail. The handoff permits a computed summary only
+              alongside its formula and never in place of the components — so
+              the means link to the formula and every component stays below. */}
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {summarizeClaimScores(evaluations).map((s) => (
+              <div key={s.kind} className="card p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  {DIMENSION_KIND_LABELS[s.kind] ?? s.kind.replace(/_/g, " ")}
+                </p>
+                <p className="mt-1 text-2xl font-bold tabular-nums">
+                  {s.mean == null ? "—" : s.mean.toFixed(2)}
+                  <span className="ml-1 text-sm font-normal text-slate-400 dark:text-slate-500">
+                    / 5
+                  </span>
+                </p>
+                <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                  {s.dimensionCount} dimensions · {s.ratingCount} ratings
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            {SUMMARY_FORMULA} The component scores below are the finding; open one to read why it
+            was scored that way.{" "}
             <a
               href="/review/prophecy/evaluations/"
               className="font-semibold text-brand-600 hover:underline"
             >
-              Disagreement queue →
+              Corpus overview →
             </a>
           </p>
           {evalGroups.map(([kind, rows]) => (
@@ -300,7 +328,15 @@ export default async function ProphecyClaimDetailPage({
                         <code>{e.reviewerSlug}</code> · confidence {e.confidence}
                       </span>
                     </div>
-                    <p className="mt-1 text-slate-600 dark:text-slate-300">{e.rationale}</p>
+                    {/* <details> keeps the numbers scannable and the prose one
+                        click away — native HTML, so no client component. */}
+                    <details className="mt-1 group">
+                      <summary className="cursor-pointer list-none text-xs font-semibold text-brand-600 hover:underline">
+                        <span className="group-open:hidden">Why this score →</span>
+                        <span className="hidden group-open:inline">Hide reasoning</span>
+                      </summary>
+                      <p className="mt-1 text-slate-600 dark:text-slate-300">{e.rationale}</p>
+                    </details>
                   </div>
                 ))}
               </div>
