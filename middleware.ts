@@ -82,14 +82,19 @@ export function middleware(req: NextRequest) {
   const decision = decideFromHeaders((name) => req.headers.get(name));
   if (decision.allowed) return NextResponse.next();
 
-  // Blocked. For a page navigation, send the visitor to a plain explanation
-  // page; for actions/APIs (POST, or anything not asking for HTML) return a
-  // true 451 so no data-collecting request slips through.
-  const wantsHtml =
-    req.method === "GET" &&
-    (req.headers.get("accept") ?? "").includes("text/html");
+  // Blocked. A browser page load must NEVER be answered with a JSON body — the
+  // browser would download it as a file instead of showing a page. So every GET
+  // that could be a page view is redirected to the plain HTML explainer. That
+  // deliberately includes GETs that don't advertise `text/html`: Next.js RSC
+  // navigations and `<Link>` prefetches send `Accept: */*` (or an `RSC` header),
+  // and answering those with JSON is exactly what produced the "downloads the
+  // chat" bug. The raw 451 is reserved for genuine data traffic that no browser
+  // renders — API routes and non-GET requests (e.g. server-action POSTs) — so no
+  // data-collecting request slips through.
+  const isDataRequest =
+    req.method !== "GET" || req.nextUrl.pathname.startsWith("/api/");
 
-  if (wantsHtml) {
+  if (!isDataRequest) {
     const res = NextResponse.redirect(publicUrl(req, "/unavailable"));
     res.headers.set("x-robots-tag", "noindex");
     return res;
