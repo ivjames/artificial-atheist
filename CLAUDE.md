@@ -141,11 +141,22 @@ reference the corpus:
   generatedAt) is mandatory; loads as status=draft via the dashboard's "Load AI
   claim drafts" button (`lib/prophecy/draftload.ts`, idempotent, never touches
   human-edited claims). Spot-check at /review/prophecy/claims/?status=draft.
-- Status: Phases 0–3 done + AI-drafted normalization awaiting human review.
+- Public surface (Phase 4): `app/(app)/prophecy/` — landing, claims index
+  (search + category/subject filters + pagination), claim detail (verbatim
+  source entries grouped by list with matchType/confidence/rationale, related
+  claims, AI-drafted/human-reviewed provenance), source-list index + detail
+  (claimed-vs-actual counts). Read model `lib/prophecy/public.ts` filters
+  `status="published"` in EVERY query — unpublished claims 404 and are never
+  linked; entries stay visible as provenance. No auth, no client components.
+  `tests/prophecy-public.test.ts` pins the draft-invisibility rules.
+  **Nav entry is still deliberately absent** from `lib/site.ts` until real
+  claims are published — add it there when you're ready to surface it.
+- Status: Phases 0–4 built. AI-drafted normalization awaits human review.
   Droplet steps after deploy: paste-import each list at /review/prophecy/lists/,
-  then click "Load AI claim drafts". Next: human spot-check/approval, then
-  public browsing (Phase 4; nav entry waits for this), editorial analysis.
-  Public routes don't exist yet.
+  click "Load AI claim drafts", then spot-check at
+  /review/prophecy/claims/?status=draft and publish what passes (nothing shows
+  publicly until you do). Next: cross-passage merges, evaluations/objections
+  (Phase 5), optional AI assist (Phase 6).
 
 ## Adversary eval harness (debate-agent stress test)
 - `lib/agent/adversary.ts` — the debate agent's opponent: a simulated apologist
