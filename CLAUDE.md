@@ -135,11 +135,17 @@ reference the corpus:
   `301-aboutbibleprophecy` (Ray Konig index lines only — copyright),
   `70-about-jesus` (also Konig), `jewishvoice-messianic` (15, no claimed total).
   Each .md has the droplet import walkthrough; imports are idempotent.
-- Status: Phases 0–2 done; Phase 3 dataset prepared and import-verified
-  (droplet ingest is an operator step: paste the JSON at /review/prophecy).
-  Next: normalization/mapping editorial work, then public browsing (Phase 4;
-  nav entry waits for this), editorial analysis, optional AI assist. Public
-  routes don't exist yet.
+- AI normalization draft: `data/prophecy/claims-draft-v1.json` — 546 neutral
+  claims + 1,080 entry mappings covering all 1,057 entries (per-passage-group;
+  cross-passage merging left to humans). Provenance meta (model/promptVersion/
+  generatedAt) is mandatory; loads as status=draft via the dashboard's "Load AI
+  claim drafts" button (`lib/prophecy/draftload.ts`, idempotent, never touches
+  human-edited claims). Spot-check at /review/prophecy/claims/?status=draft.
+- Status: Phases 0–3 done + AI-drafted normalization awaiting human review.
+  Droplet steps after deploy: paste-import each list at /review/prophecy/lists/,
+  then click "Load AI claim drafts". Next: human spot-check/approval, then
+  public browsing (Phase 4; nav entry waits for this), editorial analysis.
+  Public routes don't exist yet.
 
 ## Adversary eval harness (debate-agent stress test)
 - `lib/agent/adversary.ts` — the debate agent's opponent: a simulated apologist
