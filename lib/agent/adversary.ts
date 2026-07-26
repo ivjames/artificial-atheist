@@ -404,6 +404,16 @@ const ENGAGEMENT_HOOK_PATTERNS: RegExp[] = [
   /(?:got|have) (?:any )?(?:other|more) (?:questions|thoughts)/i,
 ];
 
+// Remove double-quoted spans (straight and curly) so a question the agent
+// QUOTES doesn't inflate its question counts. Replaced with a space so the
+// surrounding words stay separated. Single quotes are deliberately left alone —
+// stripping them would swallow apostrophes in contractions (it's, don't).
+function stripQuotedSpans(text: string): string {
+  return text
+    .replace(/"[^"]*"/g, " ")
+    .replace(/“[^”]*”/g, " ");
+}
+
 export function emptyAgentMetrics(): AgentMetrics {
   return {
     agentTurns: 0,
@@ -431,9 +441,13 @@ export function scoreAgentTurns(replies: string[]): AgentMetrics {
     chars += t.length;
     words += t.split(/\s+/).filter(Boolean).length;
 
-    const qMarks = (t.match(/\?/g) || []).length;
+    // Count only the agent's OWN questions: strip double-quoted spans first, so
+    // a question it quotes from the opponent ("why is there something rather
+    // than nothing?") isn't miscounted as the agent asking one.
+    const q = stripQuotedSpans(t);
+    const qMarks = (q.match(/\?/g) || []).length;
     if (qMarks > 1) multiQ++;
-    if (/\?["')\]]*\s*$/.test(t)) trailingQ++;
+    if (/\?["')\]]*\s*$/.test(q)) trailingQ++;
 
     const tail = t.slice(-220);
     if (ENGAGEMENT_HOOK_PATTERNS.some((re) => re.test(tail))) hooks++;

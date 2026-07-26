@@ -135,6 +135,24 @@ describe("scoreAgentTurns", () => {
     expect(m.trailingQuestions).toBe(2);
     expect(m.multiQuestionTurns).toBe(1);
   });
+
+  it("does not count questions the agent only quotes", () => {
+    const m = scoreAgentTurns([
+      // A quoted question + no question of the agent's own → neither flag.
+      'You ask "where did it come from?" but that just assumes a cause.',
+      // A quoted question alongside ONE genuine question → not multi, but trailing.
+      'You keep asking "why is there something rather than nothing?" — so what grounds necessity?',
+    ]);
+    expect(m.multiQuestionTurns).toBe(0);
+    expect(m.trailingQuestions).toBe(1); // only the second reply, and via its own question
+  });
+
+  it("still flags two genuine (un-quoted) questions", () => {
+    const m = scoreAgentTurns([
+      "On what grounds? And why grant that the category applies to reality?",
+    ]);
+    expect(m.multiQuestionTurns).toBe(1);
+  });
 });
 
 const mkRun = (over: Partial<ParsedRun>): ParsedRun =>
