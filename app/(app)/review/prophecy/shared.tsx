@@ -96,6 +96,10 @@ const ERROR_MESSAGES: Record<string, string> = {
   year: "Year must be a whole number between -4000 and 2100.",
   count: "Claimed count must be a whole number between 0 and 100000.",
   source: "That source does not exist.",
+  slug_format: "Slug must be lowercase letters, numbers and single hyphens.",
+  slug_taken: "A source list with that slug already exists.",
+  status_superseded:
+    "This claim was merged into another and cannot change status. Reopen it by un-merging first.",
   format: "Format must be csv or json.",
   empty: "Paste the CSV/JSON content to import.",
   claim: "Enter a claim slug or id to map to.",

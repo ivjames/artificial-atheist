@@ -44,6 +44,18 @@ export default async function ProphecyListsPage({
             Title (required)
             <input name="title" required className={INPUT_CLS} />
           </label>
+          <label className={LABEL_CLS}>
+            Slug (optional — derived from the title when blank)
+            <input
+              name="slug"
+              placeholder="e.g. 324-outoftheoverflow-2008"
+              className={INPUT_CLS}
+            />
+            <span className="mt-1 block text-xs font-normal normal-case tracking-normal text-slate-500 dark:text-slate-400">
+              When importing a committed dataset from <code>data/prophecy/</code>, enter the exact
+              slug its walkthrough names — the AI claim drafts reference lists by slug.
+            </span>
+          </label>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className={LABEL_CLS}>
               Bibliographic source (optional)

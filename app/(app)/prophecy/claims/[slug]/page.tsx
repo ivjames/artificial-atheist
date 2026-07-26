@@ -1,9 +1,9 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getPublishedClaim } from "@/lib/prophecy/public";
+import { getPublishedClaim, resolveMergedClaimSlug } from "@/lib/prophecy/public";
 import { Label, MatchBadge, Muted, Tag, parseKeys, vocabLabel } from "../../shared";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -16,7 +16,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function PublicClaimPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const claim = await getPublishedClaim(prisma, slug);
-  if (!claim) notFound();
+  if (!claim) {
+    // Merging supersedes the loser, which would silently break every inbound
+    // link to a claim that was public before the merge. Send those to the
+    // survivor instead of 404ing. Unknown and unpublished-and-unmerged slugs
+    // still 404 — a draft never becomes reachable this way.
+    const survivor = await resolveMergedClaimSlug(prisma, slug);
+    if (survivor) permanentRedirect(`/prophecy/claims/${survivor}/`);
+    notFound();
+  }
 
   const cats = parseKeys(claim.categoryKeys);
   const subs = parseKeys(claim.subjectKeys);

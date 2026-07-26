@@ -196,6 +196,45 @@ export async function getPublishedClaim(
   };
 }
 
+/**
+ * Resolve a slug that 404s as a published claim because it was MERGED away.
+ * Merging supersedes the loser, so a URL that was public yesterday would
+ * otherwise break; this finds the published survivor so the page can redirect
+ * instead. Follows a short chain (A merged into B, B later merged into C) with
+ * a hop cap so a cyclic supersededById can't spin.
+ *
+ * Deliberately narrow: it returns ONLY the survivor's slug, never any content
+ * belonging to the superseded claim, and returns null when the survivor is
+ * itself unpublished — an unreviewed claim must not become reachable by
+ * following a merge pointer.
+ */
+export async function resolveMergedClaimSlug(
+  prisma: PrismaClient,
+  slug: string,
+): Promise<string | null> {
+  let current = await prisma.prophecyClaim.findFirst({
+    where: { slug, status: "superseded" },
+    select: { supersededById: true },
+  });
+
+  const seen = new Set<string>();
+  for (let hop = 0; hop < 5; hop++) {
+    const nextId = current?.supersededById;
+    if (!nextId || seen.has(nextId)) return null;
+    seen.add(nextId);
+
+    const next = await prisma.prophecyClaim.findUnique({
+      where: { id: nextId },
+      select: { slug: true, status: true, supersededById: true },
+    });
+    if (!next) return null;
+    if (next.status === PUBLISHED) return next.slug;
+    if (next.status !== "superseded") return null; // survivor exists but isn't public
+    current = { supersededById: next.supersededById };
+  }
+  return null;
+}
+
 // --- landing stats ----------------------------------------------------------
 
 /**

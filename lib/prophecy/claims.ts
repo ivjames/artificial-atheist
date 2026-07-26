@@ -279,6 +279,51 @@ export async function mergeClaims(
       data: { claimId: canonicalId },
     });
 
+    // Relationship edges: the duplicate's graph position belongs to the
+    // survivor too (a `contradicts` or `depends_on` edge is a fact about the
+    // proposition, not about which row happened to win the merge), so both
+    // incoming and outgoing claim-typed endpoints are re-pointed. Runs BEFORE
+    // the duplicate_of edge below is created, so that edge isn't collapsed into
+    // a self-reference. Two edges get dropped rather than moved: ones that
+    // would become self-edges (duplicate ↔ canonical), and ones that would
+    // collide with an edge the canonical already has (the unique is
+    // fromType+fromId+toType+toId+type).
+    const edgeKey = (fromType: string, fromId: string, toType: string, toId: string, type: string) =>
+      `${fromType}|${fromId}|${toType}|${toId}|${type}`;
+    const canonicalEdges = new Set(
+      (
+        await tx.prophecyRelationship.findMany({
+          where: {
+            OR: [
+              { fromType: "claim", fromId: canonicalId },
+              { toType: "claim", toId: canonicalId },
+            ],
+          },
+        })
+      ).map((r) => edgeKey(r.fromType, r.fromId, r.toType, r.toId, r.type)),
+    );
+    const duplicateEdges = await tx.prophecyRelationship.findMany({
+      where: {
+        OR: [
+          { fromType: "claim", fromId: duplicateId },
+          { toType: "claim", toId: duplicateId },
+        ],
+      },
+    });
+    for (const r of duplicateEdges) {
+      const fromId = r.fromType === "claim" && r.fromId === duplicateId ? canonicalId : r.fromId;
+      const toId = r.toType === "claim" && r.toId === duplicateId ? canonicalId : r.toId;
+
+      const isSelfEdge = r.fromType === "claim" && r.toType === "claim" && fromId === toId;
+      const key = edgeKey(r.fromType, fromId, r.toType, toId, r.type);
+      if (isSelfEdge || canonicalEdges.has(key)) {
+        await tx.prophecyRelationship.delete({ where: { id: r.id } });
+        continue;
+      }
+      canonicalEdges.add(key);
+      await tx.prophecyRelationship.update({ where: { id: r.id }, data: { fromId, toId } });
+    }
+
     // Pre-merge snapshots for BOTH claims (states captured above, before any
     // mutation of the claim rows themselves).
     const note = args.note ?? "";

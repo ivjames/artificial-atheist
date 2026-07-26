@@ -64,6 +64,15 @@ export async function changeClaimStatus(id: string, status: string): Promise<voi
   const claim = await prisma.prophecyClaim.findUnique({ where: { id } });
   if (!claim) notFound();
 
+  // A merged (superseded) claim is frozen. Re-publishing it would put the
+  // duplicate back on the public surface while supersededById still points at
+  // the survivor — the merge state would be internally inconsistent and the
+  // proposition would appear twice. Un-merging is a separate operation that
+  // would have to restore the moved mappings, so it is refused here outright.
+  if (claim.status === "superseded" || claim.supersededById) {
+    redirect(`${detail}?error=status_superseded`);
+  }
+
   let failure = "";
   try {
     await updateClaimStatus(prisma, id, status);

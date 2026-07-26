@@ -14,7 +14,9 @@ import {
   listPublishedClaims,
   listSourceLists,
   publicStats,
+  resolveMergedClaimSlug,
 } from "@/lib/prophecy/public";
+import { mergeClaims } from "@/lib/prophecy/claims";
 
 const hasDb = Boolean(process.env.DATABASE_URL);
 const P = "t-pub-";
@@ -244,5 +246,180 @@ describe.skipIf(!hasDb)("prophecy public read model", () => {
     });
     const list = await getSourceList(prisma, `${P}list`);
     expect(list!.entries.map((e) => e.entryNumber)).toEqual(["1", "2", "10"]);
+  });
+});
+
+// Regression tests for PR #46 review findings: a merged claim's public URL must
+// resolve to its survivor rather than 404, and merges must carry the duplicate's
+// relationship edges over to the canonical claim.
+describe.skipIf(!hasDb)("merge follow-through", () => {
+  const prisma = new PrismaClient();
+  const M = "t-mrg-";
+
+  async function sweep() {
+    const ids = (
+      await prisma.prophecyClaim.findMany({
+        where: { slug: { startsWith: M } },
+        select: { id: true },
+      })
+    ).map((c) => c.id);
+    if (ids.length) {
+      await prisma.prophecyClaimEntryMap.deleteMany({ where: { claimId: { in: ids } } });
+      await prisma.prophecyRelationship.deleteMany({
+        where: { OR: [{ fromId: { in: ids } }, { toId: { in: ids } }] },
+      });
+      await prisma.prophecyRevision.deleteMany({
+        where: { targetType: "claim", targetId: { in: ids } },
+      });
+      await prisma.prophecyClaim.updateMany({
+        where: { id: { in: ids } },
+        data: { supersededById: null },
+      });
+      await prisma.prophecyClaim.deleteMany({ where: { id: { in: ids } } });
+    }
+  }
+
+  async function mkClaim(suffix: string, status = "published") {
+    return prisma.prophecyClaim.create({
+      data: {
+        slug: `${M}${suffix}`,
+        text: `Merge fixture ${suffix}`,
+        summary: "",
+        status,
+        categoryKeys: "[]",
+        subjectKeys: "[]",
+      },
+    });
+  }
+
+  beforeAll(sweep);
+  afterAll(async () => {
+    await sweep();
+    await prisma.$disconnect();
+  });
+
+  it("redirect target: a merged published slug resolves to its survivor", async () => {
+    const canonical = await mkClaim("canonical");
+    const duplicate = await mkClaim("duplicate");
+    await mergeClaims(prisma, { duplicateId: duplicate.id, canonicalId: canonical.id });
+
+    // The old URL no longer resolves as a published claim...
+    expect(await getPublishedClaim(prisma, `${M}duplicate`)).toBeNull();
+    // ...but resolves to the survivor rather than dead-ending in a 404.
+    expect(await resolveMergedClaimSlug(prisma, `${M}duplicate`)).toBe(`${M}canonical`);
+  });
+
+  it("does not resolve a merge pointer into an unpublished survivor", async () => {
+    const canonical = await mkClaim("draft-canonical", "draft");
+    const duplicate = await mkClaim("orphan-duplicate");
+    await mergeClaims(prisma, { duplicateId: duplicate.id, canonicalId: canonical.id });
+    expect(await resolveMergedClaimSlug(prisma, `${M}orphan-duplicate`)).toBeNull();
+  });
+
+  it("follows a merge chain to the published survivor", async () => {
+    const c = await mkClaim("chain-c");
+    const b = await mkClaim("chain-b");
+    const a = await mkClaim("chain-a");
+    await mergeClaims(prisma, { duplicateId: a.id, canonicalId: b.id });
+    await mergeClaims(prisma, { duplicateId: b.id, canonicalId: c.id });
+    expect(await resolveMergedClaimSlug(prisma, `${M}chain-a`)).toBe(`${M}chain-c`);
+  });
+
+  it("returns null for unknown and for merely-unpublished slugs", async () => {
+    await mkClaim("plain-draft", "draft");
+    expect(await resolveMergedClaimSlug(prisma, `${M}plain-draft`)).toBeNull();
+    expect(await resolveMergedClaimSlug(prisma, `${M}does-not-exist`)).toBeNull();
+  });
+
+  it("re-points the duplicate's relationship edges onto the canonical claim", async () => {
+    const canonical = await mkClaim("rel-canonical");
+    const duplicate = await mkClaim("rel-duplicate");
+    const outside = await mkClaim("rel-outside");
+
+    // duplicate --contradicts--> outside, and outside --depends_on--> duplicate
+    await prisma.prophecyRelationship.create({
+      data: {
+        fromType: "claim",
+        fromId: duplicate.id,
+        toType: "claim",
+        toId: outside.id,
+        type: "contradicts",
+        note: "outgoing",
+      },
+    });
+    await prisma.prophecyRelationship.create({
+      data: {
+        fromType: "claim",
+        fromId: outside.id,
+        toType: "claim",
+        toId: duplicate.id,
+        type: "depends_on",
+        note: "incoming",
+      },
+    });
+
+    await mergeClaims(prisma, { duplicateId: duplicate.id, canonicalId: canonical.id });
+
+    const outgoing = await prisma.prophecyRelationship.findFirst({
+      where: { type: "contradicts", toId: outside.id },
+    });
+    expect(outgoing?.fromId).toBe(canonical.id);
+
+    const incoming = await prisma.prophecyRelationship.findFirst({
+      where: { type: "depends_on", fromId: outside.id },
+    });
+    expect(incoming?.toId).toBe(canonical.id);
+  });
+
+  it("drops edges that would become self-edges or collide on merge", async () => {
+    const canonical = await mkClaim("col-canonical");
+    const duplicate = await mkClaim("col-duplicate");
+    const outside = await mkClaim("col-outside");
+
+    // Would become canonical --shares_passage_with--> canonical (self-edge).
+    await prisma.prophecyRelationship.create({
+      data: {
+        fromType: "claim",
+        fromId: duplicate.id,
+        toType: "claim",
+        toId: canonical.id,
+        type: "shares_passage_with",
+        note: "self after merge",
+      },
+    });
+    // Both already point at outside with the same type → collision.
+    for (const from of [canonical.id, duplicate.id]) {
+      await prisma.prophecyRelationship.create({
+        data: {
+          fromType: "claim",
+          fromId: from,
+          toType: "claim",
+          toId: outside.id,
+          type: "supports",
+          note: from === canonical.id ? "canonical keeps this" : "duplicate's collides",
+        },
+      });
+    }
+
+    await mergeClaims(prisma, { duplicateId: duplicate.id, canonicalId: canonical.id });
+
+    // No self-edge survived.
+    expect(
+      await prisma.prophecyRelationship.count({
+        where: { fromId: canonical.id, toId: canonical.id },
+      }),
+    ).toBe(0);
+    // Exactly one supports edge remains, the canonical's own.
+    const supports = await prisma.prophecyRelationship.findMany({
+      where: { type: "supports", toId: outside.id },
+    });
+    expect(supports).toHaveLength(1);
+    expect(supports[0].note).toBe("canonical keeps this");
+    // Nothing is left dangling on the superseded claim.
+    expect(
+      await prisma.prophecyRelationship.count({
+        where: { OR: [{ fromId: duplicate.id }, { toId: duplicate.id }], type: { not: "duplicate_of" } },
+      }),
+    ).toBe(0);
   });
 });

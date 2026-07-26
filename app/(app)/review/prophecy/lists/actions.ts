@@ -44,10 +44,27 @@ export async function createList(formData: FormData): Promise<void> {
     claimedCount = n;
   }
 
-  const base = slugify(title);
-  let slug = base;
-  for (let n = 2; await prisma.prophecySourceList.findUnique({ where: { slug } }); n++) {
-    slug = `${base}-${n}`;
+  // The slug is an IDENTIFIER, not a display detail: committed datasets under
+  // data/prophecy/ reference their list by slug (claims-draft-v1.json's
+  // `listSlug`), so an operator following a dataset walkthrough must be able to
+  // create the list under exactly that identifier. Deriving it from the title
+  // silently produced a different slug and left every draft mapping unloadable.
+  // An explicit slug is therefore accepted and used verbatim; the title-derived
+  // value is only the fallback.
+  const slugRaw = String(formData.get("slug") ?? "").trim();
+  let slug: string;
+  if (slugRaw) {
+    if (slugify(slugRaw) !== slugRaw) redirect(`${BASE}?error=slug_format`);
+    if (await prisma.prophecySourceList.findUnique({ where: { slug: slugRaw } })) {
+      redirect(`${BASE}?error=slug_taken`);
+    }
+    slug = slugRaw;
+  } else {
+    const base = slugify(title);
+    slug = base;
+    for (let n = 2; await prisma.prophecySourceList.findUnique({ where: { slug } }); n++) {
+      slug = `${base}-${n}`;
+    }
   }
 
   const created = await prisma.prophecySourceList.create({
