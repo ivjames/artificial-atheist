@@ -385,7 +385,13 @@ export type AgentMetrics = {
   // Replies that end on a question mark (allowed only if it's a substantive
   // Socratic challenge — flagged here for a human to eyeball).
   trailingQuestions: number;
-  // Replies containing more than one question (rule: at most one).
+  // Replies that STACK questions at the visitor — two or more questions in the
+  // reply's closing run. Rhetorical questions woven into the argument body
+  // (Euthyphro, "what caused God?") are legitimate and deliberately NOT counted:
+  // the rule the persona breaks is interrogating/soliciting the visitor, which
+  // shows up as questions in the trailing (turn-handoff) position, not as
+  // dialectical questions mid-paragraph. (persona.ts: "ask AT MOST ONE pointed
+  // question … never stack multiple questions … or end every turn with one.")
   multiQuestionTurns: number;
 };
 
@@ -412,6 +418,33 @@ function stripQuotedSpans(text: string): string {
   return text
     .replace(/"[^"]*"/g, " ")
     .replace(/“[^”]*”/g, " ");
+}
+
+// How many question sentences sit in the reply's CLOSING run — the contiguous
+// block of question sentences at the very end. A reply that closes
+// "…so which is it — design or chance? And why should I trust that?" has a run
+// of 2 (questions fired at the visitor); a rhetorical question buried in the
+// argument and then answered ("…what caused God? That just relocates the
+// problem.") has a run of 0, because declarative text follows it. This is the
+// line between an engagement/interrogation question (flagged) and a substantive
+// rhetorical one (allowed) — position, not mere presence of a "?".
+function trailingQuestionRun(text: string): number {
+  const t = text.trim();
+  if (!t) return 0;
+  // Split into sentences, keeping terminal punctuation and any trailing
+  // brackets/quotes ("?)"). Matches are contiguous, so anything left over after
+  // the final match is an unterminated trailing fragment.
+  const sentences = t.match(/[^.!?]+[.!?]+["')\]]*/g) || [];
+  const covered = sentences.join("").length;
+  // A non-empty unterminated tail means the reply ends on a NON-question
+  // fragment (e.g. a truncated clause), so there is no trailing question.
+  if (t.slice(covered).trim().length > 0) return 0;
+  let run = 0;
+  for (let i = sentences.length - 1; i >= 0; i--) {
+    if (/\?["')\]]*$/.test(sentences[i].trim())) run++;
+    else break;
+  }
+  return run;
 }
 
 export function emptyAgentMetrics(): AgentMetrics {
@@ -443,11 +476,13 @@ export function scoreAgentTurns(replies: string[]): AgentMetrics {
 
     // Count only the agent's OWN questions: strip double-quoted spans first, so
     // a question it quotes from the opponent ("why is there something rather
-    // than nothing?") isn't miscounted as the agent asking one.
+    // than nothing?") isn't miscounted as the agent asking one. Then look ONLY
+    // at the closing run — rhetorical questions in the argument body don't count
+    // as violations, only questions fired at the visitor in the trailing slot.
     const q = stripQuotedSpans(t);
-    const qMarks = (q.match(/\?/g) || []).length;
-    if (qMarks > 1) multiQ++;
-    if (/\?["')\]]*\s*$/.test(q)) trailingQ++;
+    const closingQ = trailingQuestionRun(q);
+    if (closingQ > 1) multiQ++;
+    if (closingQ >= 1) trailingQ++;
 
     const tail = t.slice(-220);
     if (ENGAGEMENT_HOOK_PATTERNS.some((re) => re.test(tail))) hooks++;

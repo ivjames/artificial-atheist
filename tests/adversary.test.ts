@@ -153,6 +153,40 @@ describe("scoreAgentTurns", () => {
     ]);
     expect(m.multiQuestionTurns).toBe(1);
   });
+
+  it("does not flag rhetorical questions woven into the argument body", () => {
+    // The Galloper regression: the agent poses dialectical questions mid-reply
+    // (Euthyphro, "what caused God?") and then answers them. These are allowed
+    // — only questions fired at the visitor in the CLOSING run count.
+    const m = scoreAgentTurns([
+      "A transcendent cause doesn't solve this; what caused God? That just " +
+        "relocates the puzzle. And is it good because God commands it, or does " +
+        "God command it because it's good? Either way, you don't need Him. The " +
+        "honest answer is that we don't yet know.",
+    ]);
+    expect(m.multiQuestionTurns).toBe(0);
+    expect(m.trailingQuestions).toBe(0);
+  });
+
+  it("flags questions stacked at the visitor in the closing", () => {
+    const m = scoreAgentTurns([
+      "Fine-tuning has no denominator to make it improbable. So which is it — " +
+        "design, or a selection effect across many universes? And why should I " +
+        "grant your prior?",
+    ]);
+    expect(m.multiQuestionTurns).toBe(1);
+    expect(m.trailingQuestions).toBe(1);
+  });
+
+  it("exempts a single substantive closing question from the stacked flag", () => {
+    // Rule 17 allows a lone closing Socratic challenge; only stacking is flagged.
+    const m = scoreAgentTurns([
+      "Evolution explains why we recognize harm; it doesn't make harm unreal. " +
+        "So what, exactly, does a divine command add to the wrongness of genocide?",
+    ]);
+    expect(m.multiQuestionTurns).toBe(0);
+    expect(m.trailingQuestions).toBe(1);
+  });
 });
 
 const mkRun = (over: Partial<ParsedRun>): ParsedRun =>
