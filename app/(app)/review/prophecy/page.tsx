@@ -3,8 +3,8 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { adminToken, isAdminAuthed } from "../pipeline/auth";
-import { loginWithToken, logoutAdmin } from "./actions";
-import { ErrorBanner, qp } from "./shared";
+import { loadClaimDraftsAction, loginWithToken, logoutAdmin } from "./actions";
+import { ErrorBanner, NoticeBanner, qp } from "./shared";
 
 // A small labelled number tile for the stats strip.
 function Stat({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
@@ -42,6 +42,23 @@ function BreakdownCard({
         </dl>
       )}
     </div>
+  );
+}
+
+// Result banner for the draft-loader action. The ?draftload= param is either
+// "missing" (rendered as an ErrorBanner by the page) or five comma-separated
+// counts: claimsCreated,claimsSkipped,mappingsCreated,mappingsSkipped,errors.
+function DraftloadBanner({ value }: { value: string }) {
+  const parts = value.split(",");
+  if (parts.length !== 5 || parts.some((p) => !/^\d+$/.test(p))) return null;
+  const [claimsCreated, claimsSkipped, mappingsCreated, mappingsSkipped, errorCount] = parts;
+  return (
+    <NoticeBanner>
+      AI claim drafts loaded: {claimsCreated} claim{claimsCreated === "1" ? "" : "s"} created,{" "}
+      {claimsSkipped} skipped; {mappingsCreated} mapping{mappingsCreated === "1" ? "" : "s"}{" "}
+      created, {mappingsSkipped} skipped; {errorCount} error{errorCount === "1" ? "" : "s"}
+      {errorCount !== "0" ? " (details in the server log)" : ""}.
+    </NoticeBanner>
   );
 }
 
@@ -83,6 +100,7 @@ export default async function ProphecyDashboardPage({
 
   const sp = await searchParams;
   const error = qp(sp.error);
+  const draftload = qp(sp.draftload);
   const authed = await isAdminAuthed();
 
   if (!authed) {
@@ -149,6 +167,8 @@ export default async function ProphecyDashboardPage({
       </div>
 
       {error ? <ErrorBanner code={error} /> : null}
+      {draftload === "missing" ? <ErrorBanner code="draftload_missing" /> : null}
+      {draftload && draftload !== "missing" ? <DraftloadBanner value={draftload} /> : null}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         <Stat label="Claims" value={claimCount} />
@@ -162,6 +182,19 @@ export default async function ProphecyDashboardPage({
         <BreakdownCard title="Claims by status" rows={statusRows} />
         <BreakdownCard title="Entries by mapping status" rows={mappingRows} />
       </div>
+
+      <section className="card p-5">
+        <h2 className="text-sm font-bold">Data</h2>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          Load the AI-drafted claim-normalization file into draft claims + entry mappings.
+          Idempotent: existing slugs and mappings are skipped, never overwritten.
+        </p>
+        <form action={loadClaimDraftsAction} className="mt-3">
+          <button type="submit" className="btn-primary px-4 py-2 text-sm">
+            Load AI claim drafts (claims-draft-v1)
+          </button>
+        </form>
+      </section>
 
       <section>
         <h2 className="text-lg font-bold">Work areas</h2>

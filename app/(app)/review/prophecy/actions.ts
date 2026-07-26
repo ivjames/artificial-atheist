@@ -1,7 +1,12 @@
 "use server";
 
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { prisma } from "@/lib/prisma";
+import { loadClaimDrafts } from "@/lib/prophecy/draftload";
 import {
   ADMIN_COOKIE,
   ADMIN_COOKIE_MAX_AGE,
@@ -49,4 +54,40 @@ export async function logoutAdmin(): Promise<void> {
   const jar = await cookies();
   jar.delete(ADMIN_COOKIE);
   redirect("/review/prophecy/");
+}
+
+// One-click loader for the AI-drafted claim-normalization file. Reads
+// data/prophecy/claims-draft-v1.json from the deployed working tree and turns
+// it into draft claims + entry mappings (idempotent — see lib/prophecy/
+// draftload.ts). The redirect carries only counts; individual error strings
+// go to the server log so the URL stays small.
+export async function loadClaimDraftsAction(): Promise<void> {
+  await assertProphecyAdmin();
+
+  const filePath = path.join(process.cwd(), "data", "prophecy", "claims-draft-v1.json");
+  let fileText: string | null = null;
+  try {
+    fileText = await readFile(filePath, "utf8");
+  } catch {
+    fileText = null;
+  }
+  if (fileText === null) redirect("/review/prophecy/?draftload=missing");
+
+  const result = await loadClaimDrafts(prisma, fileText!);
+  if (result.errors.length) {
+    console.error(
+      `loadClaimDraftsAction: ${result.errors.length} error(s) loading ${filePath}\n` +
+        result.errors.map((e) => `  - ${e}`).join("\n"),
+    );
+  }
+
+  revalidatePath("/review/prophecy");
+  const counts = [
+    result.claimsCreated,
+    result.claimsSkipped,
+    result.mappingsCreated,
+    result.mappingsSkipped,
+    result.errors.length,
+  ].join(",");
+  redirect(`/review/prophecy/?draftload=${counts}`);
 }

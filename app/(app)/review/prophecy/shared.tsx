@@ -110,6 +110,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   map_failed: "Mapping failed.",
   import_failed: "Import failed.",
   create_failed: "Create failed.",
+  draftload_missing: "Draft file data/prophecy/claims-draft-v1.json not found on the server.",
 };
 
 export function ErrorBanner({ code, detail }: { code: string; detail?: string }) {

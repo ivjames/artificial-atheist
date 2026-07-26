@@ -78,7 +78,9 @@ async function uniqueClaimSlug(prisma: PrismaClient, base: string): Promise<stri
  * Create a normalized claim. Validates non-empty text and that every
  * category/subject key exists in the controlled vocabulary (kind "category" /
  * "subject"); throws on any violation. Slug collisions get -2, -3, …
- * suffixes. Writes a creation revision snapshot.
+ * suffixes. Writes a creation revision snapshot; `revisionNote` overrides the
+ * default "created" note so loaders can stamp provenance (e.g. which AI model
+ * drafted the claim) directly on the creation revision.
  */
 export async function createClaim(
   prisma: PrismaClient,
@@ -88,6 +90,7 @@ export async function createClaim(
     categoryKeys?: string[];
     subjectKeys?: string[];
     createdBy?: string;
+    revisionNote?: string;
   },
 ): Promise<ProphecyClaim> {
   const text = args.text?.trim();
@@ -113,7 +116,14 @@ export async function createClaim(
       createdBy: args.createdBy ?? "",
     },
   });
-  await writeRevision(prisma, "claim", claim.id, claim, args.createdBy ?? "", "created");
+  await writeRevision(
+    prisma,
+    "claim",
+    claim.id,
+    claim,
+    args.createdBy ?? "",
+    args.revisionNote ?? "created",
+  );
   return claim;
 }
 
