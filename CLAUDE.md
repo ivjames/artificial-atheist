@@ -128,10 +128,13 @@ reference the corpus:
   paste-import + entry→claim mapping, claims search/status/merge, export.
 - Tests: `tests/prophecy-vocab.test.ts` (pure) + `tests/prophecy-domain.test.ts`
   (pure + DB-integration gated on DATABASE_URL).
-- First dataset: `data/prophecy/324-outoftheoverflow-2008.{json,md}` — one
-  clearly identified copy of the circulating "324 prophecies" list (315 actual
-  entries, verbatim; provenance + droplet import walkthrough in the .md).
-  `data/*` stays gitignored except `data/prophecy/`.
+- Datasets (`data/prophecy/<slug>.{json,md}`, verbatim entries + provenance;
+  `data/*` stays gitignored except `data/prophecy/`): `324-outoftheoverflow-2008`
+  (claims 324, contains 315), `356-accordingtothescriptures` (URL says 353,
+  page says 356 — the list grew in place; source of the 351/353/356 variants),
+  `301-aboutbibleprophecy` (Ray Konig index lines only — copyright),
+  `70-about-jesus` (also Konig), `jewishvoice-messianic` (15, no claimed total).
+  Each .md has the droplet import walkthrough; imports are idempotent.
 - Status: Phases 0–2 done; Phase 3 dataset prepared and import-verified
   (droplet ingest is an operator step: paste the JSON at /review/prophecy).
   Next: normalization/mapping editorial work, then public browsing (Phase 4;
