@@ -1,9 +1,10 @@
 {
  "meta": {
-  "model": "claude-fable-5",
+  "model": "ai-normalizer",
   "promptVersion": "prophecy-normalize-v1",
   "generatedAt": "2026-07-26T20:02:41Z",
-  "method": "Mechanical passage grouping (lib/prophecy/normalize.ts refKey over the five verbatim source lists; 329 groups) followed by an AI naming pass in 6 batches: one neutral claim per distinct proposition per group, per-entry matchType/confidence/rationale. Claims never span passage groups; cross-passage merging is left to human review. All records load as status=draft for spot-checking."
+  "method": "Mechanical passage grouping (lib/prophecy/normalize.ts refKey over the five verbatim source lists; 329 groups) followed by an AI naming pass in 6 batches: one neutral claim per distinct proposition per group, per-entry matchType/confidence/rationale. Claims never span passage groups; cross-passage merging is left to human review. All records load as status=draft for spot-checking.",
+  "note": "Generator identity is deliberately generic; a run is pinned by promptVersion + generatedAt."
  },
  "claims": [
   {

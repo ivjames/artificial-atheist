@@ -37,10 +37,9 @@ export default async function PublicClaimPage({ params }: { params: Promise<{ sl
     if (bucket) bucket.push(m);
     else byList.set(key, [m]);
   }
-  // createdBy is "ai:<model>" for machine-drafted wording; naming the model is
-  // part of the provenance, not a footnote.
+  // createdBy is "ai:<id>" for machine-drafted wording. The flag is all the page
+  // needs — the specific generator is internal provenance, not site copy.
   const aiDrafted = (claim.createdBy ?? "").startsWith("ai:");
-  const draftModel = aiDrafted ? claim.createdBy.slice(3) || "an AI model" : "";
 
   return (
     <div className="flex flex-col gap-8">
@@ -185,7 +184,7 @@ export default async function PublicClaimPage({ params }: { params: Promise<{ sl
               not imply one. */}
           <p>
             {aiDrafted
-              ? `Claim wording drafted by ${draftModel} from the source entries below.`
+              ? "Claim wording was drafted by an AI model from the source entries below."
               : "Claim wording written by an editor."}{" "}
             The source entries are reproduced unedited.
           </p>

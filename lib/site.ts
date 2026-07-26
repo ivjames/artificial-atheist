@@ -112,6 +112,7 @@ export const nav: NavItem[] = [
   { label: "News", url: "/topics/news/", icon: "ti-broadcast" },
   { label: "Debate", url: "/chat/", icon: "ti-messages" },
   { label: "Quiz", url: "/quiz/", icon: "ti-bulb" },
+  { label: "Prophecy", url: "/prophecy/", icon: "ti-scroll" },
   { label: "About", url: "/about/", icon: "ti-info-circle" },
   { label: "FAQ", url: "/faq/", icon: "ti-help" },
 ];

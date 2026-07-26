@@ -73,8 +73,8 @@ export default async function ProphecyLandingPage() {
           <p>
             <strong>How the claims were written.</strong> The source entries are verbatim. The
             normalized claim wordings, and the match type and confidence attached to each entry,
-            were drafted by an AI model reading those entries, and each claim page names the model
-            that produced it. Treat them as a machine-built index of what the lists assert — useful
+            were drafted by an AI model reading those entries. Treat them as a machine-built
+            index of what the lists assert — useful
             for seeing structure, not a substitute for reading the sources, which are reproduced
             in full alongside every claim.
           </p>
