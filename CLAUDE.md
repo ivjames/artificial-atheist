@@ -111,6 +111,28 @@ reference the corpus:
 - `tools/admin/` — the old standalone admin dashboard (separate node process,
   basic-auth at /admin/). Independent of the Next app; run it separately if wanted.
 
+## Prophecy analysis module (structured prophecy-claims knowledge base)
+- Spec: `PROPHECY-HANDOFF.md`; integration plan + audit: `PROPHECY-PLAN.md`.
+- Schema: `Prophecy*` models in `prisma/schema.prisma` (religion-neutral;
+  source lists preserved verbatim, normalized claims mapped many-to-many,
+  interpretations/fulfillments/evidence/objections/resolutions/evaluations
+  kept as separate records; polymorphic targetType/targetId for evidence,
+  citations, evaluations, revisions — app-layer integrity).
+- Controlled vocabularies: `lib/prophecy/vocab.ts` (pure data), upserted
+  idempotently on every deploy by `prisma/seed-prophecy.ts` via `seed.ts`.
+- Data layer: `lib/prophecy/import.ts` (CSV/JSON, idempotent re-import),
+  `claims.ts` (create/map/merge-with-provenance/search + revision snapshots),
+  `export.ts` (JSON/CSV).
+- Admin surface: `/review/prophecy` (same `aa_admin` cookie as the pipeline
+  queue; NOT gated on CHAT_ENABLED). Dashboard, sources, source lists +
+  paste-import + entry→claim mapping, claims search/status/merge, export.
+- Tests: `tests/prophecy-vocab.test.ts` (pure) + `tests/prophecy-domain.test.ts`
+  (pure + DB-integration gated on DATABASE_URL).
+- Status: Phases 0–2 (admin-first editorial core) done. Next per handoff:
+  Phase 3 ingest one identified "324 prophecies" list via the importer (never
+  hard-coded seeds), then public browsing (Phase 4; nav entry waits for this),
+  editorial analysis, optional AI assist. Public routes don't exist yet.
+
 ## Adversary eval harness (debate-agent stress test)
 - `lib/agent/adversary.ts` — the debate agent's opponent: a simulated apologist
   persona library. "Mental capacities" are modelled as composable DIALS
