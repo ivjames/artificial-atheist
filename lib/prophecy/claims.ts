@@ -385,16 +385,18 @@ export async function mergeClaims(
  * JSON, not a relational join — fine for known vocab keys, not for arbitrary
  * user input.
  */
-export async function searchClaims(
-  prisma: PrismaClient,
-  args: {
-    q?: string;
-    status?: string;
-    categoryKey?: string;
-    sourceListId?: string;
-    take?: number;
-  },
-): Promise<ProphecyClaim[]> {
+export type ClaimSearchArgs = {
+  q?: string;
+  status?: string;
+  categoryKey?: string;
+  sourceListId?: string;
+  take?: number;
+  skip?: number;
+};
+
+// Shared filter builder so searchClaims and countClaims can never drift — a
+// count that doesn't match the rows it describes is worse than no count.
+function claimSearchWhere(args: ClaimSearchArgs): Prisma.ProphecyClaimWhereInput | undefined {
   const and: Prisma.ProphecyClaimWhereInput[] = [];
 
   const q = args.q?.trim();
@@ -415,9 +417,25 @@ export async function searchClaims(
     and.push({ entryMaps: { some: { entry: { sourceListId: args.sourceListId } } } });
   }
 
+  return and.length ? { AND: and } : undefined;
+}
+
+export async function searchClaims(
+  prisma: PrismaClient,
+  args: ClaimSearchArgs,
+): Promise<ProphecyClaim[]> {
   return prisma.prophecyClaim.findMany({
-    where: and.length ? { AND: and } : undefined,
-    orderBy: { updatedAt: "desc" },
+    where: claimSearchWhere(args),
+    // updatedAt alone is not a total order — a bulk draft load stamps hundreds
+    // of rows in the same instant, and ties can otherwise reshuffle between
+    // pages, hiding rows. id breaks the tie deterministically.
+    orderBy: [{ updatedAt: "desc" }, { id: "asc" }],
     take: args.take ?? 50,
+    skip: args.skip ?? 0,
   });
+}
+
+/** Total matching claims for the same filters — drives page counts. */
+export async function countClaims(prisma: PrismaClient, args: ClaimSearchArgs): Promise<number> {
+  return prisma.prophecyClaim.count({ where: claimSearchWhere(args) });
 }
