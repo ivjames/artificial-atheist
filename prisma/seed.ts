@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { seedProphecyVocab } from "./seed-prophecy";
 
 const prisma = new PrismaClient();
 
@@ -1778,6 +1779,10 @@ const questions = [
 ];
 
 async function main() {
+  // Prophecy controlled vocabulary: idempotent upserts that must run on every
+  // deploy, so it goes BEFORE the question-seed early return below.
+  await seedProphecyVocab(prisma);
+
   // Deploy-safe by default: if questions already exist, do nothing and never
   // touch Result/Answer, so redeploys don't wipe players' results.
   // Set SEED_FORCE=1 to fully reset the question bank (local use only).

@@ -276,3 +276,571 @@ model AdversaryRun {
   @@index([createdAt])
   @@index([runStamp])
 }
+
+// ===========================================================================
+// Prophecy analysis module (PROPHECY-HANDOFF.md — Phase 1 domain schema).
+//
+// Religion-neutral knowledge base for prophecy claims: source lists preserved
+// verbatim → normalized claims → passages → interpretations → alleged
+// fulfillments → evidence → objections → resolutions → reviewer evaluations.
+// Each layer is its own record; nothing is collapsed into a verdict.
+//
+// Conventions (match the rest of this schema): String cuid ids, String
+// status/kind columns with allowed values documented in comments (no Postgres
+// enums), JSON stored in String columns (like AdversaryRun.transcript).
+//
+// POLYMORPHIC TARGETS: evidence, objections, evaluations, citations, and
+// revisions attach to many entity types via (targetType, targetId) String
+// pairs instead of ~8 join tables each. Trade-off: no DB-level referential
+// integrity on targetId — the app layer must validate targets, and orphan
+// sweeps are a maintenance job. Accepted deliberately: the handoff requires
+// citations/objections on "specific assertions" of nearly every type, and the
+// join-table alternative multiplies models without adding real safety here.
+// ===========================================================================
+
+// A religious or nonreligious tradition (Christianity, Judaism, Islam,
+// secular historical criticism, …). Attached to corpora and interpretations
+// so "internal vs external" evidence classification has a referent.
+model ProphecyTradition {
+  id          String   @id @default(cuid())
+  key         String   @unique // slug, e.g. "christianity"
+  name        String
+  description String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  corpora         ProphecyCorpus[]
+  interpretations ProphecyInterpretation[]
+}
+
+// A collection of documents (Hebrew Bible, New Testament, Quran, …).
+model ProphecyCorpus {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String   @default("")
+  traditionId String? // originating tradition, when clear-cut
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tradition ProphecyTradition? @relation(fields: [traditionId], references: [id])
+  documents ProphecyDocument[]
+
+  @@index([traditionId])
+}
+
+// A text within a corpus (Isaiah, Micah, Matthew, …). `sortOrder` preserves
+// the corpus's canonical book order for listings.
+model ProphecyDocument {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  corpusId  String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  corpus   ProphecyCorpus    @relation(fields: [corpusId], references: [id])
+  passages ProphecyPassage[]
+
+  @@index([corpusId])
+}
+
+// A stable reference to a portion of a document ("Isaiah 7:14"). Canonical
+// reference data ONLY — quotations/translations live in ProphecyQuotation so
+// textual traditions are never treated as interchangeable (handoff: Passage).
+// chapter/verse bounds are optional because not every document versifies.
+model ProphecyPassage {
+  id           String   @id @default(cuid())
+  documentId   String
+  ref          String // human-readable canonical ref, e.g. "Isaiah 7:14"
+  chapterStart Int?
+  verseStart   Int?
+  chapterEnd   Int?
+  verseEnd     Int?
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  document        ProphecyDocument         @relation(fields: [documentId], references: [id])
+  quotations      ProphecyQuotation[]
+  claimLinks      ProphecyClaimPassage[]
+  interpretations ProphecyInterpretation[]
+
+  @@unique([documentId, ref])
+}
+
+// One rendering of a passage in a named translation/textual tradition
+// ("KJV", "JPS", "LXX (NETS)"). Short quotations only — copyright.
+model ProphecyQuotation {
+  id          String   @id @default(cuid())
+  passageId   String
+  translation String // e.g. "KJV" | "JPS" | "LXX (NETS)"
+  text        String
+  sourceId    String? // bibliographic source of this rendering
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  passage ProphecyPassage @relation(fields: [passageId], references: [id], onDelete: Cascade)
+  source  ProphecySource? @relation(fields: [sourceId], references: [id])
+
+  @@index([passageId])
+  @@index([sourceId])
+}
+
+// Bibliographic / documentary provenance. Reused by quotations, source lists,
+// evidence items, and citations.
+model ProphecySource {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  // book | book_chapter | journal_article | academic_paper | website |
+  // primary_text | manuscript | inscription | archaeological_report |
+  // video | reference_work   (seeded vocab kind "source_type")
+  type      String
+  title     String
+  author    String   @default("")
+  year      Int?
+  publisher String   @default("")
+  url       String   @default("")
+  citation  String   @default("") // rendered citation string
+  notes     String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quotations  ProphecyQuotation[]
+  sourceLists ProphecySourceList[]
+  evidence    ProphecyEvidence[]
+  citations   ProphecyCitation[]
+}
+
+// A published/circulated collection of prophecy claims (e.g. one specific
+// "324 prophecies" list). `claimedCount` is the list's OWN advertised total —
+// provenance metadata, never presented as a finding of ours.
+model ProphecySourceList {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  sourceId     String? // bibliographic source of the list itself
+  description  String   @default("")
+  claimedCount Int? // e.g. 324 — the list's advertised total
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  source  ProphecySource?          @relation(fields: [sourceId], references: [id])
+  batches ProphecyImportBatch[]
+  entries ProphecySourceListEntry[]
+
+  @@index([sourceId])
+}
+
+// One CSV/JSON import run against a source list. Entries point back here so a
+// bad batch can be audited or re-run without losing earlier imports.
+model ProphecyImportBatch {
+  id           String   @id @default(cuid())
+  sourceListId String
+  format       String // csv | json
+  filename     String   @default("")
+  importedBy   String   @default("")
+  status       String   @default("pending") // pending | parsed | mapped | failed
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+
+  sourceList ProphecySourceList        @relation(fields: [sourceListId], references: [id], onDelete: Cascade)
+  entries    ProphecySourceListEntry[]
+
+  @@index([sourceListId])
+  @@index([status])
+}
+
+// The original numbered item exactly as its source list presents it. This is
+// NOT the canonical claim — normalization happens via ProphecyClaimEntryMap,
+// which is how inflated totals (duplicates, splits, compounds) get exposed
+// without touching the original wording.
+model ProphecySourceListEntry {
+  id                      String   @id @default(cuid())
+  sourceListId            String
+  batchId                 String? // import batch that produced this entry
+  entryNumber             String // original numbering kept verbatim — lists use "1a" etc.
+  originalWording         String
+  originalPassageRefs     String   @default("") // passage refs as the list gives them
+  originalFulfillmentRefs String   @default("") // fulfillment refs as the list gives them
+  originalRaw             String   @default("") // JSON-encoded original row/object
+  parseStatus             String   @default("ok") // ok | error
+  parseErrors             String   @default("")
+  mappingStatus           String   @default("unmapped") // unmapped | mapped | disputed
+  notes                   String   @default("")
+  createdAt               DateTime @default(now())
+
+  sourceList ProphecySourceList     @relation(fields: [sourceListId], references: [id], onDelete: Cascade)
+  batch      ProphecyImportBatch?   @relation(fields: [batchId], references: [id])
+  claimMaps  ProphecyClaimEntryMap[]
+
+  // Import idempotency: re-importing the same list can't silently duplicate.
+  @@unique([sourceListId, entryNumber])
+  @@index([batchId])
+  @@index([mappingStatus])
+}
+
+// The normalized, unique proposition under evaluation ("A future ruler would
+// come from Bethlehem"). Written neutrally — the text must not embed a
+// verdict. Duplicate merging supersedes rather than deletes, so source-entry
+// provenance survives (handoff: merge without provenance loss).
+model ProphecyClaim {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  text           String // neutral normalized proposition
+  summary        String   @default("")
+  // draft | submitted | needs_changes | approved | published | rejected |
+  // archived | superseded   (shared moderation states)
+  status         String   @default("draft")
+  categoryKeys   String   @default("[]") // JSON string[] of vocab keys (kind "category")
+  subjectKeys    String   @default("[]") // JSON string[] of vocab keys (kind "subject")
+  createdBy      String   @default("")
+  supersededById String? // set when merged into a surviving duplicate
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  supersededBy ProphecyClaim?  @relation("ClaimSupersession", fields: [supersededById], references: [id])
+  supersedes   ProphecyClaim[] @relation("ClaimSupersession")
+
+  entryMaps       ProphecyClaimEntryMap[]
+  passageLinks    ProphecyClaimPassage[]
+  interpretations ProphecyInterpretation[]
+  fulfillments    ProphecyFulfillment[]
+
+  @@index([status])
+  @@index([supersededById])
+}
+
+// Many-to-many map between verbatim source-list entries and normalized
+// claims, with the rationale that justifies the mapping. One entry can hold
+// several claims (compound) and many entries can collapse into one claim
+// (duplicate) — this table is where the real dedup arithmetic lives.
+model ProphecyClaimEntryMap {
+  id         String   @id @default(cuid())
+  claimId    String
+  entryId    String
+  matchType  String // exact | partial | compound | duplicate | near_duplicate | disputed
+  confidence Int // 0-5 mapping confidence
+  rationale  String   @default("")
+  createdAt  DateTime @default(now())
+
+  claim ProphecyClaim           @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  entry ProphecySourceListEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@unique([claimId, entryId])
+  @@index([entryId])
+}
+
+// Claim ↔ passage link. `role` distinguishes the passage the claim is drawn
+// from (primary) from supporting or parallel texts.
+model ProphecyClaimPassage {
+  id        String   @id @default(cuid())
+  claimId   String
+  passageId String
+  role      String   @default("primary") // primary | supporting | parallel
+  note      String   @default("")
+  createdAt DateTime @default(now())
+
+  claim   ProphecyClaim   @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  passage ProphecyPassage @relation(fields: [passageId], references: [id], onDelete: Cascade)
+
+  @@unique([claimId, passageId])
+  @@index([passageId])
+}
+
+// An identified reading of a passage/claim, tied to a perspective and an
+// interpretive method. `predatesFulfillment` records whether the reading is
+// documented BEFORE the alleged fulfillment — a load-bearing fact the handoff
+// requires to be stored, not inferred.
+model ProphecyInterpretation {
+  id                  String   @id @default(cuid())
+  claimId             String
+  passageId           String?
+  traditionId         String?
+  perspective         String   @default("") // e.g. "second-temple Jewish", "evangelical"
+  // direct_prediction | messianic | historical_context | typology | allegory |
+  // dual_fulfillment | sensus_plenior | retrospective | post_event
+  // (seeded vocab kind "interpretation_method")
+  method              String
+  description         String
+  originalContext     String   @default("") // original historical context of the reading
+  predatesFulfillment String   @default("unknown") // yes | no | disputed | unknown
+  // draft | submitted | needs_changes | approved | published | rejected |
+  // archived | superseded
+  status              String   @default("draft")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  claim        ProphecyClaim         @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  passage      ProphecyPassage?      @relation(fields: [passageId], references: [id])
+  tradition    ProphecyTradition?    @relation(fields: [traditionId], references: [id])
+  fulfillments ProphecyFulfillment[]
+
+  @@index([claimId])
+  @@index([passageId])
+  @@index([traditionId])
+  @@index([status])
+}
+
+// A specific assertion that an event/person/condition fulfilled the claim.
+// Separate from the event itself and from the evidence that the event
+// happened. `direction` is the evidentiary-direction classification —
+// internal (tradition-internal sources only) vs external (independently
+// testable) — stored WITH a rationale, and never itself a verdict.
+model ProphecyFulfillment {
+  id                 String   @id @default(cuid())
+  claimId            String
+  interpretationId   String? // the reading under which this counts as fulfillment
+  eventId            String?
+  personId           String?
+  description        String
+  direction          String   @default("internal") // internal | external | mixed | not_testable
+  directionRationale String   @default("")
+  // draft | submitted | needs_changes | approved | published | rejected |
+  // archived | superseded
+  status             String   @default("draft")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  claim          ProphecyClaim           @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  interpretation ProphecyInterpretation? @relation(fields: [interpretationId], references: [id])
+  event          ProphecyEvent?          @relation(fields: [eventId], references: [id])
+  person         ProphecyPerson?         @relation(fields: [personId], references: [id])
+
+  @@index([claimId])
+  @@index([interpretationId])
+  @@index([eventId])
+  @@index([personId])
+  @@index([status])
+}
+
+// A source-backed item supporting/opposing/qualifying a target assertion.
+// Polymorphic target (see banner). `independence` records the relationship to
+// the originating tradition; `directness` and `reliabilityNotes` carry the
+// source-criticism detail the ratings lean on.
+model ProphecyEvidence {
+  id               String   @id @default(cuid())
+  targetType       String // claim | interpretation | fulfillment | objection | resolution
+  targetId         String
+  direction        String // supports | opposes | mixed | contextual
+  // textual | archaeological | historical_record | astronomical | numismatic |
+  // epigraphic | scholarly_analysis | tradition_internal | other
+  // (seeded vocab kind "evidence_type")
+  evidenceType     String   @default("")
+  summary          String
+  sourceId         String?
+  dateRange        String   @default("") // date or range, freeform ("c. 590–570 BCE")
+  independence     String   @default("unknown") // internal | independent | mixed | unknown
+  directness       String   @default("") // how directly the source bears on the target
+  reliabilityNotes String   @default("")
+  // draft | submitted | needs_changes | approved | published | rejected |
+  // archived | superseded
+  status           String   @default("draft")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  source ProphecySource? @relation(fields: [sourceId], references: [id])
+
+  @@index([targetType, targetId])
+  @@index([sourceId])
+  @@index([status])
+}
+
+// A formal challenge to a claim/interpretation/fulfillment/evidence item/
+// evaluation. Polymorphic target (see banner). Objections are preserved, not
+// overwritten — resolutions answer them as separate records.
+model ProphecyObjection {
+  id        String   @id @default(cuid())
+  targetType String // claim | interpretation | fulfillment | evidence | evaluation
+  targetId  String
+  summary   String
+  detail    String   @default("")
+  raisedBy  String   @default("")
+  // draft | submitted | needs_changes | approved | published | rejected |
+  // archived | superseded
+  status    String   @default("draft")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  resolutions ProphecyResolution[]
+
+  @@index([targetType, targetId])
+  @@index([status])
+}
+
+// A proposed answer to an objection. Existing ≠ accepted: resolutions get
+// their own evaluations (resolution-quality dimensions), and one objection
+// may carry several competing resolutions.
+model ProphecyResolution {
+  id          String   @id @default(cuid())
+  objectionId String
+  summary     String
+  detail      String
+  proposedBy  String   @default("")
+  // draft | submitted | needs_changes | approved | published | rejected |
+  // archived | superseded
+  status      String   @default("draft")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  objection ProphecyObjection @relation(fields: [objectionId], references: [id], onDelete: Cascade)
+
+  @@index([objectionId])
+  @@index([status])
+}
+
+// A reviewer identity: stable pseudonym + DECLARED perspective, both visible
+// on published evaluations (handoff scope decision).
+model ProphecyReviewer {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  displayName String // stable pseudonym
+  perspective String // declared perspective, e.g. "secular historical-critical", "evangelical"
+  bio         String   @default("")
+  createdAt   DateTime @default(now())
+
+  evaluations ProphecyEvaluation[]
+}
+
+// One reviewer's score on ONE dimension of ONE target. The rationale is what
+// earns the number — the UI must never show an unexplained score. NEVER
+// UPDATE another reviewer's row; add a new evaluation and mark the old one
+// superseded instead (disagreement is preserved, not overwritten).
+model ProphecyEvaluation {
+  id         String   @id @default(cuid())
+  reviewerId String
+  targetType String // claim | interpretation | fulfillment | evidence_set | objection | resolution
+  targetId   String
+  // vocab key from kind prediction_dimension | fulfillment_dimension |
+  // resolution_dimension, depending on the target
+  dimension  String
+  score      Int // 0-5
+  label      String // absent | very_weak | weak | mixed | strong | very_strong
+  rationale  String // required; non-empty enforced at the app layer
+  confidence Int // 0-5 reviewer confidence
+  status     String   @default("draft") // draft | submitted | approved | superseded | rejected
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  reviewer ProphecyReviewer @relation(fields: [reviewerId], references: [id])
+
+  @@index([targetType, targetId])
+  @@index([reviewerId])
+  @@index([status])
+}
+
+// A citation attaching a source to a SPECIFIC assertion (polymorphic target,
+// see banner) rather than to a whole page. `quote` is a short quotation only
+// — copyright (handoff: citation model).
+model ProphecyCitation {
+  id         String   @id @default(cuid())
+  // any assertion type: claim | interpretation | fulfillment | evidence |
+  // objection | resolution | evaluation | quotation
+  targetType String
+  targetId   String
+  sourceId   String
+  locator    String   @default("") // page/section/verse/timestamp within the source
+  quote      String   @default("") // short quotation only — copyright
+  note       String   @default("")
+  createdAt  DateTime @default(now())
+
+  source ProphecySource @relation(fields: [sourceId], references: [id])
+
+  @@index([targetType, targetId])
+  @@index([sourceId])
+}
+
+// Reusable person entity for cross-referencing claims and fulfillments.
+model ProphecyPerson {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+
+  fulfillments ProphecyFulfillment[]
+}
+
+// Reusable place entity for cross-referencing events.
+model ProphecyPlace {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+
+  events ProphecyEvent[]
+}
+
+// Reusable event entity — the thing alleged to fulfill a claim, stored apart
+// from the fulfillment assertion and from the evidence that it occurred.
+model ProphecyEvent {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  dateRange   String   @default("") // freeform ("587 BCE", "c. 30–33 CE")
+  placeId     String?
+  createdAt   DateTime @default(now())
+
+  place        ProphecyPlace?        @relation(fields: [placeId], references: [id])
+  fulfillments ProphecyFulfillment[]
+
+  @@index([placeId])
+}
+
+// Generic typed cross-reference between domain objects (polymorphic on both
+// ends — see banner). This is where the duplicate graph lives:
+// duplicate_of / potential_duplicate_of edges plus the dependency and
+// intertextuality edges the handoff enumerates.
+model ProphecyRelationship {
+  id       String   @id @default(cuid())
+  fromType String   @default("claim")
+  fromId   String
+  toType   String   @default("claim")
+  toId     String
+  // duplicate_of | potential_duplicate_of | derived_from | depends_on |
+  // contradicts | supports | responds_to | reinterprets | shares_passage_with |
+  // shares_fulfillment_with | part_of_composite_claim | allegedly_fulfilled_by |
+  // quoted_by | alludes_to   (seeded vocab kind "relationship_type")
+  type     String
+  note     String   @default("")
+  createdAt DateTime @default(now())
+
+  @@unique([fromType, fromId, toType, toId, type])
+  @@index([toType, toId])
+}
+
+// Controlled vocabulary — seeded, editable data instead of hard-coded enums
+// (handoff: prefer editable vocabularies where expansion is expected).
+// Seeded idempotently by prisma/seed-prophecy.ts from lib/prophecy/vocab.ts.
+model ProphecyVocabTerm {
+  id          String  @id @default(cuid())
+  // category | subject | interpretation_method | relationship_type |
+  // evidence_type | prediction_dimension | fulfillment_dimension |
+  // resolution_dimension | source_type
+  kind        String
+  key         String // snake_case vocab key
+  label       String
+  description String  @default("")
+  sortOrder   Int     @default(0) // position within kind
+  active      Boolean @default(true) // soft-retire terms instead of deleting
+
+  @@unique([kind, key])
+}
+
+// Append-only revision log for canonical records (polymorphic target, see
+// banner). `snapshot` is the JSON-encoded record state BEFORE the edit, so
+// any canonical record can be audited or rolled back.
+model ProphecyRevision {
+  id         String   @id @default(cuid())
+  targetType String
+  targetId   String
+  snapshot   String // JSON-encoded record state
+  editor     String   @default("")
+  note       String   @default("")
+  createdAt  DateTime @default(now())
+
+  @@index([targetType, targetId])
+}
