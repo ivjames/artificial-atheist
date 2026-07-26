@@ -15,17 +15,21 @@ import { isAdminAuthed } from "@/app/(app)/review/pipeline/auth";
 // the otherwise-static footer so the publication itself stays fully static.
 export const dynamic = "force-dynamic";
 
+// Per-user auth state must never be cached — a stale copy from before sign-in
+// or admin login would leave the footer showing the wrong links.
+const NO_STORE = { "cache-control": "no-store" } as const;
+
 export async function GET() {
   const admin = await isAdminAuthed().catch(() => false);
 
   if (!CHAT_ENABLED) {
-    return Response.json({ chatEnabled: false, authed: false, admin });
+    return Response.json({ chatEnabled: false, authed: false, admin }, { headers: NO_STORE });
   }
   try {
     const user = await getCurrentUser();
-    return Response.json({ chatEnabled: true, authed: Boolean(user), admin });
+    return Response.json({ chatEnabled: true, authed: Boolean(user), admin }, { headers: NO_STORE });
   } catch {
     // DB hiccup — fail closed to the signed-out menu rather than 500.
-    return Response.json({ chatEnabled: true, authed: false, admin });
+    return Response.json({ chatEnabled: true, authed: false, admin }, { headers: NO_STORE });
   }
 }
