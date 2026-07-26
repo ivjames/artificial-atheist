@@ -1,0 +1,1808 @@
+[
+  {
+    "entryNumber": "1",
+    "originalWording": "1 Genesis 3:15 God promised a savior to resolve the problem of sin John 3:16",
+    "originalPassageRefs": "Genesis 3:15",
+    "originalFulfillmentRefs": "John 3:16"
+  },
+  {
+    "entryNumber": "2",
+    "originalWording": "2 Genesis 3:15 The ‘seed of Eve’ prophecy: The Messiah would be a descendant of Eve, the mother of humanity Matthew 1:1-16, Luke 3:23-38",
+    "originalPassageRefs": "Genesis 3:15",
+    "originalFulfillmentRefs": "Matthew 1:1-16, Luke 3:23-38"
+  },
+  {
+    "entryNumber": "3",
+    "originalWording": "3 Genesis 3:15 The Messiah would be a human being, as opposed to an angel or some other type of being Galatians 4:4-5",
+    "originalPassageRefs": "Genesis 3:15",
+    "originalFulfillmentRefs": "Galatians 4:4-5"
+  },
+  {
+    "entryNumber": "4",
+    "originalWording": "4 Genesis 3:15 The Messiah would suffer and die for the benefit of others John 3:16",
+    "originalPassageRefs": "Genesis 3:15",
+    "originalFulfillmentRefs": "John 3:16"
+  },
+  {
+    "entryNumber": "5",
+    "originalWording": "5 Genesis 3:15 The Messiah would restore what Adam and Eve lost -- eternal life in a perfect world John 3:16",
+    "originalPassageRefs": "Genesis 3:15",
+    "originalFulfillmentRefs": "John 3:16"
+  },
+  {
+    "entryNumber": "6",
+    "originalWording": "6 Genesis 12:3 Abraham would be a forefather to a worldwide blessing, which is later clarified as being the Messiah Matthew 1:1-2, Luke 3:34",
+    "originalPassageRefs": "Genesis 12:3",
+    "originalFulfillmentRefs": "Matthew 1:1-2, Luke 3:34"
+  },
+  {
+    "entryNumber": "7",
+    "originalWording": "7 Genesis 14:18-19 Melchizedek sets a precedent for the Messiah being the intermediary between humanity and God Acts 4:12, 1 Timothy 2:5",
+    "originalPassageRefs": "Genesis 14:18-19",
+    "originalFulfillmentRefs": "Acts 4:12, 1 Timothy 2:5"
+  },
+  {
+    "entryNumber": "8",
+    "originalWording": "8 Genesis 14:18-19 Melchizedek sets a precedent for the Messiah being both high priest and king Hebrews 4:14-16, 5:6, 7:17, 7:23-28; Luke 1:32-33; John 18:36-37; Revelation 19:16",
+    "originalPassageRefs": "Genesis 14:18-19",
+    "originalFulfillmentRefs": "Hebrews 4:14-16, 5:6, 7:17, 7:23-28; Luke 1:32-33; John 18:36-37; Revelation 19:16"
+  },
+  {
+    "entryNumber": "9",
+    "originalWording": "9 Genesis 17:19 The miraculous birth of Isaac [Abraham’s son] foreshadows and sets a precedent for the miraculous birth of Jesus Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Genesis 17:19",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "10",
+    "originalWording": "10 Genesis 17:21 The predicted birth of Isaac foreshadows and sets a precedent for the predicted birth of Jesus Matthew 1:21, Luke 1:31-32",
+    "originalPassageRefs": "Genesis 17:21",
+    "originalFulfillmentRefs": "Matthew 1:21, Luke 1:31-32"
+  },
+  {
+    "entryNumber": "11",
+    "originalWording": "11 Genesis 22:2 The near-sacrifice of Abraham’s son Isaac foreshadows the sacrifice of God’s son Jesus John 1:29, 3:16; Romans 5:6-8, 8:3; 1 Corinthians 15:3",
+    "originalPassageRefs": "Genesis 22:2",
+    "originalFulfillmentRefs": "John 1:29, 3:16; Romans 5:6-8, 8:3; 1 Corinthians 15:3"
+  },
+  {
+    "entryNumber": "12",
+    "originalWording": "12 Genesis 22:8 The prophetic promise that God would provide the sacrificial lamb, which later is clarified as being the Messiah John 1:29-34",
+    "originalPassageRefs": "Genesis 22:8",
+    "originalFulfillmentRefs": "John 1:29-34"
+  },
+  {
+    "entryNumber": "13",
+    "originalWording": "13 Genesis 22:18 The ‘seed of Abraham’ prophecy: Abraham would be a forefather to a worldwide blessing, meaning a forefather to the Messiah Matthew 1:1-2, Luke 3:34",
+    "originalPassageRefs": "Genesis 22:18",
+    "originalFulfillmentRefs": "Matthew 1:1-2, Luke 3:34"
+  },
+  {
+    "entryNumber": "14",
+    "originalWording": "14 Genesis 22:18 The Messiah would be a Semite, by virtue of being Abraham’s descendant Matthew 1:1-2 and Luke 3:34",
+    "originalPassageRefs": "Genesis 22:18",
+    "originalFulfillmentRefs": "Matthew 1:1-2 and Luke 3:34"
+  },
+  {
+    "entryNumber": "15",
+    "originalWording": "15 Genesis 26:4 The ‘seed of Isaac’ prophecy: Abraham’s son Isaac would be a forefather to a worldwide blessing, meaning a forefather to the Messiah Matthew 1:1-2, Luke 3:34",
+    "originalPassageRefs": "Genesis 26:4",
+    "originalFulfillmentRefs": "Matthew 1:1-2, Luke 3:34"
+  },
+  {
+    "entryNumber": "16",
+    "originalWording": "16 Genesis 28:14 The ‘seed of Jacob’ prophecy: Abraham’s grandson Jacob would be a forefather to a worldwide blessing, meaning a forefather to the Messiah Matthew 1:1-2, Luke 3:34",
+    "originalPassageRefs": "Genesis 28:14",
+    "originalFulfillmentRefs": "Matthew 1:1-2, Luke 3:34"
+  },
+  {
+    "entryNumber": "17",
+    "originalWording": "17 Genesis 28:14 The Messiah would be an Israelite, by virtue of being a descendant of Jacob, who is the father of the 12 Tribes of Israel Matthew 1:1-2 and Luke 3:34",
+    "originalPassageRefs": "Genesis 28:14",
+    "originalFulfillmentRefs": "Matthew 1:1-2 and Luke 3:34"
+  },
+  {
+    "entryNumber": "18",
+    "originalWording": "18 Genesis 49:10 Abraham’s great-grandson Judah would be a forefather to ‘Shiloh,’ meaning ‘the one to whom it [the scepter] belongs,’ meaning the Messiah Matthew 1:1-3; Luke 1:32-33, 3:33",
+    "originalPassageRefs": "Genesis 49:10",
+    "originalFulfillmentRefs": "Matthew 1:1-3; Luke 1:32-33, 3:33"
+  },
+  {
+    "entryNumber": "19",
+    "originalWording": "19 Genesis 49:10 The Messiah would be a Jew, by virtue of being a descendant of Judah, who is the father of the Israelite Tribe of Judah Matthew 1:1-3; Luke 1:32-33, 3:33",
+    "originalPassageRefs": "Genesis 49:10",
+    "originalFulfillmentRefs": "Matthew 1:1-3; Luke 1:32-33, 3:33"
+  },
+  {
+    "entryNumber": "20",
+    "originalWording": "20 Genesis 49:10 The Messiah would be a ruler, a God-promised king Luke 1:32-33, record of history",
+    "originalPassageRefs": "Genesis 49:10",
+    "originalFulfillmentRefs": "Luke 1:32-33, record of history"
+  },
+  {
+    "entryNumber": "21",
+    "originalWording": "21 Genesis 49:10 The Messiah would arrive after a succession of leaders from the Tribe of Judah Matthew 2:1",
+    "originalPassageRefs": "Genesis 49:10",
+    "originalFulfillmentRefs": "Matthew 2:1"
+  },
+  {
+    "entryNumber": "22",
+    "originalWording": "22 Genesis 49:10 The Messiah would command the obedience of peoples, indicating a far-reaching impact Historically, through the worldwide spread of Christianity",
+    "originalPassageRefs": "Genesis 49:10",
+    "originalFulfillmentRefs": "Historically, through the worldwide spread of Christianity"
+  },
+  {
+    "entryNumber": "23",
+    "originalWording": "23 Exodus 12:13 A precedent that the blood of the Messiah would spare believers of God’s judgment, as did the blood of lambs during Passover John 19:31-37, 1 Corinthians 5:7",
+    "originalPassageRefs": "Exodus 12:13",
+    "originalFulfillmentRefs": "John 19:31-37, 1 Corinthians 5:7"
+  },
+  {
+    "entryNumber": "24",
+    "originalWording": "24 Exodus 12:46 A precedent that the Messiah would be the ultimate Passover Lamb, that no bones would be broken while he was being sacrificed John 19:31-37, 1 Corinthians 5:7",
+    "originalPassageRefs": "Exodus 12:46",
+    "originalFulfillmentRefs": "John 19:31-37, 1 Corinthians 5:7"
+  },
+  {
+    "entryNumber": "25",
+    "originalWording": "25 Leviticus 16:30 Yearly animal sacrifices set a precedent for the Messiah being sacrificed to atone for the sins of others John 1:29-34, John 19:31-37, 1 Corinthians 5:7, Hebrews 7:23-28",
+    "originalPassageRefs": "Leviticus 16:30",
+    "originalFulfillmentRefs": "John 1:29-34, John 19:31-37, 1 Corinthians 5:7, Hebrews 7:23-28"
+  },
+  {
+    "entryNumber": "26",
+    "originalWording": "26 Numbers 24:17 The star of Jacob prophecy: The Messiah would rise from Israel Matthew 2:2, Revelation 22:16",
+    "originalPassageRefs": "Numbers 24:17",
+    "originalFulfillmentRefs": "Matthew 2:2, Revelation 22:16"
+  },
+  {
+    "entryNumber": "27",
+    "originalWording": "27 Numbers 24:17 The Israelites would be divinely protected from total destruction because they would be the people from whom the Messiah would come The record of history",
+    "originalPassageRefs": "Numbers 24:17",
+    "originalFulfillmentRefs": "The record of history"
+  },
+  {
+    "entryNumber": "28",
+    "originalWording": "28 Deuteronomy 18:15 The Messiah would be like Moses -- a prophet, miracle worker, leader, intermediary and deliverer The Gospels record Jesus as a prophet, miracle worker, leader, intermediary.",
+    "originalPassageRefs": "Deuteronomy 18:15",
+    "originalFulfillmentRefs": "The Gospels record Jesus as a prophet, miracle worker, leader, intermediary."
+  },
+  {
+    "entryNumber": "29",
+    "originalWording": "29 Deuteronomy 18:15 Moses foretold that the Messiah would be an Israelite Matthew 1:1-16, Luke 3:23-38",
+    "originalPassageRefs": "Deuteronomy 18:15",
+    "originalFulfillmentRefs": "Matthew 1:1-16, Luke 3:23-38"
+  },
+  {
+    "entryNumber": "30",
+    "originalWording": "30 Deuteronomy 18:18 The Messiah would receive and speak the words of God John 7:16, 8:28, 12:49-50, 14:10, 17:8",
+    "originalPassageRefs": "Deuteronomy 18:18",
+    "originalFulfillmentRefs": "John 7:16, 8:28, 12:49-50, 14:10, 17:8"
+  },
+  {
+    "entryNumber": "31",
+    "originalWording": "31 Deuteronomy 18:19 Not everyone would listen to the promised Messiah John 12:48–50, Acts 3:22–23",
+    "originalPassageRefs": "Deuteronomy 18:19",
+    "originalFulfillmentRefs": "John 12:48–50, Acts 3:22–23"
+  },
+  {
+    "entryNumber": "32",
+    "originalWording": "32 Deuteronomy 18:19 People who do not listen to the Messiah will be held to account by God Acts 3:22–23",
+    "originalPassageRefs": "Deuteronomy 18:19",
+    "originalFulfillmentRefs": "Acts 3:22–23"
+  },
+  {
+    "entryNumber": "33",
+    "originalWording": "33 1 Samuel 2:10 The Messiah would be God’s ‘anointed’ king Luke 1:32-33",
+    "originalPassageRefs": "1 Samuel 2:10",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "34",
+    "originalWording": "34 2 Samuel 7:12-13 The ‘seed of David’ prophecy: The Messiah would be a descendant of David, who was ancient Israel’s greatest king Luke 1:32-33",
+    "originalPassageRefs": "2 Samuel 7:12-13",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "35",
+    "originalWording": "35 2 Samuel 7:12-13 The Messiah would inherit an eternal throne, indicating that he himself would be eternal Luke 1:32-33; John 1:1-2, 14",
+    "originalPassageRefs": "2 Samuel 7:12-13",
+    "originalFulfillmentRefs": "Luke 1:32-33; John 1:1-2, 14"
+  },
+  {
+    "entryNumber": "36",
+    "originalWording": "36 2 Samuel 7:12-13 The Messiah would have human and divine qualities Luke 1:32-33; John 1:1-2, 14",
+    "originalPassageRefs": "2 Samuel 7:12-13",
+    "originalFulfillmentRefs": "Luke 1:32-33; John 1:1-2, 14"
+  },
+  {
+    "entryNumber": "37",
+    "originalWording": "37 2 Samuel 7:12-13 The House of David would survive existential threats [the war with the House of Saul] until the Messiah is born Matthew 1:1-25, 2:1-12; Luke 1:26-38, 2:1-21",
+    "originalPassageRefs": "2 Samuel 7:12-13",
+    "originalFulfillmentRefs": "Matthew 1:1-25, 2:1-12; Luke 1:26-38, 2:1-21"
+  },
+  {
+    "entryNumber": "38",
+    "originalWording": "38 2 Samuel 7:12-16 The first ‘son of David’ prophecy: The Messiah would be a son born to the House of David Luke 1:32-33",
+    "originalPassageRefs": "2 Samuel 7:12-16",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "39",
+    "originalWording": "39 2 Samuel 7:12-16 2 Samuel 7:12-16 reveals the Messiah would be a human descendant of David and allows for the understanding that he would be the son of God Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "2 Samuel 7:12-16",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "40",
+    "originalWording": "40 2 Samuel 7:13 The Messiah would build a house for God John 2:13-25, Ephesians 2:19-22, 1 Peter 2:4-5",
+    "originalPassageRefs": "2 Samuel 7:13",
+    "originalFulfillmentRefs": "John 2:13-25, Ephesians 2:19-22, 1 Peter 2:4-5"
+  },
+  {
+    "entryNumber": "41",
+    "originalWording": "41 2 Samuel 7:14a The Messiah would have a father-son relationship with God Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "2 Samuel 7:14a",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "42",
+    "originalWording": "42 2 Samuel 7:14 The Messiah would be punished [for the sins of others] Matthew 20:28, Luke 23:14, John 19:4, Romans 5:6-8, 1 Corinthians 15:3, 2 Corinthians 5:21, Hebrews 4:15, 1 Peter 2:22",
+    "originalPassageRefs": "2 Samuel 7:14",
+    "originalFulfillmentRefs": "Matthew 20:28, Luke 23:14, John 19:4, Romans 5:6-8, 1 Corinthians 15:3, 2 Corinthians 5:21, Hebrews 4:15, 1 Peter 2:22"
+  },
+  {
+    "entryNumber": "43",
+    "originalWording": "43 2 Samuel 7:14 It would be God’s will that the Messiah would be punished [for the sins of others] Luke 22:42, Acts 2:23",
+    "originalPassageRefs": "2 Samuel 7:14",
+    "originalFulfillmentRefs": "Luke 22:42, Acts 2:23"
+  },
+  {
+    "entryNumber": "44",
+    "originalWording": "44 2 Samuel 7:14 The Messiah’s punishment would be carried out by men Matthew 27, Mark 15, Luke 22-23, John 19",
+    "originalPassageRefs": "2 Samuel 7:14",
+    "originalFulfillmentRefs": "Matthew 27, Mark 15, Luke 22-23, John 19"
+  },
+  {
+    "entryNumber": "45",
+    "originalWording": "45 2 Samuel 7:14 The Messiah would be struck with a rod Matthew 27:27-30",
+    "originalPassageRefs": "2 Samuel 7:14",
+    "originalFulfillmentRefs": "Matthew 27:27-30"
+  },
+  {
+    "entryNumber": "46",
+    "originalWording": "46 2 Samuel 7:14 The Messiah would be beaten or flogged Matthew 27:26-38",
+    "originalPassageRefs": "2 Samuel 7:14",
+    "originalFulfillmentRefs": "Matthew 27:26-38"
+  },
+  {
+    "entryNumber": "47",
+    "originalWording": "47 2 Samuel 7:15 God will never take his love away from the Messiah John 8:29",
+    "originalPassageRefs": "2 Samuel 7:15",
+    "originalFulfillmentRefs": "John 8:29"
+  },
+  {
+    "entryNumber": "48",
+    "originalWording": "48 2 Samuel 7:16 The House of David would be eternal [through the Messiah] Matthew 1:1-16, Luke 1:32-33, Luke 3:23-38",
+    "originalPassageRefs": "2 Samuel 7:16",
+    "originalFulfillmentRefs": "Matthew 1:1-16, Luke 1:32-33, Luke 3:23-38"
+  },
+  {
+    "entryNumber": "49",
+    "originalWording": "49 2 Samuel 7:16 The Messiah would preside over an eternal kingdom Luke 1:32-33",
+    "originalPassageRefs": "2 Samuel 7:16",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "50",
+    "originalWording": "50 2 Kings 2:11 The taking of Elijah into heaven sets a precedent for the ascension of Jesus [every major detail about Jesus was either predicted by or has a precedent in the Old Testament] Luke 24:50-53, Acts 1:1-12",
+    "originalPassageRefs": "2 Kings 2:11",
+    "originalFulfillmentRefs": "Luke 24:50-53, Acts 1:1-12"
+  },
+  {
+    "entryNumber": "51",
+    "originalWording": "51 Job 19:25-27 The Messiah would have power over death Matthew 9:18-26, Mark 5:21-43, Luke 8:40-56, Luke 7:11-17, John 11:1-44",
+    "originalPassageRefs": "Job 19:25-27",
+    "originalFulfillmentRefs": "Matthew 9:18-26, Mark 5:21-43, Luke 8:40-56, Luke 7:11-17, John 11:1-44"
+  },
+  {
+    "entryNumber": "52",
+    "originalWording": "52 Psalm 2:1-2 The Messiah would be opposed by kings and commoners Acts 4:24-27",
+    "originalPassageRefs": "Psalm 2:1-2",
+    "originalFulfillmentRefs": "Acts 4:24-27"
+  },
+  {
+    "entryNumber": "53",
+    "originalWording": "53 Psalm 2:2 The Messiah would be God’s anointed one John 1:29-34",
+    "originalPassageRefs": "Psalm 2:2",
+    "originalFulfillmentRefs": "John 1:29-34"
+  },
+  {
+    "entryNumber": "54",
+    "originalWording": "54 Psalm 2:6-8 The Messiah would be the king of kings Luke 1:32-33",
+    "originalPassageRefs": "Psalm 2:6-8",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "55",
+    "originalWording": "55 Psalm 2:6-8 The Messiah would have a worldwide impact The record of history",
+    "originalPassageRefs": "Psalm 2:6-8",
+    "originalFulfillmentRefs": "The record of history"
+  },
+  {
+    "entryNumber": "56",
+    "originalWording": "56 Psalm 2:6-8 The Messiah’s worldwide impact would originate from Jerusalem Acts 1:8, the record of history",
+    "originalPassageRefs": "Psalm 2:6-8",
+    "originalFulfillmentRefs": "Acts 1:8, the record of history"
+  },
+  {
+    "entryNumber": "57",
+    "originalWording": "57 Psalm 2:6-8 The Messiah would be a son to God Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Psalm 2:6-8",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "58",
+    "originalWording": "58 Psalm 2:9-12 People will take refuge in the Messiah The record of history",
+    "originalPassageRefs": "Psalm 2:9-12",
+    "originalFulfillmentRefs": "The record of history"
+  },
+  {
+    "entryNumber": "59",
+    "originalWording": "59 Psalm 16:10-11 God’s holy one [the Messiah] would be resurrected, as in restored to eternal life Matthew 28, Mark 16, Luke 24, John 20",
+    "originalPassageRefs": "Psalm 16:10-11",
+    "originalFulfillmentRefs": "Matthew 28, Mark 16, Luke 24, John 20"
+  },
+  {
+    "entryNumber": "60",
+    "originalWording": "60 Psalm 16:10-11 God’s ‘holy one’ [the Messiah] would have human qualities -- he would be mortal and he would die Matthew 27, Mark 15, Luke 23, John 19",
+    "originalPassageRefs": "Psalm 16:10-11",
+    "originalFulfillmentRefs": "Matthew 27, Mark 15, Luke 23, John 19"
+  },
+  {
+    "entryNumber": "61",
+    "originalWording": "61 Psalm 22:1 The Messiah would cry out to God during a time of intense suffering Matthew 27:46, Mark 15:34",
+    "originalPassageRefs": "Psalm 22:1",
+    "originalFulfillmentRefs": "Matthew 27:46, Mark 15:34"
+  },
+  {
+    "entryNumber": "62",
+    "originalWording": "62 Psalm 22:6 The Messiah would be scorned and rejected Matthew 27:11-26, Mark 15:1-15, Luke 23:13-25, John 18:28-40",
+    "originalPassageRefs": "Psalm 22:6",
+    "originalFulfillmentRefs": "Matthew 27:11-26, Mark 15:1-15, Luke 23:13-25, John 18:28-40"
+  },
+  {
+    "entryNumber": "63",
+    "originalWording": "63 Psalm 22:7 The Messiah would be mocked and insulted Matthew 27:39",
+    "originalPassageRefs": "Psalm 22:7",
+    "originalFulfillmentRefs": "Matthew 27:39"
+  },
+  {
+    "entryNumber": "64",
+    "originalWording": "64 Psalm 22:8 The Messiah would be mocked for his faith in God Matthew 27:43",
+    "originalPassageRefs": "Psalm 22:8",
+    "originalFulfillmentRefs": "Matthew 27:43"
+  },
+  {
+    "entryNumber": "65",
+    "originalWording": "65 Psalm 22:9-10 The Messiah would be chosen before birth Matthew 1:22-23; John 1:1-5, 14",
+    "originalPassageRefs": "Psalm 22:9-10",
+    "originalFulfillmentRefs": "Matthew 1:22-23; John 1:1-5, 14"
+  },
+  {
+    "entryNumber": "66",
+    "originalWording": "66 Psalm 22:11 No one, other than God, would help the Messiah during his suffering Matthew 26:56, 26:57-68, 27:11-26, 27:32-44, 28:5-10",
+    "originalPassageRefs": "Psalm 22:11",
+    "originalFulfillmentRefs": "Matthew 26:56, 26:57-68, 27:11-26, 27:32-44, 28:5-10"
+  },
+  {
+    "entryNumber": "67",
+    "originalWording": "67 Psalm 22:12 The Messiah would be surrounded by enemies Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19",
+    "originalPassageRefs": "Psalm 22:12",
+    "originalFulfillmentRefs": "Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19"
+  },
+  {
+    "entryNumber": "68",
+    "originalWording": "68 Psalm 22:13 The Messiah would be attacked Matthew 26:67-68, Mark 14:65, Luke 22:63-65, John 18:22",
+    "originalPassageRefs": "Psalm 22:13",
+    "originalFulfillmentRefs": "Matthew 26:67-68, Mark 14:65, Luke 22:63-65, John 18:22"
+  },
+  {
+    "entryNumber": "69",
+    "originalWording": "69 Psalm 22:14-15 The Messiah would suffer dehydration during his suffering John 19:28-30",
+    "originalPassageRefs": "Psalm 22:14-15",
+    "originalFulfillmentRefs": "John 19:28-30"
+  },
+  {
+    "entryNumber": "70",
+    "originalWording": "70 Psalm 22:16 The Messiah’s hands and feet would be pierced during his time of persecution and suffering Luke 24:37-40, John 20:24-29",
+    "originalPassageRefs": "Psalm 22:16",
+    "originalFulfillmentRefs": "Luke 24:37-40, John 20:24-29"
+  },
+  {
+    "entryNumber": "71",
+    "originalWording": "71 Psalm 22:16 Psalm 22 foretold details consistent with Roman crucifixion, centuries beforehand, including the piercing of hands and feet Matthew 27:32-56; Mark 15:16-41; Luke 23:26-49, 24:37-40; John 19:1-37, 20:24-29; the record of history",
+    "originalPassageRefs": "Psalm 22:16",
+    "originalFulfillmentRefs": "Matthew 27:32-56; Mark 15:16-41; Luke 23:26-49, 24:37-40; John 19:1-37, 20:24-29; the record of history"
+  },
+  {
+    "entryNumber": "72",
+    "originalWording": "72 Psalm 22:17 The Messiah’s suffering would be witnessed by the public Matthew 27:32-56, Mark 15:16-41, Luke 23:26-49, and John 19:1-37",
+    "originalPassageRefs": "Psalm 22:17",
+    "originalFulfillmentRefs": "Matthew 27:32-56, Mark 15:16-41, Luke 23:26-49, and John 19:1-37"
+  },
+  {
+    "entryNumber": "73",
+    "originalWording": "73 Psalm 22:18 The Messiah would be stripped and his garments would be gambled for Matthew 27:35, Luke 23:33-4, John 19:24",
+    "originalPassageRefs": "Psalm 22:18",
+    "originalFulfillmentRefs": "Matthew 27:35, Luke 23:33-4, John 19:24"
+  },
+  {
+    "entryNumber": "74",
+    "originalWording": "74 Psalm 22:24 God would hear and respond to the Messiah’s cry for help Matthew 28, Mark 16, Luke 24, John 20",
+    "originalPassageRefs": "Psalm 22:24",
+    "originalFulfillmentRefs": "Matthew 28, Mark 16, Luke 24, John 20"
+  },
+  {
+    "entryNumber": "75",
+    "originalWording": "75 Psalm 22:27 The Messiah’s suffering would precede a worldwide spiritual impact in which people would turn to God Matthew 28:18-20, Acts 1:8, the worldwide spread of Christianity",
+    "originalPassageRefs": "Psalm 22:27",
+    "originalFulfillmentRefs": "Matthew 28:18-20, Acts 1:8, the worldwide spread of Christianity"
+  },
+  {
+    "entryNumber": "76",
+    "originalWording": "76 Psalm 22:30-31 The Messiah’s suffering would precede a spiritual impact that would resonate for generations Matthew 28:18-20, Acts 1:8, the worldwide spread of Christianity",
+    "originalPassageRefs": "Psalm 22:30-31",
+    "originalFulfillmentRefs": "Matthew 28:18-20, Acts 1:8, the worldwide spread of Christianity"
+  },
+  {
+    "entryNumber": "77",
+    "originalWording": "77 Psalm 31:5 A foreshadowing precedent for Jesus committing his spirit to God the Father during Jesus’ crucifixion Luke 23:46",
+    "originalPassageRefs": "Psalm 31:5",
+    "originalFulfillmentRefs": "Luke 23:46"
+  },
+  {
+    "entryNumber": "78",
+    "originalWording": "78 Psalm 31:11 A foreshadowing of Jesus being rejected -- even by people who did not oppose him Matthew 26:56, Mark 14:50",
+    "originalPassageRefs": "Psalm 31:11",
+    "originalFulfillmentRefs": "Matthew 26:56, Mark 14:50"
+  },
+  {
+    "entryNumber": "79",
+    "originalWording": "79 Psalm 31:13 A foreshadowing of Jesus having enemies who plot against his life Matthew 26:3-4, Mark 14:1-2, Luke 22:2, John 11:53",
+    "originalPassageRefs": "Psalm 31:13",
+    "originalFulfillmentRefs": "Matthew 26:3-4, Mark 14:1-2, Luke 22:2, John 11:53"
+  },
+  {
+    "entryNumber": "80",
+    "originalWording": "80 Psalm 31:13-16 A foreshadowing of Jesus having perfect faith in God even during his time of extreme suffering Matthew 26:42, Luke 23:46",
+    "originalPassageRefs": "Psalm 31:13-16",
+    "originalFulfillmentRefs": "Matthew 26:42, Luke 23:46"
+  },
+  {
+    "entryNumber": "81",
+    "originalWording": "81 Psalm 35:11 A foreshadowing of the false witnesses against Jesus Matthew 26:59-61",
+    "originalPassageRefs": "Psalm 35:11",
+    "originalFulfillmentRefs": "Matthew 26:59-61"
+  },
+  {
+    "entryNumber": "82",
+    "originalWording": "82 Psalm 35:19 A foreshadowing of Jesus being hated without cause John 15:24-25",
+    "originalPassageRefs": "Psalm 35:19",
+    "originalFulfillmentRefs": "John 15:24-25"
+  },
+  {
+    "entryNumber": "83",
+    "originalWording": "83 Psalm 40:6-8 The Messiah would serve as the final sacrifice for the permanent atonement of sin John 1:29-34, Hebrews 10:1–18",
+    "originalPassageRefs": "Psalm 40:6-8",
+    "originalFulfillmentRefs": "John 1:29-34, Hebrews 10:1–18"
+  },
+  {
+    "entryNumber": "84",
+    "originalWording": "84 Psalm 40:6-8 The Messiah would be obedient to God in serving as the ultimate sacrifice for the sins of people Obedience: Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19. Significance: John 3:16, Hebrews 10:1-18.",
+    "originalPassageRefs": "Psalm 40:6-8",
+    "originalFulfillmentRefs": "Obedience: Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19. Significance: John 3:16, Hebrews 10:1-18."
+  },
+  {
+    "entryNumber": "85",
+    "originalWording": "85 Psalm 40:7 The Messiah would announce that he is the one who is written about in the Old Testament Matthew 5:17",
+    "originalPassageRefs": "Psalm 40:7",
+    "originalFulfillmentRefs": "Matthew 5:17"
+  },
+  {
+    "entryNumber": "86",
+    "originalWording": "86 Psalm 41:9 The Messiah would be betrayed by a close friend with whom he shared bread John 13:18-30",
+    "originalPassageRefs": "Psalm 41:9",
+    "originalFulfillmentRefs": "John 13:18-30"
+  },
+  {
+    "entryNumber": "87",
+    "originalWording": "87 Psalm 45:6 Another prophetic indication that the Messiah would have the divine quality of being eternal Luke 1:32-33; John 1:1-2, 14",
+    "originalPassageRefs": "Psalm 45:6",
+    "originalFulfillmentRefs": "Luke 1:32-33; John 1:1-2, 14"
+  },
+  {
+    "entryNumber": "88",
+    "originalWording": "88 Psalm 45:6-7 The Messiah would be associated with righteousness, justice and eternalness Throughout New Testament, including Hebrews 4:15, 1 Peter 2:22",
+    "originalPassageRefs": "Psalm 45:6-7",
+    "originalFulfillmentRefs": "Throughout New Testament, including Hebrews 4:15, 1 Peter 2:22"
+  },
+  {
+    "entryNumber": "89",
+    "originalWording": "89 Psalm 45:6-7 A prophetic indication that the Messiah would be God incarnate Hebrews 1:8-9",
+    "originalPassageRefs": "Psalm 45:6-7",
+    "originalFulfillmentRefs": "Hebrews 1:8-9"
+  },
+  {
+    "entryNumber": "90",
+    "originalWording": "90 Psalm 69:4 The Messiah would be hated without cause John 15:24-25",
+    "originalPassageRefs": "Psalm 69:4",
+    "originalFulfillmentRefs": "John 15:24-25"
+  },
+  {
+    "entryNumber": "91",
+    "originalWording": "91 Psalm 69:8 The Messiah would be rejected -- even by his own siblings Mark 3:21, John 7:5",
+    "originalPassageRefs": "Psalm 69:8",
+    "originalFulfillmentRefs": "Mark 3:21, John 7:5"
+  },
+  {
+    "entryNumber": "92",
+    "originalWording": "92 Psalm 69:9 The Messiah would have zeal for his Father’s house [the Temple] John 2:13-25",
+    "originalPassageRefs": "Psalm 69:9",
+    "originalFulfillmentRefs": "John 2:13-25"
+  },
+  {
+    "entryNumber": "93",
+    "originalWording": "93 Psalm 69:9 The Messiah would be reproached by people who reproach God Mark 7:1-13, John 2:13-25",
+    "originalPassageRefs": "Psalm 69:9",
+    "originalFulfillmentRefs": "Mark 7:1-13, John 2:13-25"
+  },
+  {
+    "entryNumber": "94",
+    "originalWording": "94 Psalm 69:10-12 The Messiah would be reproached, mocked and ridiculed Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19",
+    "originalPassageRefs": "Psalm 69:10-12",
+    "originalFulfillmentRefs": "Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19"
+  },
+  {
+    "entryNumber": "95",
+    "originalWording": "95 Psalm 69:17 The Messiah would be a servant of God who would call out to God during a time of distress Matthew 27:46, Mark 15:34",
+    "originalPassageRefs": "Psalm 69:17",
+    "originalFulfillmentRefs": "Matthew 27:46, Mark 15:34"
+  },
+  {
+    "entryNumber": "96",
+    "originalWording": "96 Psalm 69:20 The Messiah would be abandoned and isolated during his time of suffering Matthew 27:32-44, Mark 15:21-32, Luke 23:26-43, John 19:16-27",
+    "originalPassageRefs": "Psalm 69:20",
+    "originalFulfillmentRefs": "Matthew 27:32-44, Mark 15:21-32, Luke 23:26-43, John 19:16-27"
+  },
+  {
+    "entryNumber": "97",
+    "originalWording": "97 Psalm 69:21 The Messiah would be given vinegar [sour wine] to drink during a time of great suffering [the crucifixion] Matthew 27:34, Mark 15:36, John 19:28-30",
+    "originalPassageRefs": "Psalm 69:21",
+    "originalFulfillmentRefs": "Matthew 27:34, Mark 15:36, John 19:28-30"
+  },
+  {
+    "entryNumber": "98",
+    "originalWording": "98 Psalm 72:1 The Messiah would be just and righteous Matthew 1:1, Luke 1:32-33",
+    "originalPassageRefs": "Psalm 72:1",
+    "originalFulfillmentRefs": "Matthew 1:1, Luke 1:32-33"
+  },
+  {
+    "entryNumber": "99",
+    "originalWording": "99 Psalm 72:4 The Messiah would overpower the oppressors and have concern for the needy Luke 13:10-17",
+    "originalPassageRefs": "Psalm 72:4",
+    "originalFulfillmentRefs": "Luke 13:10-17"
+  },
+  {
+    "entryNumber": "100",
+    "originalWording": "100 Psalm 72:8 The Messiah would have an impact throughout the world The New Testament book of Acts, the record of history",
+    "originalPassageRefs": "Psalm 72:8",
+    "originalFulfillmentRefs": "The New Testament book of Acts, the record of history"
+  },
+  {
+    "entryNumber": "101",
+    "originalWording": "101 Psalm 72:11 Kings of the world will bow down to the Messiah [worldwide impact] The record of history",
+    "originalPassageRefs": "Psalm 72:11",
+    "originalFulfillmentRefs": "The record of history"
+  },
+  {
+    "entryNumber": "102",
+    "originalWording": "102 Psalm 72:11 The Messiah would have an impact on all types of people in all places, regardless of national boundaries or cultural, social and linguistic barriers The New Testament book of Acts, the record of history",
+    "originalPassageRefs": "Psalm 72:11",
+    "originalFulfillmentRefs": "The New Testament book of Acts, the record of history"
+  },
+  {
+    "entryNumber": "103",
+    "originalWording": "103 Psalm 72:12 The Messiah will deliver the needy and the oppressed Matthew 14:13-21, Mark 6:30-44, Luke 9:10-17, John 6:1-15",
+    "originalPassageRefs": "Psalm 72:12",
+    "originalFulfillmentRefs": "Matthew 14:13-21, Mark 6:30-44, Luke 9:10-17, John 6:1-15"
+  },
+  {
+    "entryNumber": "104",
+    "originalWording": "104 Psalm 72:17 The Messiah’s name will endure forever The record of history",
+    "originalPassageRefs": "Psalm 72:17",
+    "originalFulfillmentRefs": "The record of history"
+  },
+  {
+    "entryNumber": "105",
+    "originalWording": "105 Psalm 72:17 The Messiah will have a worldwide spiritual impact The New Testament book of Acts, the record of history",
+    "originalPassageRefs": "Psalm 72:17",
+    "originalFulfillmentRefs": "The New Testament book of Acts, the record of history"
+  },
+  {
+    "entryNumber": "106",
+    "originalWording": "106 Psalm 72:18-19 People throughout the world would learn about the God of Israel because of the Messiah The New Testament book of Acts, the record of history",
+    "originalPassageRefs": "Psalm 72:18-19",
+    "originalFulfillmentRefs": "The New Testament book of Acts, the record of history"
+  },
+  {
+    "entryNumber": "107",
+    "originalWording": "107 Psalm 78:1-2 The Messiah would speak in parables The Gospels' record of Jesus' public ministry",
+    "originalPassageRefs": "Psalm 78:1-2",
+    "originalFulfillmentRefs": "The Gospels' record of Jesus' public ministry"
+  },
+  {
+    "entryNumber": "108",
+    "originalWording": "108 Psalm 89:1 The Messiah would have an eternal spiritual impact and make the God of the Bible known throughout the generations Luke 1:32-33 and the enduring spread of Christianity",
+    "originalPassageRefs": "Psalm 89:1",
+    "originalFulfillmentRefs": "Luke 1:32-33 and the enduring spread of Christianity"
+  },
+  {
+    "entryNumber": "109",
+    "originalWording": "109 Psalm 89:3-4 God’s covenant with David, which involves the promise of the Messiah, will endure forever Luke 1:32-33",
+    "originalPassageRefs": "Psalm 89:3-4",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "110",
+    "originalWording": "110 Psalm 89:4 The throne of the Messiah would be eternal Luke 1:32-33, Acts 13:34, Romans 6:9, Revelation 1:18",
+    "originalPassageRefs": "Psalm 89:4",
+    "originalFulfillmentRefs": "Luke 1:32-33, Acts 13:34, Romans 6:9, Revelation 1:18"
+  },
+  {
+    "entryNumber": "111",
+    "originalWording": "111 Psalm 89:4 Another ‘seed of David’ prophecy: The Messiah would be an eternal descendant of King David Luke 1:32-33",
+    "originalPassageRefs": "Psalm 89:4",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "112",
+    "originalWording": "112 Psalm 89:26 The Messiah would address God as his father Mark 14:36; Luke 2:49, 23:34, 23:46; John 5:17-18, 10:30, 11:41-42, 17:1, 17:11",
+    "originalPassageRefs": "Psalm 89:26",
+    "originalFulfillmentRefs": "Mark 14:36; Luke 2:49, 23:34, 23:46; John 5:17-18, 10:30, 11:41-42, 17:1, 17:11"
+  },
+  {
+    "entryNumber": "113",
+    "originalWording": "113 Psalm 89:27 The Messiah would be the greatest of all kings Matthew 28:18; Luke 1:32-33; 1 Timothy 6:15; Revelation 11:15, 17:14, 19:16",
+    "originalPassageRefs": "Psalm 89:27",
+    "originalFulfillmentRefs": "Matthew 28:18; Luke 1:32-33; 1 Timothy 6:15; Revelation 11:15, 17:14, 19:16"
+  },
+  {
+    "entryNumber": "114",
+    "originalWording": "114 Psalm 89:29 The line of David will be eternal [through the Messiah] Matthew 1:1,6; Luke 1:32, 3:31",
+    "originalPassageRefs": "Psalm 89:29",
+    "originalFulfillmentRefs": "Matthew 1:1,6; Luke 1:32, 3:31"
+  },
+  {
+    "entryNumber": "115",
+    "originalWording": "115 Psalm 89:30-32 The royal descendants of David would be punished for their sins [and the Messiah would be punished for the sins of others] Matthew 27:32-56, Mark 15:16-41, Luke 23:26-49, John 19:1-37",
+    "originalPassageRefs": "Psalm 89:30-32",
+    "originalFulfillmentRefs": "Matthew 27:32-56, Mark 15:16-41, Luke 23:26-49, John 19:1-37"
+  },
+  {
+    "entryNumber": "116",
+    "originalWording": "116 Psalm 89:32 The Messiah would be punished with a rod Matthew 27:27-31, Mark 15:16-20",
+    "originalPassageRefs": "Psalm 89:32",
+    "originalFulfillmentRefs": "Matthew 27:27-31, Mark 15:16-20"
+  },
+  {
+    "entryNumber": "117",
+    "originalWording": "117 Psalm 89:32 The Messiah would be flogged Matthew 27:26, John 19:1",
+    "originalPassageRefs": "Psalm 89:32",
+    "originalFulfillmentRefs": "Matthew 27:26, John 19:1"
+  },
+  {
+    "entryNumber": "118",
+    "originalWording": "118 Psalm 89:34 God would never revoke his covenant with David, which includes his promise to bring forth an eternal king, the Messiah, from the House of David Luke 1:32-33, Revelation 11:15",
+    "originalPassageRefs": "Psalm 89:34",
+    "originalFulfillmentRefs": "Luke 1:32-33, Revelation 11:15"
+  },
+  {
+    "entryNumber": "119",
+    "originalWording": "119 Psalm 89:36-37 The line and throne of David, through the Messiah, would endure forever like the sun and the moon Luke 1:32-33, Revelation 11:15",
+    "originalPassageRefs": "Psalm 89:36-37",
+    "originalFulfillmentRefs": "Luke 1:32-33, Revelation 11:15"
+  },
+  {
+    "entryNumber": "120",
+    "originalWording": "120 Psalm 110:1 The Messiah would be greater than David who was ancient Israel’s greatest king Acts 2:33-35; Hebrews 1:3, 10:12-13",
+    "originalPassageRefs": "Psalm 110:1",
+    "originalFulfillmentRefs": "Acts 2:33-35; Hebrews 1:3, 10:12-13"
+  },
+  {
+    "entryNumber": "121",
+    "originalWording": "121 Psalm 110:1 The Messiah would be seated at the right hand of God in heaven Luke 24:50-53, Acts 1:1-12",
+    "originalPassageRefs": "Psalm 110:1",
+    "originalFulfillmentRefs": "Luke 24:50-53, Acts 1:1-12"
+  },
+  {
+    "entryNumber": "122",
+    "originalWording": "122 Psalm 110:1 The Messiah would ascend into heaven, to be seated at the right hand of God Luke 1:32-33",
+    "originalPassageRefs": "Psalm 110:1",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "123",
+    "originalWording": "123 Psalm 110:4 The Messiah will be an eternal priest in the order of Melchizedek Hebrews 5:6, 5:10, 6:20, 7:11-17",
+    "originalPassageRefs": "Psalm 110:4",
+    "originalFulfillmentRefs": "Hebrews 5:6, 5:10, 6:20, 7:11-17"
+  },
+  {
+    "entryNumber": "124",
+    "originalWording": "124 Psalm 118:5-6 The Messiah would not abandon his faith but call upon God during his time of distress Luke 23:34, 46",
+    "originalPassageRefs": "Psalm 118:5-6",
+    "originalFulfillmentRefs": "Luke 23:34, 46"
+  },
+  {
+    "entryNumber": "125",
+    "originalWording": "125 Psalm 118:7-9 The Messiah would believe that God would assist him and that he would triumph over those who hate him Matthew 12:9-21, Mark 3:1-12",
+    "originalPassageRefs": "Psalm 118:7-9",
+    "originalFulfillmentRefs": "Matthew 12:9-21, Mark 3:1-12"
+  },
+  {
+    "entryNumber": "126",
+    "originalWording": "126 Psalm 118:10-12 The Messiah would be surrounded by enemies and yet would prevail Mark 3:1-6, 12:13-17; Luke 4:16-30; John 7:25-44, 8:48-59, 10:22-42",
+    "originalPassageRefs": "Psalm 118:10-12",
+    "originalFulfillmentRefs": "Mark 3:1-6, 12:13-17; Luke 4:16-30; John 7:25-44, 8:48-59, 10:22-42"
+  },
+  {
+    "entryNumber": "127",
+    "originalWording": "127 Psalm 118:13-14 The Messiah would be divinely assisted Luke 24:6-7",
+    "originalPassageRefs": "Psalm 118:13-14",
+    "originalFulfillmentRefs": "Luke 24:6-7"
+  },
+  {
+    "entryNumber": "128",
+    "originalWording": "128 Psalm 118:17-18 The Messiah would not be given over to death Matthew 28:1-10, Mark 16:1-20, Luke 24:1-49, John 20:1-29",
+    "originalPassageRefs": "Psalm 118:17-18",
+    "originalFulfillmentRefs": "Matthew 28:1-10, Mark 16:1-20, Luke 24:1-49, John 20:1-29"
+  },
+  {
+    "entryNumber": "129",
+    "originalWording": "129 Psalm 118:22-23 The rejected stone [the Messiah] would become the cornerstone of a plan from God [God’s plan of salvation] Acts 4:11-12",
+    "originalPassageRefs": "Psalm 118:22-23",
+    "originalFulfillmentRefs": "Acts 4:11-12"
+  },
+  {
+    "entryNumber": "130",
+    "originalWording": "130 Psalm 118:26 The Messiah would arrive during a time when there was a Temple in Jerusalem Matthew 21:9, Mark 11:9-10, Luke 19:38, John 12:13",
+    "originalPassageRefs": "Psalm 118:26",
+    "originalFulfillmentRefs": "Matthew 21:9, Mark 11:9-10, Luke 19:38, John 12:13"
+  },
+  {
+    "entryNumber": "131",
+    "originalWording": "131 Isaiah 7:6,13-14 Another prophetic promise that the House of David would survive existential threats [the northern alliance] until the Messiah is born Matthew 1:1, 1:6; Luke 1:32-33, 3:31",
+    "originalPassageRefs": "Isaiah 7:6,13-14",
+    "originalFulfillmentRefs": "Matthew 1:1, 1:6; Luke 1:32-33, 3:31"
+  },
+  {
+    "entryNumber": "132",
+    "originalWording": "132 Isaiah 7:13-14 Another ‘son of David’ prophecy: The Messiah would be a royal son born to the house of David Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Isaiah 7:13-14",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "133",
+    "originalWording": "133 Isaiah 7:13-14 Isaiah 7:13-14 allows for the understanding that the Messiah would be the Son of David, the Son of Man, and the Son of God Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Isaiah 7:13-14",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "134",
+    "originalWording": "134 Isaiah 7:14 The Messiah’s conception and birth would be a sign from God Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Isaiah 7:14",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "135",
+    "originalWording": "135 Isaiah 7:14 The Messiah would be called ‘Immanuel,’ which means ‘God with us’ Matthew 1:18-25",
+    "originalPassageRefs": "Isaiah 7:14",
+    "originalFulfillmentRefs": "Matthew 1:18-25"
+  },
+  {
+    "entryNumber": "136",
+    "originalWording": "136 Isaiah 7:14 Another prophetic reminder that the Messiah would be a human being born to a human mother Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Isaiah 7:14",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "137",
+    "originalWording": "137 Isaiah 7:14 The Messiah would be born to an ‘alma,’ which is a Hebrew word that refers to a soon-to-be-married virgin Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Isaiah 7:14",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "138",
+    "originalWording": "138 Isaiah 8:14 The Messiah would be a sanctuary for believers and a stumbling block for non-believers History, as expressed during the fall of Jerusalem",
+    "originalPassageRefs": "Isaiah 8:14",
+    "originalFulfillmentRefs": "History, as expressed during the fall of Jerusalem"
+  },
+  {
+    "entryNumber": "139",
+    "originalWording": "139 Isaiah 9:1-2 The Messiah would have a ministry in Galilee, a region in northern Israel Matthew 4:12-17, Matthew 4:23, Mark 1:39",
+    "originalPassageRefs": "Isaiah 9:1-2",
+    "originalFulfillmentRefs": "Matthew 4:12-17, Matthew 4:23, Mark 1:39"
+  },
+  {
+    "entryNumber": "140",
+    "originalWording": "140 Isaiah 9:1-2 The Messiah would be a great light for all people, including Gentiles Matthew 8:5-13, Luke 7:1-10",
+    "originalPassageRefs": "Isaiah 9:1-2",
+    "originalFulfillmentRefs": "Matthew 8:5-13, Luke 7:1-10"
+  },
+  {
+    "entryNumber": "141",
+    "originalWording": "141 Isaiah 9:2 The Messiah would be God’s light for people in the shadow of death John 8:12, 12:46",
+    "originalPassageRefs": "Isaiah 9:2",
+    "originalFulfillmentRefs": "John 8:12, 12:46"
+  },
+  {
+    "entryNumber": "142",
+    "originalWording": "142 Isaiah 9:6 The Messiah would be a ‘son’ who would be called ‘God’ John 1:1, 1:18, 20:28; Romans 9:5, Titus 2:13, Hebrews 1:8, 2 Peter 1:1, and 1 John 5:20",
+    "originalPassageRefs": "Isaiah 9:6",
+    "originalFulfillmentRefs": "John 1:1, 1:18, 20:28; Romans 9:5, Titus 2:13, Hebrews 1:8, 2 Peter 1:1, and 1 John 5:20"
+  },
+  {
+    "entryNumber": "143",
+    "originalWording": "143 Isaiah 9:6-7 Another ‘son of David’ prophecy: The Messiah would be an extraordinary descendant of King David Luke 1:32-33",
+    "originalPassageRefs": "Isaiah 9:6-7",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "144",
+    "originalWording": "144 Isaiah 9:6-7 The Messiah would have the divine ability to reign eternally Luke 1:32-33",
+    "originalPassageRefs": "Isaiah 9:6-7",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "145",
+    "originalWording": "145 Isaiah 9:6-7 The Messiah would have human and divine qualities Expressed throughout New Testament",
+    "originalPassageRefs": "Isaiah 9:6-7",
+    "originalFulfillmentRefs": "Expressed throughout New Testament"
+  },
+  {
+    "entryNumber": "146",
+    "originalWording": "146 Isaiah 9:7 The Messiah will be eternal, just and righteous Romans 3:25, 6:9; Hebrews 2:17, 9:26",
+    "originalPassageRefs": "Isaiah 9:7",
+    "originalFulfillmentRefs": "Romans 3:25, 6:9; Hebrews 2:17, 9:26"
+  },
+  {
+    "entryNumber": "147",
+    "originalWording": "147 Isaiah 11:1 The Messiah would be a descendant of Jesse, who was King David’s father Matthew 1:1-16, Luke 3:23-38.",
+    "originalPassageRefs": "Isaiah 11:1",
+    "originalFulfillmentRefs": "Matthew 1:1-16, Luke 3:23-38."
+  },
+  {
+    "entryNumber": "148",
+    "originalWording": "148 Isaiah 11:1 The Messiah would arrive after a great devastation for the House of David, as illustrated with the imagery of a cut-down family tree of Jesse Matthew 1:1-16, Luke 3:23-38.",
+    "originalPassageRefs": "Isaiah 11:1",
+    "originalFulfillmentRefs": "Matthew 1:1-16, Luke 3:23-38."
+  },
+  {
+    "entryNumber": "149",
+    "originalWording": "149 Isaiah 11:1 Isaiah prophetically indicates that David’s throne in Jerusalem would become and remain vacant until the promised Messiah arrived Luke 1:32-33",
+    "originalPassageRefs": "Isaiah 11:1",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "150",
+    "originalWording": "150 Isaiah 11:1 Another prophetic promise that the House of David would survive existential threats [the Babylonian conquest of Judah] until the Messiah is born Luke 1:32-33",
+    "originalPassageRefs": "Isaiah 11:1",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "151",
+    "originalWording": "151 Isaiah 11:2 The Messiah would be divinely assisted by the Holy Spirit John 1:29-34",
+    "originalPassageRefs": "Isaiah 11:2",
+    "originalFulfillmentRefs": "John 1:29-34"
+  },
+  {
+    "entryNumber": "152",
+    "originalWording": "152 Isaiah 11:5 The Messiah would be a righteous king Luke 1:32-33",
+    "originalPassageRefs": "Isaiah 11:5",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "153",
+    "originalWording": "153 Isaiah 11:6-8 The Messiah would bring peace Matthew 5:43-44",
+    "originalPassageRefs": "Isaiah 11:6-8",
+    "originalFulfillmentRefs": "Matthew 5:43-44"
+  },
+  {
+    "entryNumber": "154",
+    "originalWording": "154 Isaiah 11:9 The world would become familiar with the God of Israel during the time of the Messiah Matthew 28:18-20, Acts 1:8",
+    "originalPassageRefs": "Isaiah 11:9",
+    "originalFulfillmentRefs": "Matthew 28:18-20, Acts 1:8"
+  },
+  {
+    "entryNumber": "155",
+    "originalWording": "155 Isaiah 11:9-10 The Messiah would appeal to Gentiles Acts 11:20-21, 13:48, 14:1, 17:4",
+    "originalPassageRefs": "Isaiah 11:9-10",
+    "originalFulfillmentRefs": "Acts 11:20-21, 13:48, 14:1, 17:4"
+  },
+  {
+    "entryNumber": "156",
+    "originalWording": "156 Isaiah 11:9-10 The Messiah would have a worldwide spiritual impact Acts 17:6, 19:10, 19:26, 24:5, 28:22",
+    "originalPassageRefs": "Isaiah 11:9-10",
+    "originalFulfillmentRefs": "Acts 17:6, 19:10, 19:26, 24:5, 28:22"
+  },
+  {
+    "entryNumber": "157",
+    "originalWording": "157 Isaiah 16:5 The Messiah again is associated with justice and righteousness Romans 6:23",
+    "originalPassageRefs": "Isaiah 16:5",
+    "originalFulfillmentRefs": "Romans 6:23"
+  },
+  {
+    "entryNumber": "158",
+    "originalWording": "158 Isaiah 28:16 The Messiah would be the cornerstone of God’s plan of salvation 1 Peter 2:4-8",
+    "originalPassageRefs": "Isaiah 28:16",
+    "originalFulfillmentRefs": "1 Peter 2:4-8"
+  },
+  {
+    "entryNumber": "159",
+    "originalWording": "159 Isaiah 28:16 The Messiah would prove to be reliable as the cornerstone of God’s plan of salvation Romans 9:33, Ephesians 2:20, Hebrews 4:15, 1 Peter 2:4-8",
+    "originalPassageRefs": "Isaiah 28:16",
+    "originalFulfillmentRefs": "Romans 9:33, Ephesians 2:20, Hebrews 4:15, 1 Peter 2:4-8"
+  },
+  {
+    "entryNumber": "160",
+    "originalWording": "160 Isaiah 28:16 The impact of the Messiah would originate in Jerusalem Acts 1:8",
+    "originalPassageRefs": "Isaiah 28:16",
+    "originalFulfillmentRefs": "Acts 1:8"
+  },
+  {
+    "entryNumber": "161",
+    "originalWording": "161 Isaiah 35:4-6 The time of the Messiah would involve God visiting and saving his people The Gospels of the New Testament",
+    "originalPassageRefs": "Isaiah 35:4-6",
+    "originalFulfillmentRefs": "The Gospels of the New Testament"
+  },
+  {
+    "entryNumber": "162",
+    "originalWording": "162 Isaiah 35:4-6 Isaiah 35:4-6 allows for the understanding that the Messiah would be God incarnate Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Isaiah 35:4-6",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "163",
+    "originalWording": "163 Isaiah 35:5 The Messiah would heal the blind Matthew 9:27-31, 12:22-37, 15:29-31, 20:29-34, 21:12-17; Mark 8:22-26, 10:46-52; Luke 7:18-35, 18:35-43; John 9:1-41",
+    "originalPassageRefs": "Isaiah 35:5",
+    "originalFulfillmentRefs": "Matthew 9:27-31, 12:22-37, 15:29-31, 20:29-34, 21:12-17; Mark 8:22-26, 10:46-52; Luke 7:18-35, 18:35-43; John 9:1-41"
+  },
+  {
+    "entryNumber": "164",
+    "originalWording": "164 Isaiah 35:5 The Messiah would heal the deaf Matthew 17:14-20; Mark 7:31-37, 9:14-29; Luke 9:37-43",
+    "originalPassageRefs": "Isaiah 35:5",
+    "originalFulfillmentRefs": "Matthew 17:14-20; Mark 7:31-37, 9:14-29; Luke 9:37-43"
+  },
+  {
+    "entryNumber": "165",
+    "originalWording": "165 Isaiah 35:6 The Messiah would heal the lame Matthew 9:1-8, 15:29-31, 21:12-17; Mark 2:1-12; Luke 5:17-26; John 5:1-18",
+    "originalPassageRefs": "Isaiah 35:6",
+    "originalFulfillmentRefs": "Matthew 9:1-8, 15:29-31, 21:12-17; Mark 2:1-12; Luke 5:17-26; John 5:1-18"
+  },
+  {
+    "entryNumber": "166",
+    "originalWording": "166 Isaiah 35:6 The Messiah would heal the mute Matthew 9:32-34, 12:22-37, 15:29-31, 17:14-20; Mark 9:14-29; Luke 9:37-43, 11:14-28",
+    "originalPassageRefs": "Isaiah 35:6",
+    "originalFulfillmentRefs": "Matthew 9:32-34, 12:22-37, 15:29-31, 17:14-20; Mark 9:14-29; Luke 9:37-43, 11:14-28"
+  },
+  {
+    "entryNumber": "167",
+    "originalWording": "167 Isaiah 40:1-5 The Messiah would arrive after a time of punishment for Israel [the conquests by Assyria and Babylon] Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Isaiah 40:1-5",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "168",
+    "originalWording": "168 Isaiah 40:3 The Messiah would have the way prepared for him by a forerunner [John the Baptist] Matthew 3:1-17, Mark 1:1-11, Luke 3:1-22, John 1:15-36",
+    "originalPassageRefs": "Isaiah 40:3",
+    "originalFulfillmentRefs": "Matthew 3:1-17, Mark 1:1-11, Luke 3:1-22, John 1:15-36"
+  },
+  {
+    "entryNumber": "169",
+    "originalWording": "169 Isaiah 40:3-5 Isaiah 40:3-5 allows for the understanding that the Messiah would be God incarnate Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Isaiah 40:3-5",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "170",
+    "originalWording": "170 Isaiah 40:5 Everyone everywhere would see evidence of the Messiah’s arrival [worldwide impact] History, the worldwide spread of Christianity",
+    "originalPassageRefs": "Isaiah 40:5",
+    "originalFulfillmentRefs": "History, the worldwide spread of Christianity"
+  },
+  {
+    "entryNumber": "171",
+    "originalWording": "171 Isaiah 42:1 God would anoint the Messiah to have a worldwide spiritual impact John 1:29-34",
+    "originalPassageRefs": "Isaiah 42:1",
+    "originalFulfillmentRefs": "John 1:29-34"
+  },
+  {
+    "entryNumber": "172",
+    "originalWording": "172 Isaiah 42:1 The Messiah would bring God’s justice to the nations Matthew 12:15-21, historical record: worldwide spread of Christianity",
+    "originalPassageRefs": "Isaiah 42:1",
+    "originalFulfillmentRefs": "Matthew 12:15-21, historical record: worldwide spread of Christianity"
+  },
+  {
+    "entryNumber": "173",
+    "originalWording": "173 Isaiah 42:2-3 The Messiah would achieve a worldwide spiritual impact while being humble and gentle Matthew 12:15-21, historical record: worldwide spread of Christianity",
+    "originalPassageRefs": "Isaiah 42:2-3",
+    "originalFulfillmentRefs": "Matthew 12:15-21, historical record: worldwide spread of Christianity"
+  },
+  {
+    "entryNumber": "174",
+    "originalWording": "174 Isaiah 42:4 The Messiah will not falter or fail in his task to bring justice to the nations Matthew 12:15-21, the historical record involving the worldwide impact of Jesus",
+    "originalPassageRefs": "Isaiah 42:4",
+    "originalFulfillmentRefs": "Matthew 12:15-21, the historical record involving the worldwide impact of Jesus"
+  },
+  {
+    "entryNumber": "175",
+    "originalWording": "175 Isaiah 42:5-6 The Messiah would be divinely assisted by God John 1:29-34, 5:19, 7:30, 8:29; Acts 10:38",
+    "originalPassageRefs": "Isaiah 42:5-6",
+    "originalFulfillmentRefs": "John 1:29-34, 5:19, 7:30, 8:29; Acts 10:38"
+  },
+  {
+    "entryNumber": "176",
+    "originalWording": "176 Isaiah 42:6 The Messiah would be called in righteousness by God Matthew 9:36; Mark 1:14-15; Acts 3:14, 13:47; 2 Corinthians 5:21; Hebrews 4:15",
+    "originalPassageRefs": "Isaiah 42:6",
+    "originalFulfillmentRefs": "Matthew 9:36; Mark 1:14-15; Acts 3:14, 13:47; 2 Corinthians 5:21; Hebrews 4:15"
+  },
+  {
+    "entryNumber": "177",
+    "originalWording": "177 Isaiah 42:6-7 The Messiah would be a light for the nations Historical record: worldwide impact of Jesus",
+    "originalPassageRefs": "Isaiah 42:6-7",
+    "originalFulfillmentRefs": "Historical record: worldwide impact of Jesus"
+  },
+  {
+    "entryNumber": "178",
+    "originalWording": "178 Isaiah 42:8-9 God foretold that the Messiah would succeed with the task of achieving a worldwide spiritual impact Historical record: worldwide impact of Jesus",
+    "originalPassageRefs": "Isaiah 42:8-9",
+    "originalFulfillmentRefs": "Historical record: worldwide impact of Jesus"
+  },
+  {
+    "entryNumber": "179",
+    "originalWording": "179 Isaiah 49:1 The Messiah would be heard by people throughout the world Historical record: worldwide impact of Jesus",
+    "originalPassageRefs": "Isaiah 49:1",
+    "originalFulfillmentRefs": "Historical record: worldwide impact of Jesus"
+  },
+  {
+    "entryNumber": "180",
+    "originalWording": "180 Isaiah 49:1 The Messiah would be chosen before birth Luke 1:31-33",
+    "originalPassageRefs": "Isaiah 49:1",
+    "originalFulfillmentRefs": "Luke 1:31-33"
+  },
+  {
+    "entryNumber": "181",
+    "originalWording": "181 Isaiah 49:2 The Messiah’s weapon would be the spoken word, not an army The historical record involving the worldwide impact of Jesus",
+    "originalPassageRefs": "Isaiah 49:2",
+    "originalFulfillmentRefs": "The historical record involving the worldwide impact of Jesus"
+  },
+  {
+    "entryNumber": "182",
+    "originalWording": "182 Isaiah 49:3 The Messiah would be the perfect embodiment of Israel Romans 5:8-9",
+    "originalPassageRefs": "Isaiah 49:3",
+    "originalFulfillmentRefs": "Romans 5:8-9"
+  },
+  {
+    "entryNumber": "183",
+    "originalWording": "183 Isaiah 49:4 The Messiah would endure seemingly overwhelming opposition Matthew 27:11-26; Mark 15:1-15; Luke 23:13-25; John 11:45-57, 18:28-40",
+    "originalPassageRefs": "Isaiah 49:4",
+    "originalFulfillmentRefs": "Matthew 27:11-26; Mark 15:1-15; Luke 23:13-25; John 11:45-57, 18:28-40"
+  },
+  {
+    "entryNumber": "184",
+    "originalWording": "184 Isaiah 49:5 The Messiah would be chosen before birth and created by God Matthew 1:21, Luke 1:31-35",
+    "originalPassageRefs": "Isaiah 49:5",
+    "originalFulfillmentRefs": "Matthew 1:21, Luke 1:31-35"
+  },
+  {
+    "entryNumber": "185",
+    "originalWording": "185 Isaiah 49:5-6 The Messiah would rescue the faithful among Israel Matthew 10:5-6",
+    "originalPassageRefs": "Isaiah 49:5-6",
+    "originalFulfillmentRefs": "Matthew 10:5-6"
+  },
+  {
+    "entryNumber": "186",
+    "originalWording": "186 Isaiah 49:6 The Messiah would be a light to the nations Luke 2:32, John 8:12, Acts 13:47",
+    "originalPassageRefs": "Isaiah 49:6",
+    "originalFulfillmentRefs": "Luke 2:32, John 8:12, Acts 13:47"
+  },
+  {
+    "entryNumber": "187",
+    "originalWording": "187 Isaiah 49:6 The Messiah would bring God’s salvation to the ends of the earth Historical record: worldwide spread of Christianity",
+    "originalPassageRefs": "Isaiah 49:6",
+    "originalFulfillmentRefs": "Historical record: worldwide spread of Christianity"
+  },
+  {
+    "entryNumber": "188",
+    "originalWording": "188 Isaiah 49:7 The Messiah would be despised and abhorred Matthew 27:11-26, Mark 15:1-15, Luke 23:13-25, John 18:28-4",
+    "originalPassageRefs": "Isaiah 49:7",
+    "originalFulfillmentRefs": "Matthew 27:11-26, Mark 15:1-15, Luke 23:13-25, John 18:28-4"
+  },
+  {
+    "entryNumber": "189",
+    "originalWording": "189 Isaiah 49:7 The Messiah would succeed in having a far-reaching spiritual impact, despite being despised and abhorred Historical record: worldwide spread of Christianity",
+    "originalPassageRefs": "Isaiah 49:7",
+    "originalFulfillmentRefs": "Historical record: worldwide spread of Christianity"
+  },
+  {
+    "entryNumber": "190",
+    "originalWording": "190 Isaiah 50:4 The Messiah would be instructed by God John 12:49-50",
+    "originalPassageRefs": "Isaiah 50:4",
+    "originalFulfillmentRefs": "John 12:49-50"
+  },
+  {
+    "entryNumber": "191",
+    "originalWording": "191 Isaiah 50:5 The Messiah would be perfectly obedient to the will of God Philippians 2:8",
+    "originalPassageRefs": "Isaiah 50:5",
+    "originalFulfillmentRefs": "Philippians 2:8"
+  },
+  {
+    "entryNumber": "192",
+    "originalWording": "192 Isaiah 50:6 The Messiah would willingly submit to the abuse from others Matthew 26:47-56, Mark 14:43-52, Luke 22:39-54, John 18:1-14",
+    "originalPassageRefs": "Isaiah 50:6",
+    "originalFulfillmentRefs": "Matthew 26:47-56, Mark 14:43-52, Luke 22:39-54, John 18:1-14"
+  },
+  {
+    "entryNumber": "193",
+    "originalWording": "193 Isaiah 50:6 The Messiah would offer his back to those who would beat him Matthew 27:26-31, John 19:1-3",
+    "originalPassageRefs": "Isaiah 50:6",
+    "originalFulfillmentRefs": "Matthew 27:26-31, John 19:1-3"
+  },
+  {
+    "entryNumber": "194",
+    "originalWording": "194 Isaiah 50:6 The Messiah would be shamed, as in reproached, insulted or dishonored Mark 15:16-20",
+    "originalPassageRefs": "Isaiah 50:6",
+    "originalFulfillmentRefs": "Mark 15:16-20"
+  },
+  {
+    "entryNumber": "195",
+    "originalWording": "195 Isaiah 50:6 The Messiah would be spat upon Matthew 26:67, 27:30; Mark 14:65, 15:19",
+    "originalPassageRefs": "Isaiah 50:6",
+    "originalFulfillmentRefs": "Matthew 26:67, 27:30; Mark 14:65, 15:19"
+  },
+  {
+    "entryNumber": "196",
+    "originalWording": "196 Isaiah 50:7 The Messiah would be resolute John 2-4",
+    "originalPassageRefs": "Isaiah 50:7",
+    "originalFulfillmentRefs": "John 2-4"
+  },
+  {
+    "entryNumber": "197",
+    "originalWording": "197 Isaiah 50:7 The Messiah would be divinely assisted Luke 22:42-43",
+    "originalPassageRefs": "Isaiah 50:7",
+    "originalFulfillmentRefs": "Luke 22:42-43"
+  },
+  {
+    "entryNumber": "198",
+    "originalWording": "198 Isaiah 50:8 The Messiah would be accused Matthew 12:9-14, 12:22-37, 27:11; Mark 3:1-6, 15:26; Luke 6:6-11, 11:14-28, 23:1-2; John 19:12",
+    "originalPassageRefs": "Isaiah 50:8",
+    "originalFulfillmentRefs": "Matthew 12:9-14, 12:22-37, 27:11; Mark 3:1-6, 15:26; Luke 6:6-11, 11:14-28, 23:1-2; John 19:12"
+  },
+  {
+    "entryNumber": "199",
+    "originalWording": "199 Isaiah 50:9 The Messiah would be condemned Matthew 26-27, Mark 14-15, Luke 23-24, John 18-19",
+    "originalPassageRefs": "Isaiah 50:9",
+    "originalFulfillmentRefs": "Matthew 26-27, Mark 14-15, Luke 23-24, John 18-19"
+  },
+  {
+    "entryNumber": "200",
+    "originalWording": "200 Isaiah 52:13 God’s servant [the Messiah] would be lifted up and highly exalted Raised up on cross: Matthew 27:32-44, Mark 15:21-32, Luke 23:26-43, John 19:16-27; raised up from grave: Matthew 28:1-10, Mark 16:1-20, Luke 24:1-49, John 20:1-29; raised up to heaven: Luke 24:50-53, Acts 1:1-11",
+    "originalPassageRefs": "Isaiah 52:13",
+    "originalFulfillmentRefs": "Raised up on cross: Matthew 27:32-44, Mark 15:21-32, Luke 23:26-43, John 19:16-27; raised up from grave: Matthew 28:1-10, Mark 16:1-20, Luke 24:1-49, John 20:1-29; raised up to heaven: Luke 24:50-53, Acts 1:1-11"
+  },
+  {
+    "entryNumber": "201",
+    "originalWording": "201 Isaiah 52:14 The Messiah’s appearance would become greatly marred, disfigured Matthew 26:67-68, 27:26-44; Mark 14:65, 15:15-32; Luke 22:63-65, 23:26-43; John 18:22, 19:1-27",
+    "originalPassageRefs": "Isaiah 52:14",
+    "originalFulfillmentRefs": "Matthew 26:67-68, 27:26-44; Mark 14:65, 15:15-32; Luke 22:63-65, 23:26-43; John 18:22, 19:1-27"
+  },
+  {
+    "entryNumber": "202",
+    "originalWording": "202 Isaiah 52:15 The Messiah would be the catalyst for a spiritual awakening Historical record: worldwide spread of Christianity",
+    "originalPassageRefs": "Isaiah 52:15",
+    "originalFulfillmentRefs": "Historical record: worldwide spread of Christianity"
+  },
+  {
+    "entryNumber": "203",
+    "originalWording": "203 Isaiah 52:15 The Messiah would have a spiritual impact throughout the world Historical record: worldwide spread of Christianity",
+    "originalPassageRefs": "Isaiah 52:15",
+    "originalFulfillmentRefs": "Historical record: worldwide spread of Christianity"
+  },
+  {
+    "entryNumber": "204",
+    "originalWording": "204 Isaiah 52:15 A prophetic allusion to the Messiah atoning for the sins of others Hebrews 9:13-14, 1 Peter 1:2",
+    "originalPassageRefs": "Isaiah 52:15",
+    "originalFulfillmentRefs": "Hebrews 9:13-14, 1 Peter 1:2"
+  },
+  {
+    "entryNumber": "205",
+    "originalWording": "205 Isaiah 53:1 Not everyone would believe in the Messiah sent by God John 12:38, Romans 10:16",
+    "originalPassageRefs": "Isaiah 53:1",
+    "originalFulfillmentRefs": "John 12:38, Romans 10:16"
+  },
+  {
+    "entryNumber": "206",
+    "originalWording": "206 Isaiah 53:2 The Messiah would start out as a tender plant, like a root in dry ground, as in humble, vulnerable and impoverished Matthew 2:16, Luke 2:7",
+    "originalPassageRefs": "Isaiah 53:2",
+    "originalFulfillmentRefs": "Matthew 2:16, Luke 2:7"
+  },
+  {
+    "entryNumber": "207",
+    "originalWording": "207 Isaiah 53:2 The Messiah would not project the majesty that attracts people Matthew 27:11-26, Mark 15:1-15, Luke 23:13-25, John 18:28-40",
+    "originalPassageRefs": "Isaiah 53:2",
+    "originalFulfillmentRefs": "Matthew 27:11-26, Mark 15:1-15, Luke 23:13-25, John 18:28-40"
+  },
+  {
+    "entryNumber": "208",
+    "originalWording": "208 Isaiah 53:3 The Messiah would be despised John 2:13-22, Luke 13:10-17",
+    "originalPassageRefs": "Isaiah 53:3",
+    "originalFulfillmentRefs": "John 2:13-22, Luke 13:10-17"
+  },
+  {
+    "entryNumber": "209",
+    "originalWording": "209 Isaiah 53:3 The Messiah would be rejected Matthew 27:11-26, Mark 15:1-15, Luke 23:13-25, John 18:28-40",
+    "originalPassageRefs": "Isaiah 53:3",
+    "originalFulfillmentRefs": "Matthew 27:11-26, Mark 15:1-15, Luke 23:13-25, John 18:28-40"
+  },
+  {
+    "entryNumber": "210",
+    "originalWording": "210 Isaiah 53:4 The Messiah would have a healing ministry Matthew 8:16-17",
+    "originalPassageRefs": "Isaiah 53:4",
+    "originalFulfillmentRefs": "Matthew 8:16-17"
+  },
+  {
+    "entryNumber": "211",
+    "originalWording": "211 Isaiah 53:4 The Messiah would carry our sufferings Luke 7:11-17; John 3:14-18, 5:1-18, 11:1-44",
+    "originalPassageRefs": "Isaiah 53:4",
+    "originalFulfillmentRefs": "Luke 7:11-17; John 3:14-18, 5:1-18, 11:1-44"
+  },
+  {
+    "entryNumber": "212",
+    "originalWording": "212 Isaiah 53:4 The reason for the Messiah’s suffering would be misjudged by others Matthew 27:41-43",
+    "originalPassageRefs": "Isaiah 53:4",
+    "originalFulfillmentRefs": "Matthew 27:41-43"
+  },
+  {
+    "entryNumber": "213",
+    "originalWording": "213 Isaiah 53:5 The Messiah would suffer injury Matthew 26:67, 27:26-38; Luke 24:37-40; John 19:34-37, 20:24-29",
+    "originalPassageRefs": "Isaiah 53:5",
+    "originalFulfillmentRefs": "Matthew 26:67, 27:26-38; Luke 24:37-40; John 19:34-37, 20:24-29"
+  },
+  {
+    "entryNumber": "214",
+    "originalWording": "214 Isaiah 53:5 The Messiah would suffer not for himself but for the sins of others Matthew 20:28, 2 Corinthians 5:21",
+    "originalPassageRefs": "Isaiah 53:5",
+    "originalFulfillmentRefs": "Matthew 20:28, 2 Corinthians 5:21"
+  },
+  {
+    "entryNumber": "215",
+    "originalWording": "215 Isaiah 53:5 The Messiah’s suffering would include death Matthew 27:32-61, Mark 15:21-47, Luke 23:26-57, John 19:1-42",
+    "originalPassageRefs": "Isaiah 53:5",
+    "originalFulfillmentRefs": "Matthew 27:32-61, Mark 15:21-47, Luke 23:26-57, John 19:1-42"
+  },
+  {
+    "entryNumber": "216",
+    "originalWording": "216 Isaiah 53:5 The Messiah’s suffering would heal others John 3:16, 1 Peter 2:24",
+    "originalPassageRefs": "Isaiah 53:5",
+    "originalFulfillmentRefs": "John 3:16, 1 Peter 2:24"
+  },
+  {
+    "entryNumber": "217",
+    "originalWording": "217 Isaiah 53:5 The Messiah’s suffering would bring us peace Romans 5:1",
+    "originalPassageRefs": "Isaiah 53:5",
+    "originalFulfillmentRefs": "Romans 5:1"
+  },
+  {
+    "entryNumber": "218",
+    "originalWording": "218 Isaiah 53:5 The Messiah would suffer and die as a substitute for others 2 Corinthians 5:21",
+    "originalPassageRefs": "Isaiah 53:5",
+    "originalFulfillmentRefs": "2 Corinthians 5:21"
+  },
+  {
+    "entryNumber": "219",
+    "originalWording": "219 Isaiah 53:5 For our salvation, God would send the Messiah to endure the punishment for our sins, which is death John 3:16",
+    "originalPassageRefs": "Isaiah 53:5",
+    "originalFulfillmentRefs": "John 3:16"
+  },
+  {
+    "entryNumber": "220",
+    "originalWording": "220 Isaiah 53:6 The Messiah would be the shepherd who brings people back to God John 10:11",
+    "originalPassageRefs": "Isaiah 53:6",
+    "originalFulfillmentRefs": "John 10:11"
+  },
+  {
+    "entryNumber": "221",
+    "originalWording": "221 Isaiah 53:7 The Messiah would remain silent while being oppressed and afflicted Matthew 26:57-68, 27:11-14",
+    "originalPassageRefs": "Isaiah 53:7",
+    "originalFulfillmentRefs": "Matthew 26:57-68, 27:11-14"
+  },
+  {
+    "entryNumber": "222",
+    "originalWording": "222 Isaiah 53:7 The Messiah would be cooperative while being led to his death Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19",
+    "originalPassageRefs": "Isaiah 53:7",
+    "originalFulfillmentRefs": "Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19"
+  },
+  {
+    "entryNumber": "223",
+    "originalWording": "223 Isaiah 53:7 The Messiah would be the ultimate sacrificial lamb John 1:29-34",
+    "originalPassageRefs": "Isaiah 53:7",
+    "originalFulfillmentRefs": "John 1:29-34"
+  },
+  {
+    "entryNumber": "224",
+    "originalWording": "224 Isaiah 53:8 The Messiah would be taken away by oppression and judgment Matthew 26:59-60, Mark 14:55-56, Luke 23:1-4, John 19:4",
+    "originalPassageRefs": "Isaiah 53:8",
+    "originalFulfillmentRefs": "Matthew 26:59-60, Mark 14:55-56, Luke 23:1-4, John 19:4"
+  },
+  {
+    "entryNumber": "225",
+    "originalWording": "225 Isaiah 53:8 The significance of the Messiah’s suffering would not be understood by people during the time of his execution Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19",
+    "originalPassageRefs": "Isaiah 53:8",
+    "originalFulfillmentRefs": "Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19"
+  },
+  {
+    "entryNumber": "226",
+    "originalWording": "226 Isaiah 53:8 The Messiah would be ‘cut off out of the land of the living,’ indicating a violent death at the hands of others Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19",
+    "originalPassageRefs": "Isaiah 53:8",
+    "originalFulfillmentRefs": "Matthew 26-27, Mark 14-15, Luke 22-23, John 18-19"
+  },
+  {
+    "entryNumber": "227",
+    "originalWording": "227 Isaiah 53:8 The Messiah would be put to death for the sins of others 1 Peter 3:18",
+    "originalPassageRefs": "Isaiah 53:8",
+    "originalFulfillmentRefs": "1 Peter 3:18"
+  },
+  {
+    "entryNumber": "228",
+    "originalWording": "228 Isaiah 53:9 The Messiah would be assigned a grave with the wicked even though he had done nothing wrong Matthew 26:57-68, Matthew 27:38; Mark 15:27-28; Luke 23:1-33; John 19:1-18",
+    "originalPassageRefs": "Isaiah 53:9",
+    "originalFulfillmentRefs": "Matthew 26:57-68, Matthew 27:38; Mark 15:27-28; Luke 23:1-33; John 19:1-18"
+  },
+  {
+    "entryNumber": "229",
+    "originalWording": "229 Isaiah 53:9 He would be buried in a rich man’s tomb Matthew 27:57-60",
+    "originalPassageRefs": "Isaiah 53:9",
+    "originalFulfillmentRefs": "Matthew 27:57-60"
+  },
+  {
+    "entryNumber": "230",
+    "originalWording": "230 Isaiah 53:9 The Messiah would be without sin Hebrews 4:15, 1 Peter 2:22",
+    "originalPassageRefs": "Isaiah 53:9",
+    "originalFulfillmentRefs": "Hebrews 4:15, 1 Peter 2:22"
+  },
+  {
+    "entryNumber": "231",
+    "originalWording": "231 Isaiah 53:10 The Messiah’s suffering and death would be the will of God Luke 22:42",
+    "originalPassageRefs": "Isaiah 53:10",
+    "originalFulfillmentRefs": "Luke 22:42"
+  },
+  {
+    "entryNumber": "232",
+    "originalWording": "232 Isaiah 53:10 The Messiah’s suffering and death would atone for the sins of others John 1:29; Romans 6:10; Hebrews 9:26, 10:12, 10:14; 1 Peter 3:18",
+    "originalPassageRefs": "Isaiah 53:10",
+    "originalFulfillmentRefs": "John 1:29; Romans 6:10; Hebrews 9:26, 10:12, 10:14; 1 Peter 3:18"
+  },
+  {
+    "entryNumber": "233",
+    "originalWording": "233 Isaiah 53:10 The ‘seed of Messiah’ prophecy: The Messiah would have followers The record of history; Jesus has more than 2.3 billion followers",
+    "originalPassageRefs": "Isaiah 53:10",
+    "originalFulfillmentRefs": "The record of history; Jesus has more than 2.3 billion followers"
+  },
+  {
+    "entryNumber": "234",
+    "originalWording": "234 Isaiah 53:10 Death would not be the end of the Messiah; he would see the results of his death Matthew 28:19-20, Mark 16:9-11, John 20:11-18, Acts 1:8",
+    "originalPassageRefs": "Isaiah 53:10",
+    "originalFulfillmentRefs": "Matthew 28:19-20, Mark 16:9-11, John 20:11-18, Acts 1:8"
+  },
+  {
+    "entryNumber": "235",
+    "originalWording": "235 Isaiah 53:11 The Messiah would be restored to life, as in resurrected Acts 13:34, Romans 6:9, Corinthians 15:20-23, Hebrews 7:24-25",
+    "originalPassageRefs": "Isaiah 53:11",
+    "originalFulfillmentRefs": "Acts 13:34, Romans 6:9, Corinthians 15:20-23, Hebrews 7:24-25"
+  },
+  {
+    "entryNumber": "236",
+    "originalWording": "236 Isaiah 53:11 The Messiah would be the righteous servant of God The record of history",
+    "originalPassageRefs": "Isaiah 53:11",
+    "originalFulfillmentRefs": "The record of history"
+  },
+  {
+    "entryNumber": "237",
+    "originalWording": "237 Isaiah 53:11 The Messiah would justify many with his suffering and death John 3:16",
+    "originalPassageRefs": "Isaiah 53:11",
+    "originalFulfillmentRefs": "John 3:16"
+  },
+  {
+    "entryNumber": "238",
+    "originalWording": "238 Isaiah 53:12 The Messiah’s soul would be poured out to death for the benefit of others Luke 22:19-20, 23:46; Philippians 2:6-8",
+    "originalPassageRefs": "Isaiah 53:12",
+    "originalFulfillmentRefs": "Luke 22:19-20, 23:46; Philippians 2:6-8"
+  },
+  {
+    "entryNumber": "239",
+    "originalWording": "239 Isaiah 53:12 Death would not be the end for the Messiah; he would be rewarded by God Acts 10:40, 1 Corinthians 15:3-4, historical record: Jesus has followers on every continent in the world",
+    "originalPassageRefs": "Isaiah 53:12",
+    "originalFulfillmentRefs": "Acts 10:40, 1 Corinthians 15:3-4, historical record: Jesus has followers on every continent in the world"
+  },
+  {
+    "entryNumber": "240",
+    "originalWording": "240 Isaiah 53:12 The Messiah would be numbered with the transgressors, as in misidentified as a sinner Matthew 27:38, Mark 15:27, Luke 23:32, John 19:18",
+    "originalPassageRefs": "Isaiah 53:12",
+    "originalFulfillmentRefs": "Matthew 27:38, Mark 15:27, Luke 23:32, John 19:18"
+  },
+  {
+    "entryNumber": "241",
+    "originalWording": "241 Isaiah 53:12 The Messiah would bear the sins of others Hebrews 9:28",
+    "originalPassageRefs": "Isaiah 53:12",
+    "originalFulfillmentRefs": "Hebrews 9:28"
+  },
+  {
+    "entryNumber": "242",
+    "originalWording": "242 Isaiah 53:12 The Messiah would make intercession for sinners Luke 23:34, Romans 8:34",
+    "originalPassageRefs": "Isaiah 53:12",
+    "originalFulfillmentRefs": "Luke 23:34, Romans 8:34"
+  },
+  {
+    "entryNumber": "243",
+    "originalWording": "243 Isaiah 60:1-3 Another prophecy about the Messiah being a light to the nations Jesus uniquely has followers in at least 97 percent of all nations",
+    "originalPassageRefs": "Isaiah 60:1-3",
+    "originalFulfillmentRefs": "Jesus uniquely has followers in at least 97 percent of all nations"
+  },
+  {
+    "entryNumber": "244",
+    "originalWording": "244 Isaiah 61:1 The Holy Spirit of God would rest upon the Messiah John 1:29-34",
+    "originalPassageRefs": "Isaiah 61:1",
+    "originalFulfillmentRefs": "John 1:29-34"
+  },
+  {
+    "entryNumber": "245",
+    "originalWording": "245 Isaiah 61:1 The Messiah would preach the good news The public ministry of Jesus as described in the New Testament",
+    "originalPassageRefs": "Isaiah 61:1",
+    "originalFulfillmentRefs": "The public ministry of Jesus as described in the New Testament"
+  },
+  {
+    "entryNumber": "246",
+    "originalWording": "246 Isaiah 61:1 The Messiah would liberate the captives John 8:34-36",
+    "originalPassageRefs": "Isaiah 61:1",
+    "originalFulfillmentRefs": "John 8:34-36"
+  },
+  {
+    "entryNumber": "247",
+    "originalWording": "247 Isaiah 61:1-2 Isaiah alludes to both phases of the Messiah’s mission, first to announce the Kingdom of God and then to fully realize the eternal kingdom Mark 1:14-15, Luke 4:14-21",
+    "originalPassageRefs": "Isaiah 61:1-2",
+    "originalFulfillmentRefs": "Mark 1:14-15, Luke 4:14-21"
+  },
+  {
+    "entryNumber": "248",
+    "originalWording": "248 Jeremiah 23:3-5 The Messiah would arrive sometime after the Jews recovered from Babylon’s conquest of Judah Matthew 2:1; Luke 1:5, 26, 31, 36; Luke 2:1-2; Luke 3:1-2, 3:21-23",
+    "originalPassageRefs": "Jeremiah 23:3-5",
+    "originalFulfillmentRefs": "Matthew 2:1; Luke 1:5, 26, 31, 36; Luke 2:1-2; Luke 3:1-2, 3:21-23"
+  },
+  {
+    "entryNumber": "249",
+    "originalWording": "249 Jeremiah 23:5 Another ‘son of David’ prophecy: The Messiah would be a ‘branch’ of David, as in a descendant of David Matthew 1:1-6, Luke 3:23-38",
+    "originalPassageRefs": "Jeremiah 23:5",
+    "originalFulfillmentRefs": "Matthew 1:1-6, Luke 3:23-38"
+  },
+  {
+    "entryNumber": "250",
+    "originalWording": "250 Jeremiah 23:5 The Messiah would be a just and righteous king from the House of David Luke 1:32-33",
+    "originalPassageRefs": "Jeremiah 23:5",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "251",
+    "originalWording": "251 Jeremiah 23:5 The House of David would survive existential threats, such as Babylon’s conquest of Judah, until the Messiah is born Matthew 1:1, 1:6; Luke 1:32-33, 3:31",
+    "originalPassageRefs": "Jeremiah 23:5",
+    "originalFulfillmentRefs": "Matthew 1:1, 1:6; Luke 1:32-33, 3:31"
+  },
+  {
+    "entryNumber": "252",
+    "originalWording": "252 Jeremiah 23:5-6 The Messiah would be called ‘Yahweh our righteousness,’ which is a divine title Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Jeremiah 23:5-6",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "253",
+    "originalWording": "253 Jeremiah 23:5-6 Jeremiah 23:5-6 allows for the understanding that the Messiah would be human and divine Matthew 1:18-25; Luke 1:26-38, 32-33",
+    "originalPassageRefs": "Jeremiah 23:5-6",
+    "originalFulfillmentRefs": "Matthew 1:18-25; Luke 1:26-38, 32-33"
+  },
+  {
+    "entryNumber": "254",
+    "originalWording": "254 Jeremiah 23:6 The Messiah would save and protect the people [believers] of Judah and Israel John 3:16, Romans 10:9-10",
+    "originalPassageRefs": "Jeremiah 23:6",
+    "originalFulfillmentRefs": "John 3:16, Romans 10:9-10"
+  },
+  {
+    "entryNumber": "255",
+    "originalWording": "255 Jeremiah 31:31-34 The Messiah would usher in the New Covenant Hebrews 8:6, 9:15, 12:24",
+    "originalPassageRefs": "Jeremiah 31:31-34",
+    "originalFulfillmentRefs": "Hebrews 8:6, 9:15, 12:24"
+  },
+  {
+    "entryNumber": "256",
+    "originalWording": "256 Ezekiel 21:25-27 Zedekiah would be the last king from the House of David until the Messiah arrived Luke 1:32-33",
+    "originalPassageRefs": "Ezekiel 21:25-27",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "257",
+    "originalWording": "257 Ezekiel 21:25-27 Another ‘son of David’ prophecy: The Messiah would be the final king to inherit the crown of David Luke 1:32-33",
+    "originalPassageRefs": "Ezekiel 21:25-27",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "258",
+    "originalWording": "258 Ezekiel 21:26-27 The Messiah would appear during a time when the House of David had been greatly humbled Luke 1:32-33",
+    "originalPassageRefs": "Ezekiel 21:26-27",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "259",
+    "originalWording": "259 Ezekiel 21:26-27 The Messiah would be the one ‘whose right it is’ to inherit the crown Luke 1:32-33",
+    "originalPassageRefs": "Ezekiel 21:26-27",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "260",
+    "originalWording": "260 Ezekiel 21:26-27 Ezekiel accurately predicted that there would be no more kings from the House of David except for the Messiah Luke 1:32-33",
+    "originalPassageRefs": "Ezekiel 21:26-27",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "261",
+    "originalWording": "261 Daniel 7:13 The Messiah would be the Son of Man Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Daniel 7:13",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "262",
+    "originalWording": "262 Daniel 7:13-14 The Messiah will be eternal John 1:1-2, 14",
+    "originalPassageRefs": "Daniel 7:13-14",
+    "originalFulfillmentRefs": "John 1:1-2, 14"
+  },
+  {
+    "entryNumber": "263",
+    "originalWording": "263 Daniel 7:13-14 The Messiah will reign eternally Matthew 25:31-32, Revelation 11:15",
+    "originalPassageRefs": "Daniel 7:13-14",
+    "originalFulfillmentRefs": "Matthew 25:31-32, Revelation 11:15"
+  },
+  {
+    "entryNumber": "264",
+    "originalWording": "264 Daniel 7:13-14 The Messiah would have a worldwide dominion Jesus uniquely has followers in at least 97 percent of all nations",
+    "originalPassageRefs": "Daniel 7:13-14",
+    "originalFulfillmentRefs": "Jesus uniquely has followers in at least 97 percent of all nations"
+  },
+  {
+    "entryNumber": "265",
+    "originalWording": "265 Daniel 7:13-14 The Messiah would have human and divine attributes Matthew 1:18-25, Luke 1:26-38)",
+    "originalPassageRefs": "Daniel 7:13-14",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38)"
+  },
+  {
+    "entryNumber": "266",
+    "originalWording": "266 Daniel 7:13-14 The Messiah would arrive twice: first to announce the Kingdom of God [Zechariah 9:9-11] and then to fully establish the Kingdom of God Matthew 24:26-28, 26:64; John 5:22-30, 6:39-40",
+    "originalPassageRefs": "Daniel 7:13-14",
+    "originalFulfillmentRefs": "Matthew 24:26-28, 26:64; John 5:22-30, 6:39-40"
+  },
+  {
+    "entryNumber": "267",
+    "originalWording": "267 Daniel 9:24 Daniel foretold the arrival of ‘everlasting righteousness,’ which points to the promised Messiah Luke 1:32-33, John 8:58, 2 Corinthians 5:21, Hebrews 4:15, 1 Peter 2:22, Revelation 1:17-18",
+    "originalPassageRefs": "Daniel 9:24",
+    "originalFulfillmentRefs": "Luke 1:32-33, John 8:58, 2 Corinthians 5:21, Hebrews 4:15, 1 Peter 2:22, Revelation 1:17-18"
+  },
+  {
+    "entryNumber": "268",
+    "originalWording": "268 Daniel 9:24 The Messiah would resolve the problem of sin once and for all 1 John 2:2",
+    "originalPassageRefs": "Daniel 9:24",
+    "originalFulfillmentRefs": "1 John 2:2"
+  },
+  {
+    "entryNumber": "269",
+    "originalWording": "269 Daniel 9:25 The Messiah would appear after the rebuilding of Jerusalem Historical record: Jerusalem was restored and fully repopulated by the time Jesus was born in about 4 BC.",
+    "originalPassageRefs": "Daniel 9:25",
+    "originalFulfillmentRefs": "Historical record: Jerusalem was restored and fully repopulated by the time Jesus was born in about 4 BC."
+  },
+  {
+    "entryNumber": "270",
+    "originalWording": "270 Daniel 9:25 The Messiah would arrive 483 years after a command to restore and build Jerusalem Historical record: Jesus began his public ministry in about AD 27, which is 483 years after first command to restore and rebuild Jerusalem.",
+    "originalPassageRefs": "Daniel 9:25",
+    "originalFulfillmentRefs": "Historical record: Jesus began his public ministry in about AD 27, which is 483 years after first command to restore and rebuild Jerusalem."
+  },
+  {
+    "entryNumber": "271",
+    "originalWording": "271 Daniel 9:26 The Messiah would be ‘cut off,’ as in rejected and executed The Gospels: Jesus was 'cut off,' as in rejected and executed",
+    "originalPassageRefs": "Daniel 9:26",
+    "originalFulfillmentRefs": "The Gospels: Jesus was 'cut off,' as in rejected and executed"
+  },
+  {
+    "entryNumber": "272",
+    "originalWording": "272 Daniel 9:26 Jerusalem and the Temple would be destroyed sometime after the Messiah’s rejection and death Historical record: the Romans destroyed Jerusalem about 40 years after they crucified Jesus",
+    "originalPassageRefs": "Daniel 9:26",
+    "originalFulfillmentRefs": "Historical record: the Romans destroyed Jerusalem about 40 years after they crucified Jesus"
+  },
+  {
+    "entryNumber": "273",
+    "originalWording": "273 Daniel 9:27 Sin-atonement sacrifices at the Temple would end with the Messiah Historical record: the Romans destroyed the Temple about 40 years after they crucified Jesus",
+    "originalPassageRefs": "Daniel 9:27",
+    "originalFulfillmentRefs": "Historical record: the Romans destroyed the Temple about 40 years after they crucified Jesus"
+  },
+  {
+    "entryNumber": "274",
+    "originalWording": "274 Hosea 11:1 A precedent for the Messiah returning from refuge in Egypt Matthew 2:15",
+    "originalPassageRefs": "Hosea 11:1",
+    "originalFulfillmentRefs": "Matthew 2:15"
+  },
+  {
+    "entryNumber": "275",
+    "originalWording": "275 Micah 5:1-2 The Messiah would be born in Bethlehem Matthew 2:1-18, Luke 2:1-21",
+    "originalPassageRefs": "Micah 5:1-2",
+    "originalFulfillmentRefs": "Matthew 2:1-18, Luke 2:1-21"
+  },
+  {
+    "entryNumber": "276",
+    "originalWording": "276 Micah 5:1-2 The Messiah would be a descendant of King David, as in a Jew from the clan of Ephrathah Matthew 1:1-16, Luke 3:21-38",
+    "originalPassageRefs": "Micah 5:1-2",
+    "originalFulfillmentRefs": "Matthew 1:1-16, Luke 3:21-38"
+  },
+  {
+    "entryNumber": "277",
+    "originalWording": "277 Micah 5:1-2 Another ‘son of David’ prophecy: The Messiah would be an extraordinary descendant of King David Matthew 1:1-16; Luke 1:32-33, 3:21-38",
+    "originalPassageRefs": "Micah 5:1-2",
+    "originalFulfillmentRefs": "Matthew 1:1-16; Luke 1:32-33, 3:21-38"
+  },
+  {
+    "entryNumber": "278",
+    "originalWording": "278 Micah 5:1-2,5 Another prophetic promise that the House of David would survive existential threats [aggression of the Assyrian Empire] until the Messiah is born Luke 1:32-33",
+    "originalPassageRefs": "Micah 5:1-2,5",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "279",
+    "originalWording": "279 Micah 5:2 The Messiah would be the God-promised ruler Matthew 5:3-6",
+    "originalPassageRefs": "Micah 5:2",
+    "originalFulfillmentRefs": "Matthew 5:3-6"
+  },
+  {
+    "entryNumber": "280",
+    "originalWording": "280 Micah 5:2 The Messiah would have an unusual and noteworthy origin Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Micah 5:2",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "281",
+    "originalWording": "281 Micah 5:4 The Messiah would have a worldwide impact Historical record: Christianity is the first religion to spread to each of the world's continents",
+    "originalPassageRefs": "Micah 5:4",
+    "originalFulfillmentRefs": "Historical record: Christianity is the first religion to spread to each of the world's continents"
+  },
+  {
+    "entryNumber": "282",
+    "originalWording": "282 Zechariah 3:8 Another prophecy that the Messiah would be a servant of God Matthew 12:18",
+    "originalPassageRefs": "Zechariah 3:8",
+    "originalFulfillmentRefs": "Matthew 12:18"
+  },
+  {
+    "entryNumber": "283",
+    "originalWording": "283 Zechariah 3:8 Another prophecy that the Messiah would be the Branch, as in the promised descendant of David Luke 1:32-33",
+    "originalPassageRefs": "Zechariah 3:8",
+    "originalFulfillmentRefs": "Luke 1:32-33"
+  },
+  {
+    "entryNumber": "284",
+    "originalWording": "284 Zechariah 3:8-10 The Messiah would be linked with the forgiveness of sin John 3:16",
+    "originalPassageRefs": "Zechariah 3:8-10",
+    "originalFulfillmentRefs": "John 3:16"
+  },
+  {
+    "entryNumber": "285",
+    "originalWording": "285 Zechariah 3:9 The Messiah would be the promised stone that God himself sets in Jerusalem John 3:16, 1 Corinthians 3:11",
+    "originalPassageRefs": "Zechariah 3:9",
+    "originalFulfillmentRefs": "John 3:16, 1 Corinthians 3:11"
+  },
+  {
+    "entryNumber": "286",
+    "originalWording": "286 Zechariah 9:9 The Messiah would publicly announce himself in a humble way, by riding a lowly donkey into Jerusalem Matthew 21:1-11, Mark 11:1-11, Luke 19:28-38, John 12:12-19",
+    "originalPassageRefs": "Zechariah 9:9",
+    "originalFulfillmentRefs": "Matthew 21:1-11, Mark 11:1-11, Luke 19:28-38, John 12:12-19"
+  },
+  {
+    "entryNumber": "287",
+    "originalWording": "287 Zechariah 9:9 The Messiah would be the promised King Matthew 21:1-11, Mark 11:1-11, Luke 19:28-38, John 12:12-19",
+    "originalPassageRefs": "Zechariah 9:9",
+    "originalFulfillmentRefs": "Matthew 21:1-11, Mark 11:1-11, Luke 19:28-38, John 12:12-19"
+  },
+  {
+    "entryNumber": "288",
+    "originalWording": "288 Zechariah 9:9-10 The Messiah would have a worldwide spiritual impact Historical record: Christianity is the first religion to spread to each of the world's continents",
+    "originalPassageRefs": "Zechariah 9:9-10",
+    "originalFulfillmentRefs": "Historical record: Christianity is the first religion to spread to each of the world's continents"
+  },
+  {
+    "entryNumber": "289",
+    "originalWording": "289 Zechariah 9:9-10 The Messiah’s worldwide spiritual impact would begin in Jerusalem Acts 1-7, historical record (Antiquities 20.9.1)",
+    "originalPassageRefs": "Zechariah 9:9-10",
+    "originalFulfillmentRefs": "Acts 1-7, historical record (Antiquities 20.9.1)"
+  },
+  {
+    "entryNumber": "290",
+    "originalWording": "290 Zechariah 11:12-13 Zechariah foreshadows the betrayal of the ‘good shepherd,’ Jesus, for 30 pieces of silver Matthew 26:15, 27:9-10; John 10:11",
+    "originalPassageRefs": "Zechariah 11:12-13",
+    "originalFulfillmentRefs": "Matthew 26:15, 27:9-10; John 10:11"
+  },
+  {
+    "entryNumber": "291",
+    "originalWording": "291 Zechariah 12:10 The Messiah would be a firstborn son Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Zechariah 12:10",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "292",
+    "originalWording": "292 Zechariah 12:10 The Messiah would be pierced Luke 24:37-40; John 19:31-37, 20:24-29",
+    "originalPassageRefs": "Zechariah 12:10",
+    "originalFulfillmentRefs": "Luke 24:37-40; John 19:31-37, 20:24-29"
+  },
+  {
+    "entryNumber": "293",
+    "originalWording": "293 Zechariah 12:10 The Messiah would suffer an injury that is fatal John 19:31-37",
+    "originalPassageRefs": "Zechariah 12:10",
+    "originalFulfillmentRefs": "John 19:31-37"
+  },
+  {
+    "entryNumber": "294",
+    "originalWording": "294 Zechariah 12:10 After the Messiah’s death, people would turn to God John 19:31-37; historical record: worldwide spread of Christianity",
+    "originalPassageRefs": "Zechariah 12:10",
+    "originalFulfillmentRefs": "John 19:31-37; historical record: worldwide spread of Christianity"
+  },
+  {
+    "entryNumber": "295",
+    "originalWording": "295 Zechariah 12:10 Zechariah 12:10 allows for the understanding that the Messiah would be God incarnate Matthew 1:18-25, Luke 1:26-38",
+    "originalPassageRefs": "Zechariah 12:10",
+    "originalFulfillmentRefs": "Matthew 1:18-25, Luke 1:26-38"
+  },
+  {
+    "entryNumber": "296",
+    "originalWording": "296 Zechariah 13:7 The Messiah would be God’s shepherd, the Good Shepherd John 10:11",
+    "originalPassageRefs": "Zechariah 13:7",
+    "originalFulfillmentRefs": "John 10:11"
+  },
+  {
+    "entryNumber": "297",
+    "originalWording": "297 Zechariah 13:7 The Good Shepherd, who is the Messiah, would be struck Matthew 26:67-68, 27:26-30; Mark 14:65, 15:15-19; Luke 22:63-64; John 18:22, 19:1-3; etc.",
+    "originalPassageRefs": "Zechariah 13:7",
+    "originalFulfillmentRefs": "Matthew 26:67-68, 27:26-30; Mark 14:65, 15:15-19; Luke 22:63-64; John 18:22, 19:1-3; etc."
+  },
+  {
+    "entryNumber": "298",
+    "originalWording": "298 Zechariah 13:7 The Good Shepherd’s flock would be scattered Matthew 26:56, Mark 14:50",
+    "originalPassageRefs": "Zechariah 13:7",
+    "originalFulfillmentRefs": "Matthew 26:56, Mark 14:50"
+  },
+  {
+    "entryNumber": "299",
+    "originalWording": "299 Malachi 3:1 The Messiah would be preceded by a messenger [John the Baptist] Mark 11:1-11",
+    "originalPassageRefs": "Malachi 3:1",
+    "originalFulfillmentRefs": "Mark 11:1-11"
+  },
+  {
+    "entryNumber": "300",
+    "originalWording": "300 Malachi 3:1 The Messiah would appear during the time of the Second Temple Historical record: Jesus carried out his public ministry while the Temple was still standing",
+    "originalPassageRefs": "Malachi 3:1",
+    "originalFulfillmentRefs": "Historical record: Jesus carried out his public ministry while the Temple was still standing"
+  },
+  {
+    "entryNumber": "301",
+    "originalWording": "301 Malachi 3:1 The Messiah would be the long-awaited and much-anticipated savior of the world Jesus is the one and only person to have ever been widely accepted as being the promised Messiah",
+    "originalPassageRefs": "Malachi 3:1",
+    "originalFulfillmentRefs": "Jesus is the one and only person to have ever been widely accepted as being the promised Messiah"
+  }
+]
