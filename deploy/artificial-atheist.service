@@ -19,6 +19,13 @@ User=deploy
 WorkingDirectory=/var/www/artificial-atheist
 Environment=NODE_ENV=production
 Environment=PORT=8060
+# Fallback visitor region when no trusted geo header (x-country-code) is present,
+# so header-less requests resolve to an allowed region instead of failing closed
+# to /unavailable. Interim default — for launch, wire real geolocation via
+# deploy/nginx-geoip2.conf so true countries are detected and the GDPR region
+# gate actually applies. After editing this unit: re-copy it, then
+#   sudo systemctl daemon-reload && sudo systemctl restart artificial-atheist
+Environment=GEO_DEFAULT_COUNTRY=US
 # npm must be on PATH for the unit; use an absolute path if you use nvm.
 ExecStart=/usr/bin/npm run start
 Restart=on-failure
