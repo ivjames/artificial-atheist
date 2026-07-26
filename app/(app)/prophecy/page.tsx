@@ -8,7 +8,7 @@ import { Label, PageHead } from "./shared";
 export const metadata = {
   title: "Prophecy claims — Artificial Atheist",
   description:
-    "A structured, source-preserving knowledge base of prophecy claims: the original lists kept verbatim, the claims they assert normalized and reviewed.",
+    "A structured, source-preserving knowledge base of prophecy claims: the original lists kept verbatim, the propositions they assert separated out and normalized.",
 };
 
 function Stat({ n, label }: { n: number; label: string }) {
@@ -70,10 +70,18 @@ export default async function ProphecyLandingPage() {
             whether a claim is true; that is a separate editorial layer with its own citations and
             rationales.
           </p>
+          <p>
+            <strong>How the claims were written.</strong> The source entries are verbatim. The
+            normalized claim wordings, and the match type and confidence attached to each entry,
+            were drafted by an AI model reading those entries, and each claim page names the model
+            that produced it. Treat them as a machine-built index of what the lists assert — useful
+            for seeing structure, not a substitute for reading the sources, which are reproduced
+            in full alongside every claim.
+          </p>
           {stats.publishedClaims === 0 ? (
             <p className="text-slate-500 dark:text-slate-400">
-              No claims have completed review yet. The source lists below are already public,
-              because they are provenance; normalized claims appear here as review publishes them.
+              No claims are published yet. The source lists are already public, because they are
+              provenance; normalized claims appear here as they are published.
             </p>
           ) : null}
         </div>

@@ -144,7 +144,9 @@ reference the corpus:
 - Public surface (Phase 4): `app/(app)/prophecy/` — landing, claims index
   (search + category/subject filters + pagination), claim detail (verbatim
   source entries grouped by list with matchType/confidence/rationale, related
-  claims, AI-drafted/human-reviewed provenance), source-list index + detail
+  claims, provenance naming the drafting model — the pages never assert human
+  review of a claim, because per-claim review depth isn't tracked), source-list
+  index + detail
   (claimed-vs-actual counts). Read model `lib/prophecy/public.ts` filters
   `status="published"` in EVERY query — unpublished claims 404 and are never
   linked; entries stay visible as provenance. No auth, no client components.

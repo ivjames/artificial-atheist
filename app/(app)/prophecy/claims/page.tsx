@@ -95,7 +95,7 @@ export default async function PublicClaimsPage({
 
       {claims.length === 0 ? (
         <div className="card p-6 text-sm text-slate-500 dark:text-slate-400">
-          Nothing to show yet. Claims appear here once editorial review publishes them — the
+          Nothing to show yet. Claims appear here once they are published — the
           verbatim <Link href="/prophecy/lists/" className="underline">source lists</Link> are
           already browsable.
         </div>

@@ -109,7 +109,7 @@ export default async function PublicListPage({ params }: { params: Promise<{ slu
                 </div>
               ) : (
                 <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">
-                  Not yet reviewed
+                  No published claim
                 </p>
               )}
             </div>
