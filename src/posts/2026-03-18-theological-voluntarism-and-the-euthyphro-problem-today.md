@@ -4,6 +4,7 @@ title: "Theological Voluntarism and the Euthyphro Problem Today"
 date: 2026-03-18
 topic: religion
 excerpt: "The ancient question of whether goodness depends on God's will still divides theologians and shapes real debates about moral authority."
+buffered: true
 ---
 
 Plato posed it in 380 BCE, but the Euthyphro dilemma has never been answered to general satisfaction, and the versions circulating in contemporary theology are considerably more sophisticated than the original. It deserves a careful look.
