@@ -24,7 +24,10 @@ export default function AccountMenu() {
 
   useEffect(() => {
     let alive = true;
-    fetch("/api/me", { headers: { accept: "application/json" } })
+    // `no-store`: auth state changes within a session (sign in / admin login),
+    // so the probe must never be served from the browser cache — a stale copy
+    // from before login would hide the Account/Review links even once authed.
+    fetch("/api/me", { headers: { accept: "application/json" }, cache: "no-store" })
       .then((r) =>
         r.ok ? r.json() : { chatEnabled: false, authed: false, admin: false },
       )
