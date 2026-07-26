@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { adminToken, isAdminAuthed } from "../pipeline/auth";
-import { loadClaimDraftsAction, loginWithToken, logoutAdmin } from "./actions";
+import { bootstrapDatasetsAction, loadClaimDraftsAction, loginWithToken, logoutAdmin } from "./actions";
 import { ErrorBanner, NoticeBanner, qp } from "./shared";
 
 // A small labelled number tile for the stats strip.
@@ -62,6 +62,28 @@ function DraftloadBanner({ value }: { value: string }) {
   );
 }
 
+// Result banner for the corpus bootstrap. Six comma-separated counts:
+// listsCreated,entriesCreated,entriesSkipped,claimsCreated,mappingsCreated,errors.
+function BootstrapBanner({ value }: { value: string }) {
+  const parts = value.split(",");
+  if (parts.length !== 6 || parts.some((p) => !/^\d+$/.test(p))) return null;
+  const [lists, entriesCreated, entriesSkipped, claims, mappings, errorCount] = parts;
+  return (
+    <NoticeBanner>
+      Corpus bootstrap: {lists} source list{lists === "1" ? "" : "s"} created; {entriesCreated}{" "}
+      entr{entriesCreated === "1" ? "y" : "ies"} imported, {entriesSkipped} already present;{" "}
+      {claims} claim{claims === "1" ? "" : "s"} and {mappings} mapping
+      {mappings === "1" ? "" : "s"} created; {errorCount} error
+      {errorCount === "1" ? "" : "s"}
+      {errorCount !== "0" ? " (details in the server log)" : ""}. Review the drafts at{" "}
+      <a className="underline" href="/review/prophecy/claims/?status=draft">
+        claims → draft
+      </a>
+      .
+    </NoticeBanner>
+  );
+}
+
 const LINKS: Array<{ href: string; title: string; blurb: string }> = [
   {
     href: "/review/prophecy/sources/",
@@ -101,6 +123,7 @@ export default async function ProphecyDashboardPage({
   const sp = await searchParams;
   const error = qp(sp.error);
   const draftload = qp(sp.draftload);
+  const bootstrap = qp(sp.bootstrap);
   const authed = await isAdminAuthed();
 
   if (!authed) {
@@ -169,6 +192,7 @@ export default async function ProphecyDashboardPage({
       {error ? <ErrorBanner code={error} /> : null}
       {draftload === "missing" ? <ErrorBanner code="draftload_missing" /> : null}
       {draftload && draftload !== "missing" ? <DraftloadBanner value={draftload} /> : null}
+      {bootstrap ? <BootstrapBanner value={bootstrap} /> : null}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         <Stat label="Claims" value={claimCount} />
@@ -186,11 +210,21 @@ export default async function ProphecyDashboardPage({
       <section className="card p-5">
         <h2 className="text-sm font-bold">Data</h2>
         <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-          Load the AI-drafted claim-normalization file into draft claims + entry mappings.
-          Idempotent: existing slugs and mappings are skipped, never overwritten.
+          <strong>Start here on a fresh install.</strong> One click imports every committed
+          dataset under its correct slug and then loads the AI-drafted claims on top — no manual
+          list creation, no pasting. Everything is idempotent: existing lists, entries, claims and
+          mappings are skipped, never overwritten, so re-running is always safe.
         </p>
-        <form action={loadClaimDraftsAction} className="mt-3">
+        <form action={bootstrapDatasetsAction} className="mt-3">
           <button type="submit" className="btn-primary px-4 py-2 text-sm">
+            Import all datasets + claim drafts
+          </button>
+        </form>
+        <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+          Or load only the claim drafts, if the source lists are already imported:
+        </p>
+        <form action={loadClaimDraftsAction} className="mt-2">
+          <button type="submit" className="btn-ghost px-4 py-2 text-sm">
             Load AI claim drafts (claims-draft-v1)
           </button>
         </form>

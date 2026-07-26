@@ -7,6 +7,7 @@ import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { loadClaimDrafts } from "@/lib/prophecy/draftload";
+import { bootstrapProphecyData } from "@/lib/prophecy/bootstrap";
 import {
   ADMIN_COOKIE,
   ADMIN_COOKIE_MAX_AGE,
@@ -90,4 +91,40 @@ export async function loadClaimDraftsAction(): Promise<void> {
     result.errors.length,
   ].join(",");
   redirect(`/review/prophecy/?draftload=${counts}`);
+}
+
+// One-shot corpus bootstrap: import every dataset named in
+// data/prophecy/manifest.json (creating each source list under the exact slug
+// the claim drafts reference), then load the claim drafts on top. Saves the
+// operator from hand-creating five lists and pasting five large JSON files in
+// the right order — the step where a slug typo silently orphans every mapping.
+// Idempotent throughout; safe to re-run after adding a dataset.
+export async function bootstrapDatasetsAction(): Promise<void> {
+  await assertProphecyAdmin();
+
+  const result = await bootstrapProphecyData(prisma);
+
+  const listErrors = result.lists.reduce((n, l) => n + l.errors.length, 0);
+  const allErrors = [
+    ...result.errors,
+    ...result.lists.flatMap((l) => l.errors.map((e) => `${l.slug}: ${e}`)),
+    ...result.claims.errors,
+  ];
+  if (allErrors.length) {
+    console.error(
+      `bootstrapDatasetsAction: ${allErrors.length} error(s)\n` +
+        allErrors.map((e) => `  - ${e}`).join("\n"),
+    );
+  }
+
+  revalidatePath("/review/prophecy");
+  const counts = [
+    result.lists.filter((l) => l.listCreated).length,
+    result.lists.reduce((n, l) => n + l.entriesCreated, 0),
+    result.lists.reduce((n, l) => n + l.entriesSkipped, 0),
+    result.claims.claimsCreated,
+    result.claims.mappingsCreated,
+    listErrors + result.errors.length + result.claims.errors.length,
+  ].join(",");
+  redirect(`/review/prophecy/?bootstrap=${counts}`);
 }

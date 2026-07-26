@@ -20,6 +20,7 @@
     "pipeline:draft": "tsx scripts/pipeline.ts draft",
     "pipeline:auto": "tsx scripts/pipeline.ts auto",
     "adversary": "tsx scripts/adversary.ts",
+    "prophecy:bootstrap": "tsx scripts/prophecy-bootstrap.ts",
     "generate": "node scripts/generate.mjs",
     "generate:test": "AA_PROVIDER=mock node scripts/generate.mjs --dry-run",
     "compare": "node scripts/compare.mjs",
