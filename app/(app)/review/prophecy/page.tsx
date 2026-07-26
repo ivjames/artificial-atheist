@@ -3,8 +3,8 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { adminToken, isAdminAuthed } from "../pipeline/auth";
-import { bootstrapDatasetsAction, loadClaimDraftsAction, loginWithToken, logoutAdmin } from "./actions";
-import { ErrorBanner, NoticeBanner, qp } from "./shared";
+import { loginWithToken, logoutAdmin } from "./actions";
+import { ErrorBanner, qp } from "./shared";
 
 // A small labelled number tile for the stats strip.
 function Stat({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
@@ -45,44 +45,12 @@ function BreakdownCard({
   );
 }
 
-// Result banner for the draft-loader action. The ?draftload= param is either
-// "missing" (rendered as an ErrorBanner by the page) or five comma-separated
-// counts: claimsCreated,claimsSkipped,mappingsCreated,mappingsSkipped,errors.
-function DraftloadBanner({ value }: { value: string }) {
-  const parts = value.split(",");
-  if (parts.length !== 5 || parts.some((p) => !/^\d+$/.test(p))) return null;
-  const [claimsCreated, claimsSkipped, mappingsCreated, mappingsSkipped, errorCount] = parts;
-  return (
-    <NoticeBanner>
-      AI claim drafts loaded: {claimsCreated} claim{claimsCreated === "1" ? "" : "s"} created,{" "}
-      {claimsSkipped} skipped; {mappingsCreated} mapping{mappingsCreated === "1" ? "" : "s"}{" "}
-      created, {mappingsSkipped} skipped; {errorCount} error{errorCount === "1" ? "" : "s"}
-      {errorCount !== "0" ? " (details in the server log)" : ""}.
-    </NoticeBanner>
-  );
-}
-
-// Result banner for the corpus bootstrap. Six comma-separated counts:
-// listsCreated,entriesCreated,entriesSkipped,claimsCreated,mappingsCreated,errors.
-function BootstrapBanner({ value }: { value: string }) {
-  const parts = value.split(",");
-  if (parts.length !== 6 || parts.some((p) => !/^\d+$/.test(p))) return null;
-  const [lists, entriesCreated, entriesSkipped, claims, mappings, errorCount] = parts;
-  return (
-    <NoticeBanner>
-      Corpus bootstrap: {lists} source list{lists === "1" ? "" : "s"} created; {entriesCreated}{" "}
-      entr{entriesCreated === "1" ? "y" : "ies"} imported, {entriesSkipped} already present;{" "}
-      {claims} claim{claims === "1" ? "" : "s"} and {mappings} mapping
-      {mappings === "1" ? "" : "s"} created; {errorCount} error
-      {errorCount === "1" ? "" : "s"}
-      {errorCount !== "0" ? " (details in the server log)" : ""}. Review the drafts at{" "}
-      <a className="underline" href="/review/prophecy/claims/?status=draft">
-        claims → draft
-      </a>
-      .
-    </NoticeBanner>
-  );
-}
+// NOTE: the one-click data-loading buttons ("Import all datasets + claim
+// drafts" / "Load AI claim drafts") used to live here. The corpus is loaded,
+// and a button that rewrites the whole corpus is a footgun sitting next to
+// the editorial workflow. Future datasets go in through the CLI on the
+// droplet — `npm run prophecy:bootstrap` — which is where the DB is anyway.
+// The server actions themselves are still exported from ./actions.ts.
 
 const LINKS: Array<{ href: string; title: string; blurb: string }> = [
   {
@@ -99,6 +67,11 @@ const LINKS: Array<{ href: string; title: string; blurb: string }> = [
     href: "/review/prophecy/claims/",
     title: "Claims",
     blurb: "Normalized claims — search, create, moderate, merge.",
+  },
+  {
+    href: "/review/prophecy/evaluations/",
+    title: "Evaluations",
+    blurb: "Dimensional scores and the disagreement queue — where reviewers split.",
   },
   {
     href: "/review/prophecy/export/",
@@ -122,8 +95,6 @@ export default async function ProphecyDashboardPage({
 
   const sp = await searchParams;
   const error = qp(sp.error);
-  const draftload = qp(sp.draftload);
-  const bootstrap = qp(sp.bootstrap);
   const authed = await isAdminAuthed();
 
   if (!authed) {
@@ -190,9 +161,6 @@ export default async function ProphecyDashboardPage({
       </div>
 
       {error ? <ErrorBanner code={error} /> : null}
-      {draftload === "missing" ? <ErrorBanner code="draftload_missing" /> : null}
-      {draftload && draftload !== "missing" ? <DraftloadBanner value={draftload} /> : null}
-      {bootstrap ? <BootstrapBanner value={bootstrap} /> : null}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         <Stat label="Claims" value={claimCount} />
@@ -206,29 +174,6 @@ export default async function ProphecyDashboardPage({
         <BreakdownCard title="Claims by status" rows={statusRows} />
         <BreakdownCard title="Entries by mapping status" rows={mappingRows} />
       </div>
-
-      <section className="card p-5">
-        <h2 className="text-sm font-bold">Data</h2>
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-          <strong>Start here on a fresh install.</strong> One click imports every committed
-          dataset under its correct slug and then loads the AI-drafted claims on top — no manual
-          list creation, no pasting. Everything is idempotent: existing lists, entries, claims and
-          mappings are skipped, never overwritten, so re-running is always safe.
-        </p>
-        <form action={bootstrapDatasetsAction} className="mt-3">
-          <button type="submit" className="btn-primary px-4 py-2 text-sm">
-            Import all datasets + claim drafts
-          </button>
-        </form>
-        <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
-          Or load only the claim drafts, if the source lists are already imported:
-        </p>
-        <form action={loadClaimDraftsAction} className="mt-2">
-          <button type="submit" className="btn-ghost px-4 py-2 text-sm">
-            Load AI claim drafts (claims-draft-v1)
-          </button>
-        </form>
-      </section>
 
       <section>
         <h2 className="text-lg font-bold">Work areas</h2>
