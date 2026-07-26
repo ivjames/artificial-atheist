@@ -499,3 +499,85 @@ export const DIMENSION_KIND_LABELS: Record<string, string> = {
   prediction_dimension: "Prediction quality",
   fulfillment_dimension: "Fulfillment quality",
 };
+
+// --- summary scores ---------------------------------------------------------
+//
+// The handoff permits a computed summary but forbids an unexplained one: it
+// "must never replace the component scores and must disclose its formula."
+// So every consumer of these helpers renders SUMMARY_FORMULA alongside the
+// number, and the per-dimension rows stay on the page.
+
+export const SUMMARY_FORMULA =
+  "Unweighted mean of the component dimension scores on the 0–5 scale, averaged across raters where more than one rated a dimension. Not a verdict on the claim.";
+
+export type ScoreSummary = {
+  kind: string;
+  mean: number | null; // null when nothing has been rated yet
+  dimensionCount: number;
+  ratingCount: number;
+};
+
+/**
+ * Per-kind means for one claim's evaluation rows. Averages per dimension
+ * first, then across dimensions, so a dimension rated by two passes doesn't
+ * count double against one rated by a single pass.
+ */
+export function summarizeClaimScores(rows: ClaimEvaluationRow[]): ScoreSummary[] {
+  const byKind = new Map<string, Map<string, number[]>>();
+  for (const r of rows) {
+    const dims = byKind.get(r.dimensionKind) ?? new Map<string, number[]>();
+    const scores = dims.get(r.dimensionKey) ?? [];
+    scores.push(r.score);
+    dims.set(r.dimensionKey, scores);
+    byKind.set(r.dimensionKind, dims);
+  }
+
+  return [...byKind.entries()].map(([kind, dims]) => {
+    const perDimension = [...dims.values()].map(
+      (scores) => scores.reduce((a, b) => a + b, 0) / scores.length,
+    );
+    const ratingCount = [...dims.values()].reduce((n, s) => n + s.length, 0);
+    return {
+      kind,
+      mean: perDimension.length
+        ? perDimension.reduce((a, b) => a + b, 0) / perDimension.length
+        : null,
+      dimensionCount: dims.size,
+      ratingCount,
+    };
+  });
+}
+
+export type DimensionStat = {
+  dimensionKind: string;
+  dimensionKey: string;
+  mean: number;
+  claimsRated: number;
+};
+
+/**
+ * Corpus-wide mean per dimension — the "where does this whole corpus sit"
+ * view. Ordered weakest-first, because the low end is what a reader of a
+ * prophecy-claims database actually wants to interrogate.
+ */
+export async function corpusDimensionStats(prisma: PrismaClient): Promise<DimensionStat[]> {
+  // The column is a bare vocab key; the kind lives in the vocabulary, not the
+  // row, so resolve it here rather than denormalizing it into the table.
+  const kindByKey = new Map(PROPHECY_VOCAB.map((t) => [t.key, t.kind]));
+
+  const grouped = await prisma.prophecyEvaluation.groupBy({
+    by: ["dimension"],
+    where: { targetType: "claim" },
+    _avg: { score: true },
+    _count: { _all: true },
+  });
+
+  return grouped
+    .map((g) => ({
+      dimensionKind: kindByKey.get(g.dimension) ?? "unknown",
+      dimensionKey: g.dimension,
+      mean: g._avg.score ?? 0,
+      claimsRated: g._count._all,
+    }))
+    .sort((a, b) => a.mean - b.mean);
+}
