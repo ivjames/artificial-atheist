@@ -136,7 +136,7 @@ export default function RootLayout({
         <main>{children}</main>
 
         <footer className="footer">
-          <AccountMenu chatEnabled={CHAT_ENABLED} />
+          <AccountMenu />
           <div className="footer-inner">
             <div className="footer-left">
               <span className="footer-name">{site.title}</span>

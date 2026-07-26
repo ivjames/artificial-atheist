@@ -1,25 +1,31 @@
 import { CHAT_ENABLED } from "@/lib/config";
 import { getCurrentUser } from "@/lib/auth/session";
+import { isAdminAuthed } from "@/app/(app)/review/pipeline/auth";
 
-// Tiny auth-state probe for the account submenu (components/AccountMenu).
-// Reads the session cookie and reports ONLY whether the visitor is signed in —
-// no email, no id, no PII in the body. While the chat surface is dark
-// (CHAT_ENABLED=false) the whole logged-in surface 404s, so the probe short
-// -circuits to "not authed" and the menu stays hidden.
+// Tiny auth-state probe for the footer account menu (components/AccountMenu).
+// Reports ONLY booleans — no email, id, or PII in the body:
+//   - authed: the visitor holds a valid user session (chat surface).
+//   - admin:  the visitor holds the operator admin cookie (review surface).
+// While the chat surface is dark (CHAT_ENABLED=false) the logged-in user
+// surface 404s, so `authed` short-circuits to false — but `admin` is still
+// reported, because the /review/** operator tools are intentionally NOT gated
+// on CHAT_ENABLED.
 //
 // Kept out of SSG (reads cookies + DB per request); the client fetches it from
 // the otherwise-static footer so the publication itself stays fully static.
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const admin = await isAdminAuthed().catch(() => false);
+
   if (!CHAT_ENABLED) {
-    return Response.json({ chatEnabled: false, authed: false });
+    return Response.json({ chatEnabled: false, authed: false, admin });
   }
   try {
     const user = await getCurrentUser();
-    return Response.json({ chatEnabled: true, authed: Boolean(user) });
+    return Response.json({ chatEnabled: true, authed: Boolean(user), admin });
   } catch {
     // DB hiccup — fail closed to the signed-out menu rather than 500.
-    return Response.json({ chatEnabled: true, authed: false });
+    return Response.json({ chatEnabled: true, authed: false, admin });
   }
 }
