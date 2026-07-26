@@ -52,7 +52,7 @@ function RunCard({ run }: { run: ParsedRun }) {
           {m.hookViolations} engagement-hook{m.hookViolations === 1 ? "" : "s"}
         </span>
         <span className={m.multiQuestionTurns ? "font-semibold text-amber-600 dark:text-amber-400" : ""}>
-          {m.multiQuestionTurns} multi-question
+          {m.multiQuestionTurns} stacked-question
         </span>
         <span>{m.trailingQuestions} end on a question</span>
         <span className="text-slate-400 dark:text-slate-500">{run.adversaryModel}</span>
@@ -145,7 +145,8 @@ export default async function AdversaryReviewPage({
             Transcripts and stats from <code>npm run adversary</code> — the simulated apologist
             vs. the real debate agent. The flagged counts below track the debate persona&apos;s own
             rules: it should never end a reply by soliciting more engagement, and never stack
-            questions.
+            questions at the visitor in its closing. Rhetorical questions woven into the
+            argument (e.g. Euthyphro) are allowed and are not counted.
           </p>
         </div>
         <form action={logoutAdmin}>
@@ -173,9 +174,9 @@ export default async function AdversaryReviewPage({
                 hint="should be 0"
               />
               <Stat
-                label="Multi-question replies"
+                label="Stacked-question replies"
                 value={stats.multiQuestionTurns}
-                hint="rule: ≤1 question"
+                hint="≤1 closing question; rhetoricals OK"
               />
               <Stat label="Replies ending on a ?" value={stats.trailingQuestions} />
               <Stat label="Input tokens" value={stats.inputTokens.toLocaleString()} />
@@ -193,7 +194,7 @@ export default async function AdversaryReviewPage({
                       <th className="py-2 pr-4 text-right">Replies</th>
                       <th className="py-2 pr-4 text-right">Avg words</th>
                       <th className="py-2 pr-4 text-right">Hooks</th>
-                      <th className="py-2 text-right">Multi-Q</th>
+                      <th className="py-2 text-right">Stacked-Q</th>
                     </tr>
                   </thead>
                   <tbody>
