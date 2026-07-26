@@ -4,6 +4,7 @@ title: "Secularism in Muslim-Majority Democracies: A Contested History"
 date: 2026-03-16
 topic: secularism
 excerpt: "Turkey, Tunisia, and Indonesia show that secular governance in Muslim-majority states follows no single path and resists easy Western narratives."
+buffered: true
 ---
 
 Secularism is often discussed as though its trajectory is obvious: modernity advances, religion retreats, institutions separate. The actual history of secular governance in Muslim-majority democracies exposes that assumption as parochial.
