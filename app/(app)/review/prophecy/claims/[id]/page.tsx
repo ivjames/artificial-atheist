@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { MODERATION_STATES } from "@/lib/prophecy/vocab";
+import { DIMENSION_KIND_LABELS, claimEvaluations } from "@/lib/prophecy/evaluations";
 import {
   CATEGORY_TERMS,
   ErrorBanner,
@@ -55,7 +56,7 @@ export default async function ProphecyClaimDetailPage({
   });
   if (!claim) notFound();
 
-  const [relationships, revisions] = await Promise.all([
+  const [relationships, revisions, evaluations] = await Promise.all([
     prisma.prophecyRelationship.findMany({
       where: {
         OR: [
@@ -69,7 +70,29 @@ export default async function ProphecyClaimDetailPage({
       where: { targetType: "claim", targetId: claim.id },
       orderBy: { createdAt: "desc" },
     }),
+    claimEvaluations(prisma, claim.id),
   ]);
+
+  // Group the component scores for display: kind → rows, preserving the
+  // vocab ordering claimEvaluations already applied. Dimensions where the
+  // reviewers landed on different numbers are flagged inline — the split is
+  // the finding, and burying it would defeat running two passes at all.
+  const evalGroups: Array<[string, typeof evaluations]> = [];
+  const disagreedDimensions = new Set<string>();
+  {
+    const scoresByDimension = new Map<string, Set<number>>();
+    for (const e of evaluations) {
+      const seen = scoresByDimension.get(e.dimensionKey) ?? new Set<number>();
+      seen.add(e.score);
+      scoresByDimension.set(e.dimensionKey, seen);
+      const group = evalGroups.find(([kind]) => kind === e.dimensionKind);
+      if (group) group[1].push(e);
+      else evalGroups.push([e.dimensionKind, [e]]);
+    }
+    for (const [key, seen] of scoresByDimension) {
+      if (seen.size > 1) disagreedDimensions.add(key);
+    }
+  }
 
   // Resolve claim endpoints in the relationship graph to slugs for display.
   const relClaimIds = new Set<string>();
@@ -236,6 +259,55 @@ export default async function ProphecyClaimDetailPage({
           )}
         </div>
       </section>
+
+      {evaluations.length > 0 ? (
+        <section>
+          <h2 className="text-lg font-bold">Evaluations ({evaluations.length})</h2>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+            Component scores per dimension, each with its rationale and reviewer. They are
+            deliberately <em>not</em> averaged into a single number — a composite would hide
+            exactly the dimension a reader needs to check.{" "}
+            <a
+              href="/review/prophecy/evaluations/"
+              className="font-semibold text-brand-600 hover:underline"
+            >
+              Disagreement queue →
+            </a>
+          </p>
+          {evalGroups.map(([kind, rows]) => (
+            <div key={kind} className="mt-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                {DIMENSION_KIND_LABELS[kind] ?? kind.replace(/_/g, " ")} ({rows.length})
+              </h3>
+              <div className="mt-2 flex flex-col gap-2">
+                {rows.map((e) => (
+                  <div
+                    key={`${e.dimensionKey}:${e.reviewerSlug}`}
+                    className="rounded-xl border border-slate-200 px-4 py-3 text-sm dark:border-slate-800"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold">{e.label}</span>
+                      <span className="rounded-full bg-slate-500/10 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                        {e.score}/5 · {e.scoreLabel.replace(/_/g, " ")}
+                      </span>
+                      {disagreedDimensions.has(e.dimensionKey) ? (
+                        <span className="rounded-full bg-amber-500/15 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-400">
+                          reviewers disagree
+                        </span>
+                      ) : null}
+                      <StatusBadge status={e.status} />
+                      <span className="ml-auto text-xs text-slate-400 dark:text-slate-500">
+                        <code>{e.reviewerSlug}</code> · confidence {e.confidence}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-slate-600 dark:text-slate-300">{e.rationale}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+      ) : null}
 
       <section className="card p-6">
         <h2 className="text-lg font-bold">Merge a duplicate into this claim</h2>
