@@ -76,8 +76,12 @@ export const credits = {
 // thread (which resets context and lowers per-turn cost).
 export const threadTokenBudget = envInt("THREAD_TOKEN_BUDGET", 40_000);
 
-// Max tokens the model may generate per reply (keeps output cost bounded).
-export const maxOutputTokens = envInt("MAX_OUTPUT_TOKENS", 800);
+// Max tokens the model may generate per reply (keeps output cost bounded). The
+// old 800 default truncated longer debate replies mid-sentence (visible as
+// chopped transcripts in the adversary eval, and it would chop live replies
+// too); 2000 gives a complete reply room to land. Still env-tunable to dial
+// live-chat economics back at launch.
+export const maxOutputTokens = envInt("MAX_OUTPUT_TOKENS", 2000);
 
 // --- Credit packs (§8) ----------------------------------------------------
 // Minimum pack pushed to ~$5 so Stripe's fixed $0.30 doesn't dominate (§8).
