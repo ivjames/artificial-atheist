@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  sentenceCount,
   stripQuotedSpans,
   trailingQuestionRun,
   trimStackedClosingQuestions,
@@ -15,6 +16,25 @@ describe("stripQuotedSpans", () => {
     expect(stripped).not.toContain("why not");
     expect(stripped.replace(/\s+/g, " ").trim()).toBe("He said loudly");
     expect(stripQuotedSpans("don't — it's fine")).toBe("don't — it's fine");
+  });
+});
+
+describe("sentenceCount", () => {
+  it("counts terminated sentences across . ? and !", () => {
+    expect(sentenceCount("One. Two? Three!")).toBe(3);
+  });
+
+  it("counts an unterminated trailing fragment as a sentence", () => {
+    expect(sentenceCount("Done. And then this")).toBe(2);
+  });
+
+  it("is zero for empty or whitespace", () => {
+    expect(sentenceCount("   ")).toBe(0);
+  });
+
+  it("does not count ordinal list markers as their own sentences", () => {
+    // "1." and "2." split out as fragments; they are markers, not sentences.
+    expect(sentenceCount("1. First claim. 2. Second claim.")).toBe(2);
   });
 });
 

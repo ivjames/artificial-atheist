@@ -29,6 +29,7 @@ agent_avg_words: 132
 hook_violations: 1
 trailing_questions: 2
 multi_question_turns: 0
+long_replies: 1
 run: 2026-07-25_21-05-33
 ---
 
@@ -155,6 +156,7 @@ describe("parseTranscriptFile", () => {
       hookViolations: 1,
       trailingQuestions: 2,
       multiQuestionTurns: 0,
+      longReplies: 1,
     });
   });
 

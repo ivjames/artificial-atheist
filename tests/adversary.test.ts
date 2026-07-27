@@ -193,6 +193,21 @@ describe("scoreAgentTurns", () => {
     expect(m.multiQuestionTurns).toBe(0);
     expect(m.trailingQuestions).toBe(1);
   });
+
+  it("flags replies that sprawl past the sentence ceiling", () => {
+    const wall = Array.from({ length: 12 }, (_, i) => `Point number ${i + 1}.`).join(" ");
+    const tight = "Order looks designed. That inference is the weak link. It assumes what it sets out to prove.";
+    const m = scoreAgentTurns([wall, tight]);
+    expect(m.longReplies).toBe(1); // only the 12-sentence wall
+    expect(m.agentTurns).toBe(2);
+  });
+
+  it("does not flag a reply that lands within the ceiling", () => {
+    // Exactly ten sentences is at the top of the persona's stated range, not over it.
+    const tenSentences = Array.from({ length: 10 }, (_, i) => `Claim ${i + 1}.`).join(" ");
+    const m = scoreAgentTurns([tenSentences]);
+    expect(m.longReplies).toBe(0);
+  });
 });
 
 const mkRun = (over: Partial<ParsedRun>): ParsedRun =>
@@ -222,6 +237,7 @@ const mkRun = (over: Partial<ParsedRun>): ParsedRun =>
         hookViolations: 1,
         trailingQuestions: 1,
         multiQuestionTurns: 0,
+        longReplies: 0,
       },
   }) as ParsedRun;
 
@@ -268,6 +284,7 @@ describe("aggregateStats", () => {
           hookViolations: 2,
           trailingQuestions: 0,
           multiQuestionTurns: 1,
+          longReplies: 3,
         },
       }),
       mkRun({
@@ -280,6 +297,7 @@ describe("aggregateStats", () => {
           hookViolations: 0,
           trailingQuestions: 0,
           multiQuestionTurns: 0,
+          longReplies: 1,
         },
       }),
     ];
@@ -288,9 +306,26 @@ describe("aggregateStats", () => {
     expect(s.agentTurns).toBe(5);
     expect(s.hookViolations).toBe(2);
     expect(s.multiQuestionTurns).toBe(1);
+    expect(s.longReplies).toBe(4);
     // weighted: (50*4 + 100*1) / 5 = 60
     expect(s.avgAgentWords).toBe(60);
     expect(s.byPersona).toHaveLength(2);
+  });
+
+  it("treats a stored run missing longReplies as zero (older rows)", () => {
+    // Runs saved before the length metric existed have no `longReplies` key in
+    // their JSON blob. The roll-up must coalesce it, not add undefined.
+    const legacyMetrics = {
+      agentTurns: 2,
+      agentAvgChars: 0,
+      agentAvgWords: 30,
+      hookViolations: 0,
+      trailingQuestions: 0,
+      multiQuestionTurns: 0,
+    } as ParsedRun["metrics"]; // deliberately omits longReplies
+    const s = aggregateStats([mkRun({ metrics: legacyMetrics })]);
+    expect(s.longReplies).toBe(0);
+    expect(s.byPersona[0].longReplies).toBe(0);
   });
 
   it("handles an empty run set", () => {

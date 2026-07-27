@@ -14,7 +14,7 @@
 // The adversary is a role-play. Its only job is to be a realistic, in-character
 // interlocutor so we can see how the real debate agent holds up.
 
-import { stripQuotedSpans, trailingQuestionRun } from "./questions";
+import { sentenceCount, stripQuotedSpans, trailingQuestionRun } from "./questions";
 
 // --- Dials -----------------------------------------------------------------
 
@@ -395,7 +395,20 @@ export type AgentMetrics = {
   // dialectical questions mid-paragraph. (persona.ts: "ask AT MOST ONE pointed
   // question … never stack multiple questions … or end every turn with one.")
   multiQuestionTurns: number;
+  // Replies that run LONG — more than MAX_REPLY_SENTENCES sentences. The persona
+  // caps a debate reply at roughly five to ten sentences (one or two short
+  // paragraphs); a reply that sprawls past the ceiling is the "wall of text"
+  // visitors complain about. Position-agnostic, unlike the question metrics —
+  // this counts total length, not what sits in the closing run.
+  longReplies: number;
 };
+
+// The persona's length ceiling, in sentences. A debate reply should make one
+// strong point in a handful of tight sentences; past this it's the
+// multi-paragraph sprawl the persona forbids. Set at the top of the persona's
+// stated "five to ten sentences" range so the metric flags genuine walls of
+// text, not a reply that lands at nine.
+export const MAX_REPLY_SENTENCES = 10;
 
 // Engagement-hook phrasings the persona is told never to end on. Matched
 // against the tail of a reply so a mid-reply "let me know" doesn't false-fire.
@@ -419,6 +432,7 @@ export function emptyAgentMetrics(): AgentMetrics {
     hookViolations: 0,
     trailingQuestions: 0,
     multiQuestionTurns: 0,
+    longReplies: 0,
   };
 }
 
@@ -432,11 +446,17 @@ export function scoreAgentTurns(replies: string[]): AgentMetrics {
   let hooks = 0;
   let trailingQ = 0;
   let multiQ = 0;
+  let long = 0;
 
   for (const raw of replies) {
     const t = raw.trim();
     chars += t.length;
     words += t.split(/\s+/).filter(Boolean).length;
+
+    // Length ceiling: a reply past MAX_REPLY_SENTENCES is the wall-of-text the
+    // persona forbids. Total sentence count, quotes included — a long quotation
+    // still reads as a long reply.
+    if (sentenceCount(t) > MAX_REPLY_SENTENCES) long++;
 
     // Count only the agent's OWN questions: strip double-quoted spans first, so
     // a question it quotes from the opponent ("why is there something rather
@@ -459,6 +479,7 @@ export function scoreAgentTurns(replies: string[]): AgentMetrics {
     hookViolations: hooks,
     trailingQuestions: trailingQ,
     multiQuestionTurns: multiQ,
+    longReplies: long,
   };
 }
 
