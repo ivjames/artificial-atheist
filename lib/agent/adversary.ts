@@ -493,6 +493,23 @@ export function scoreAgentTurns(replies: string[]): AgentMetrics {
   };
 }
 
+// (Re)derive a run's metrics from its persisted transcript — the same scoring
+// scripts/adversary.ts runs live, but over the stored agent replies instead of
+// fresh model output. The transcript keeps every agent reply verbatim, so this
+// reproduces the original score exactly AND fills in metrics that didn't exist
+// when the run was saved (e.g. agentAvgSentences on older rows). Pure: same
+// transcript → same metrics, no I/O, no model cost. Backs the rescore script.
+// Accepts the minimal line shape so callers needn't import the read model's
+// TranscriptLine type (which would create an import cycle).
+export function metricsFromTranscript(
+  transcript: { speaker: string; content: string }[],
+): AgentMetrics {
+  const agentReplies = transcript
+    .filter((l) => l.speaker === "agent")
+    .map((l) => l.content);
+  return scoreAgentTurns(agentReplies);
+}
+
 // The instruction that seeds the very first adversary turn (and stays at the
 // head of the adversary's view of the conversation). An optional seed pins the
 // opening to a specific argument or a verbatim opener.
