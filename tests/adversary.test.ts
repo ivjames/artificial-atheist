@@ -7,6 +7,7 @@ import {
   withDials,
   openerInstruction,
   scoreAgentTurns,
+  metricsFromTranscript,
   ARGUMENTS,
   argumentKeys,
 } from "@/lib/agent/adversary";
@@ -214,6 +215,37 @@ describe("scoreAgentTurns", () => {
     const tenSentences = Array.from({ length: 10 }, (_, i) => `Claim ${i + 1}.`).join(" ");
     const m = scoreAgentTurns([tenSentences]);
     expect(m.longReplies).toBe(0);
+  });
+});
+
+describe("metricsFromTranscript", () => {
+  it("scores only the agent's replies, ignoring the adversary's turns", () => {
+    const transcript = [
+      { speaker: "adversary", content: "Why is there something rather than nothing? Answer me." },
+      { speaker: "agent", content: "That question assumes a cause. It doesn't have one." },
+      { speaker: "agent", content: "A. B. C. D. E. F. G. H. I. J. K." }, // 11 sentences → over-length
+    ];
+    const m = metricsFromTranscript(transcript);
+    expect(m.agentTurns).toBe(2); // adversary line excluded
+    expect(m.longReplies).toBe(1); // the 11-sentence agent reply
+    expect(m.agentAvgSentences).toBeGreaterThan(0);
+  });
+
+  it("equals scoreAgentTurns over the agent lines (same computation)", () => {
+    const transcript = [
+      { speaker: "agent", content: "One point. And a second." },
+      { speaker: "adversary", content: "Rebuttal here." },
+      { speaker: "agent", content: "A closing thought." },
+    ];
+    expect(metricsFromTranscript(transcript)).toEqual(
+      scoreAgentTurns(["One point. And a second.", "A closing thought."]),
+    );
+  });
+
+  it("returns empty metrics when the transcript has no agent turns", () => {
+    const m = metricsFromTranscript([{ speaker: "adversary", content: "Only me here." }]);
+    expect(m.agentTurns).toBe(0);
+    expect(m.agentAvgSentences).toBe(0);
   });
 });
 

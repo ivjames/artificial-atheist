@@ -225,6 +225,16 @@ reference the corpus:
   each direction at the cheaper model gives a floor and the dearer one a ceiling
   — a bound, not an estimate. The aggregate's Total cost becomes a range when any
   backfilled run is present, with the exact-only figure in the hint.
+- `scripts/adversary-rescore.ts` (`npm run adversary:rescore`, `--dry-run`) —
+  recomputes every `AdversaryRun`'s metrics in place from its stored transcript
+  via `metricsFromTranscript` (a thin wrapper over `scoreAgentTurns` in
+  `adversary.ts`). Metrics are DERIVED data; the transcript keeps every agent
+  reply verbatim, so re-scoring reproduces the original numbers AND fills in
+  heuristics added after a run was saved (e.g. `agentAvgSentences` reads 0 on
+  older rows until this runs). No model calls, no cost. Idempotent (skips rows
+  whose metrics already match) and safe (skips rows with no agent turns rather
+  than zeroing real numbers). This is the ONLY way to populate a new metric on
+  historical runs — the backfill is insert-only and never touches existing rows.
 - **Review surface:** `/review/adversary` (admin-token gated, reuses the pipeline
   auth cookie; NOT gated on CHAT_ENABLED since it's an operator/eval tool). Shows
   aggregate + per-persona stats and every transcript. This is how you review the
