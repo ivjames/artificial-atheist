@@ -13,6 +13,7 @@ import {
 import {
   aggregateStats,
   runCostAvailable,
+  runCostBoundUsd,
   runCostUsd,
   type ParsedRun,
 } from "@/lib/adversaryRuns";
@@ -315,11 +316,78 @@ describe("aggregateStats", () => {
     });
     const s = aggregateStats([costable, backfilled]);
     expect(s.costUnavailableRuns).toBe(1);
-    // Only the costable run contributes; the backfilled one adds nothing
-    // rather than adding a fabricated figure.
+    // costUsd stays the EXACT figure — the backfilled run adds nothing to it
+    // rather than adding a fabricated number.
     expect(s.costUsd).toBeCloseTo(runCostUsd(costable), 6);
+    // The corpus bracket does include it, as a floor and ceiling.
+    const b = runCostBoundUsd(backfilled);
+    expect(s.costMinUsd).toBeCloseTo(s.costUsd + b.min, 6);
+    expect(s.costMaxUsd).toBeCloseTo(s.costUsd + b.max, 6);
+    expect(s.costMinUsd).toBeLessThan(s.costMaxUsd);
     // Its tokens still count — those numbers ARE recoverable from the file.
     expect(s.inputTokens).toBe(costable.inputTokens + 5000);
+  });
+
+  it("collapses the bracket to the exact total when nothing was backfilled", () => {
+    const s = aggregateStats([
+      mkRun({ transcript: [{ speaker: "agent", content: "", inTok: 100, outTok: 10 }] }),
+    ]);
+    expect(s.costUnavailableRuns).toBe(0);
+    expect(s.costMinUsd).toBeCloseTo(s.costUsd, 9);
+    expect(s.costMaxUsd).toBeCloseTo(s.costUsd, 9);
+  });
+});
+
+describe("runCostBoundUsd", () => {
+  // standard tier → agent on Haiku 4.5 ($1/$5); adversary on Sonnet 4.5 ($3/$15).
+  const run = mkRun({
+    tier: "standard",
+    adversaryModel: "anthropic:claude-sonnet-4-5",
+    inputTokens: 10_000,
+    outputTokens: 2_000,
+    transcript: [{ speaker: "agent", content: "x", inTok: 0, outTok: 0 }],
+  });
+
+  it("brackets input and output independently at each model's rate", () => {
+    const b = runCostBoundUsd(run);
+    // floor: all Haiku  → 10000*1 + 2000*5  = 20000 → $0.0200
+    // ceil:  all Sonnet → 10000*3 + 2000*15 = 60000 → $0.0600
+    expect(b.min).toBeCloseTo(0.02, 6);
+    expect(b.max).toBeCloseTo(0.06, 6);
+  });
+
+  it("contains the exact cost of any possible split", () => {
+    const b = runCostBoundUsd(run);
+    // Whatever the real split was, costing it lands inside the bracket. Check
+    // the extremes plus a middle split — the bound is only useful if true.
+    for (const agentShare of [0, 0.5, 1]) {
+      const agIn = 10_000 * agentShare;
+      const agOut = 2_000 * agentShare;
+      const exact = runCostUsd(
+        mkRun({
+          tier: "standard",
+          adversaryModel: "anthropic:claude-sonnet-4-5",
+          transcript: [
+            { speaker: "agent", content: "", inTok: agIn, outTok: agOut },
+            { speaker: "adversary", content: "", inTok: 10_000 - agIn, outTok: 2_000 - agOut },
+          ],
+        }),
+      );
+      expect(exact).toBeGreaterThanOrEqual(b.min - 1e-9);
+      expect(exact).toBeLessThanOrEqual(b.max + 1e-9);
+    }
+  });
+
+  it("collapses to a point when both sides ran the same model", () => {
+    const same = mkRun({
+      tier: "premium", // agent on Sonnet
+      adversaryModel: "anthropic:claude-sonnet-4-5",
+      inputTokens: 1_000,
+      outputTokens: 100,
+      transcript: [{ speaker: "agent", content: "x", inTok: 0, outTok: 0 }],
+    });
+    const b = runCostBoundUsd(same);
+    expect(b.min).toBeCloseTo(b.max, 9);
   });
 });
 
