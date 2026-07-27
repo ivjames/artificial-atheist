@@ -381,6 +381,10 @@ export type AgentMetrics = {
   agentTurns: number;
   agentAvgChars: number;
   agentAvgWords: number;
+  // Mean sentences per reply — the length figure in the unit the persona rule
+  // is written in ("roughly five to ten sentences"). Complements agentAvgWords
+  // on the dashboard: words shows heft, sentences shows it against the ceiling.
+  agentAvgSentences: number;
   // Replies that END by drumming up further engagement — the persona's
   // number-one "never do this" rule. The heuristic scans the reply's tail.
   hookViolations: number;
@@ -429,6 +433,7 @@ export function emptyAgentMetrics(): AgentMetrics {
     agentTurns: 0,
     agentAvgChars: 0,
     agentAvgWords: 0,
+    agentAvgSentences: 0,
     hookViolations: 0,
     trailingQuestions: 0,
     multiQuestionTurns: 0,
@@ -443,6 +448,7 @@ export function scoreAgentTurns(replies: string[]): AgentMetrics {
 
   let chars = 0;
   let words = 0;
+  let sentences = 0;
   let hooks = 0;
   let trailingQ = 0;
   let multiQ = 0;
@@ -453,10 +459,13 @@ export function scoreAgentTurns(replies: string[]): AgentMetrics {
     chars += t.length;
     words += t.split(/\s+/).filter(Boolean).length;
 
-    // Length ceiling: a reply past MAX_REPLY_SENTENCES is the wall-of-text the
-    // persona forbids. Total sentence count, quotes included — a long quotation
-    // still reads as a long reply.
-    if (sentenceCount(t) > MAX_REPLY_SENTENCES) long++;
+    // Length in sentences: feeds both the average (dashboard) and the ceiling
+    // flag. Total sentence count, quotes included — a long quotation still
+    // reads as a long reply. A reply past MAX_REPLY_SENTENCES is the
+    // wall-of-text the persona forbids.
+    const sents = sentenceCount(t);
+    sentences += sents;
+    if (sents > MAX_REPLY_SENTENCES) long++;
 
     // Count only the agent's OWN questions: strip double-quoted spans first, so
     // a question it quotes from the opponent ("why is there something rather
@@ -476,6 +485,7 @@ export function scoreAgentTurns(replies: string[]): AgentMetrics {
     agentTurns: n,
     agentAvgChars: Math.round(chars / n),
     agentAvgWords: Math.round(words / n),
+    agentAvgSentences: Math.round(sentences / n),
     hookViolations: hooks,
     trailingQuestions: trailingQ,
     multiQuestionTurns: multiQ,

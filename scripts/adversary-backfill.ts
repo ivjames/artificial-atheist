@@ -42,6 +42,7 @@ type FrontMatter = {
   input_tokens?: number;
   output_tokens?: number;
   agent_avg_words?: number;
+  agent_avg_sentences?: number;
   hook_violations?: number;
   trailing_questions?: number;
   multi_question_turns?: number;
@@ -66,6 +67,7 @@ export type ParsedTranscript = {
   metrics: {
     agentTurns: number;
     agentAvgWords: number;
+    agentAvgSentences: number;
     hookViolations: number;
     trailingQuestions: number;
     multiQuestionTurns: number;
@@ -180,6 +182,7 @@ export function parseTranscriptFile(
     metrics: {
       agentTurns,
       agentAvgWords: Number(fm.agent_avg_words ?? 0) || 0,
+      agentAvgSentences: Number(fm.agent_avg_sentences ?? 0) || 0,
       hookViolations: Number(fm.hook_violations ?? 0) || 0,
       trailingQuestions: Number(fm.trailing_questions ?? 0) || 0,
       multiQuestionTurns: Number(fm.multi_question_turns ?? 0) || 0,

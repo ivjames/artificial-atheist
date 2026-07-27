@@ -26,6 +26,7 @@ turns: 2
 input_tokens: 4210
 output_tokens: 980
 agent_avg_words: 132
+agent_avg_sentences: 6
 hook_violations: 1
 trailing_questions: 2
 multi_question_turns: 0
@@ -153,6 +154,7 @@ describe("parseTranscriptFile", () => {
     expect(parsed.metrics).toEqual({
       agentTurns: 1,
       agentAvgWords: 132,
+      agentAvgSentences: 6,
       hookViolations: 1,
       trailingQuestions: 2,
       multiQuestionTurns: 0,

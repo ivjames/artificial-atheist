@@ -353,6 +353,7 @@ turns: ${opts.turns}
 ${opts.seed ? `seed: "${opts.seed.replace(/"/g, "'")}"\n` : ""}input_tokens: ${inTok}
 output_tokens: ${outTok}
 agent_avg_words: ${metrics.agentAvgWords}
+agent_avg_sentences: ${metrics.agentAvgSentences}
 hook_violations: ${metrics.hookViolations}
 trailing_questions: ${metrics.trailingQuestions}
 multi_question_turns: ${metrics.multiQuestionTurns}
