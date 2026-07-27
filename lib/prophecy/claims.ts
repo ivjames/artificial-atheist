@@ -448,15 +448,26 @@ export type BulkStatusResult = {
   skippedBelowScore: number;
   /** Already at the target status; counted so the tally always adds up. */
   skippedAlready: number;
+  /** Claims whose individual write threw. See `errors` for the first few. */
+  failed: number;
+  /** First few failure messages, for the operator-facing banner. */
+  errors: string[];
 };
 
 /**
  * Mean evaluation score per claim, over the claims given.
  *
- * The mean is across every dimension and every rater — the same unweighted
- * formula the review pages disclose (SUMMARY_FORMULA). It is a navigation aid,
- * not a verdict, which is exactly why it's only ever used here as a FILTER over
- * a human's chosen threshold rather than as an automatic publish decision.
+ * TWO-LEVEL, matching SUMMARY_FORMULA exactly: average the raters within each
+ * dimension first, then average those dimension means unweighted. A flat mean
+ * over every rating row is NOT the same thing whenever dimensions carry
+ * different numbers of ratings — it silently weights the dimension more raters
+ * happened to score. Two 5s on one dimension and a single 0 on another give
+ * 3.33 flat but 2.5 here, so a threshold of 3 would publish a claim the score
+ * shown on its own page says should fail. The number that gates publishing has
+ * to be the number the site displays.
+ *
+ * It's a navigation aid, not a verdict, which is why it's only ever a FILTER
+ * under a human's chosen threshold rather than an automatic publish decision.
  */
 export async function claimMeanScores(
   prisma: PrismaClient,
@@ -464,13 +475,23 @@ export async function claimMeanScores(
 ): Promise<Map<string, number>> {
   if (claimIds.length === 0) return new Map();
   const rows = await prisma.prophecyEvaluation.groupBy({
-    by: ["targetId"],
+    by: ["targetId", "dimension"],
     where: { targetType: "claim", targetId: { in: claimIds } },
     _avg: { score: true },
   });
-  const out = new Map<string, number>();
+
+  // claimId → per-dimension means, then the unweighted mean of those.
+  const perClaim = new Map<string, number[]>();
   for (const r of rows) {
-    if (r._avg.score != null) out.set(r.targetId, r._avg.score);
+    if (r._avg.score == null) continue;
+    const list = perClaim.get(r.targetId);
+    if (list) list.push(r._avg.score);
+    else perClaim.set(r.targetId, [r._avg.score]);
+  }
+
+  const out = new Map<string, number>();
+  for (const [claimId, means] of perClaim) {
+    out.set(claimId, means.reduce((a, b) => a + b, 0) / means.length);
   }
   return out;
 }
@@ -487,6 +508,17 @@ export async function claimMeanScores(
  * issuing an updateMany. That costs a query per claim (trivial at this scale)
  * and buys the thing that matters: every transition still lands in the revision
  * log, so a bulk publish is as auditable as a hand-made one.
+ *
+ * PARTIAL PROGRESS IS REPORTED, NOT HIDDEN. A row that throws mid-batch does
+ * not abort the rest and does not discard the tally: the operation keeps going
+ * and returns `failed` plus the first few messages, so the operator learns that
+ * (say) 540 of 546 unpublished and six are still live. Rolling the batch into
+ * one transaction was the alternative, and it's the wrong trade here — hundreds
+ * of sequential writes would sit well past Prisma's interactive-transaction
+ * timeout while holding locks, and the operation is idempotent anyway
+ * (`skippedAlready`), so the real fix for a partial run is to press the button
+ * again. What would be unacceptable is a partial run that reports nothing,
+ * leaving an unknown subset public.
  *
  * `minMeanScore` gates on evaluation ratings. Claims with NO ratings are
  * excluded whenever a threshold is set — an unrated claim hasn't cleared the
@@ -526,6 +558,8 @@ export async function bulkUpdateClaimStatus(
     skippedSuperseded: 0,
     skippedBelowScore: 0,
     skippedAlready: 0,
+    failed: 0,
+    errors: [],
   };
 
   const live = candidates.filter((c) => {
@@ -557,8 +591,15 @@ export async function bulkUpdateClaimStatus(
   }
 
   for (const c of eligible) {
-    await updateClaimStatus(prisma, c.id, status);
-    result.updated += 1;
+    try {
+      await updateClaimStatus(prisma, c.id, status);
+      result.updated += 1;
+    } catch (e) {
+      result.failed += 1;
+      if (result.errors.length < 5) {
+        result.errors.push(`${c.id}: ${e instanceof Error ? e.message : "unknown error"}`);
+      }
+    }
   }
   return result;
 }

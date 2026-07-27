@@ -159,12 +159,19 @@ export async function bulkChangeClaimStatus(formData: FormData): Promise<void> {
   revalidatePath("/prophecy/claims");
 
   const r = result!;
+  if (r.failed > 0) {
+    // A partial run must never look like a clean one — the operator has to know
+    // some claims are still at the old status before they walk away.
+    console.error(`bulkChangeClaimStatus: ${r.failed} failed\n${r.errors.join("\n")}`);
+  }
   redirect(
     backTo({
       bulk: target,
       updated: String(r.updated),
       skipped: String(r.skippedSuperseded + r.skippedBelowScore + r.skippedAlready),
       below: String(r.skippedBelowScore),
+      failed: String(r.failed),
+      detail: r.errors[0]?.slice(0, 200) ?? "",
     }),
   );
 }

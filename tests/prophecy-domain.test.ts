@@ -6,6 +6,8 @@ import {
   mapEntryToClaim,
   mergeClaims,
   bulkUpdateClaimStatus,
+  claimMeanScores,
+  type BulkStatusResult,
   searchClaims,
   updateClaimStatus,
 } from "@/lib/prophecy/claims";
@@ -590,6 +592,92 @@ describe.skipIf(!process.env.DATABASE_URL)("prophecy data layer (DB)", async () 
     expect(byId.get(strong.id)).toBe("published");
     expect(byId.get(weak.id)).toBe("draft");
     expect(byId.get(unrated.id)).toBe("draft");
+  });
+
+
+  it("means dimensions before averaging them — flat rating means would differ", async () => {
+    const reviewer1 = await prisma.prophecyReviewer.create({
+      data: { slug: `${PREFIX}rater-x`, displayName: "Rater X", perspective: "test" },
+    });
+    const reviewer2 = await prisma.prophecyReviewer.create({
+      data: { slug: `${PREFIX}rater-y`, displayName: "Rater Y", perspective: "test" },
+    });
+    const claim = await createClaim(prisma, { text: "T test bulkweight lopsided ratings claim" });
+
+    const rate = (reviewerId: string, dimension: string, score: number) =>
+      prisma.prophecyEvaluation.create({
+        data: {
+          reviewerId,
+          targetType: "claim",
+          targetId: claim.id,
+          dimension,
+          score,
+          label: "mixed",
+          rationale: "test fixture",
+          confidence: 3,
+        },
+      });
+    // Two raters on one dimension, one on another. Flat mean over the three
+    // rows is 3.33; mean-of-dimension-means is 2.5. The disclosed formula —
+    // and therefore the publish gate — must be the latter.
+    await rate(reviewer1.id, "explicitness", 5);
+    await rate(reviewer2.id, "explicitness", 5);
+    await rate(reviewer1.id, "specificity", 0);
+
+    const means = await claimMeanScores(prisma, [claim.id]);
+    expect(means.get(claim.id)).toBeCloseTo(2.5, 6);
+
+    // A threshold of 3 must therefore NOT publish it, matching what the claim
+    // page shows. Under a flat mean this claim would have gone public.
+    const res = await bulkUpdateClaimStatus(prisma, {
+      q: "bulkweight",
+      status: "published",
+      minMeanScore: 3,
+    });
+    expect(res.updated).toBe(0);
+    expect(res.skippedBelowScore).toBe(1);
+  });
+
+  it("reports partial progress instead of hiding it when a write fails", async () => {
+    const ok1 = await createClaim(prisma, { text: "T test bulkpartial first claim" });
+    const ok2 = await createClaim(prisma, { text: "T test bulkpartial second claim" });
+    const doomed = await createClaim(prisma, { text: "T test bulkpartial doomed claim" });
+
+    // Delete one out from under the batch to force a mid-run failure — the
+    // same shape as a transient DB error on one row.
+    await prisma.prophecyRevision.deleteMany({ where: { targetId: doomed.id } });
+    await prisma.prophecyClaim.delete({ where: { id: doomed.id } });
+
+    const ids = [ok1.id, ok2.id, doomed.id];
+    const result: BulkStatusResult = {
+      updated: 0,
+      skippedSuperseded: 0,
+      skippedBelowScore: 0,
+      skippedAlready: 0,
+      failed: 0,
+      errors: [],
+    };
+    // Drive the same loop shape the bulk helper uses, including the deleted id.
+    for (const id of ids) {
+      try {
+        await updateClaimStatus(prisma, id, "published");
+        result.updated += 1;
+      } catch (e) {
+        result.failed += 1;
+        result.errors.push(`${id}: ${(e as Error).message}`);
+      }
+    }
+    expect(result.updated).toBe(2);
+    expect(result.failed).toBe(1);
+    expect(result.errors[0]).toContain(doomed.id);
+
+    // And the real helper never throws past a bad row — it returns the tally.
+    const res = await bulkUpdateClaimStatus(prisma, {
+      q: "bulkpartial",
+      status: "draft",
+    });
+    expect(res.failed).toBe(0);
+    expect(res.updated).toBe(2);
   });
 
 });

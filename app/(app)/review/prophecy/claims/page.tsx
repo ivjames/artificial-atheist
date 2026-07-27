@@ -37,6 +37,7 @@ export default async function ProphecyClaimsPage({
   const bulkUpdated = qp(sp.updated);
   const bulkSkipped = qp(sp.skipped);
   const bulkBelow = qp(sp.below);
+  const bulkFailed = qp(sp.failed);
   const q = qp(sp.q).trim();
   const statusRaw = qp(sp.status);
   const status = (MODERATION_STATES as readonly string[]).includes(statusRaw) ? statusRaw : "";
@@ -91,14 +92,26 @@ export default async function ProphecyClaimsPage({
       {error ? <ErrorBanner code={error} detail={detail} /> : null}
       {created ? <NoticeBanner>Claim created.</NoticeBanner> : null}
       {bulk ? (
-        <NoticeBanner>
-          {bulkUpdated} claim{bulkUpdated === "1" ? "" : "s"} → {bulk.replace(/_/g, " ")}.
-          {Number(bulkSkipped) > 0
-            ? ` ${bulkSkipped} skipped (already at that status, merged away${
-                Number(bulkBelow) > 0 ? `, or ${bulkBelow} under the score threshold` : ""
-              }).`
-            : ""}
-        </NoticeBanner>
+        <>
+          <NoticeBanner>
+            {bulkUpdated} claim{bulkUpdated === "1" ? "" : "s"} → {bulk.replace(/_/g, " ")}.
+            {Number(bulkSkipped) > 0
+              ? ` ${bulkSkipped} skipped (already at that status, merged away${
+                  Number(bulkBelow) > 0 ? `, or ${bulkBelow} under the score threshold` : ""
+                }).`
+              : ""}
+          </NoticeBanner>
+          {/* A partial run has to read as a partial run. Those claims are still
+              at their old status — re-running is safe and picks them up. */}
+          {Number(bulkFailed) > 0 ? (
+            <div className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
+              {bulkFailed} claim{bulkFailed === "1" ? "" : "s"} failed and{" "}
+              {bulkFailed === "1" ? "is" : "are"} still at the previous status. Re-run to retry —
+              the operation is idempotent.
+              {detail ? <span className="mt-1 block text-xs opacity-80">{detail}</span> : null}
+            </div>
+          ) : null}
+        </>
       ) : null}
 
       <section className="card p-6">
