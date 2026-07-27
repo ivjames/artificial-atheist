@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  applyReplyGuards,
   sentenceCount,
   stripQuotedSpans,
   trailingQuestionRun,
@@ -150,5 +151,20 @@ describe("trimToSentenceLimit", () => {
 
   it("returns the text unchanged for a non-positive limit", () => {
     expect(trimToSentenceLimit("A. B. C.", 0)).toBe("A. B. C.");
+  });
+});
+
+describe("applyReplyGuards", () => {
+  it("caps length and drops stacked closing questions together", () => {
+    expect(applyReplyGuards("A. B. C. D. E. F. G. H. I. J.", 4)).toBe("A. B. C. D.");
+  });
+
+  it("trims stacked closing questions on a reply within the length cap", () => {
+    expect(applyReplyGuards("It's clear. Why A? Why B?", 8)).toBe("It's clear. Why A?");
+  });
+
+  it("leaves a compliant reply untouched", () => {
+    const ok = "One point. A second. Done.";
+    expect(applyReplyGuards(ok, 8)).toBe(ok);
   });
 });

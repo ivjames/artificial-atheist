@@ -8,6 +8,7 @@ import {
   openerInstruction,
   scoreAgentTurns,
   metricsFromTranscript,
+  shippedMetricsFromTranscript,
   ARGUMENTS,
   argumentKeys,
 } from "@/lib/agent/adversary";
@@ -246,6 +247,22 @@ describe("metricsFromTranscript", () => {
     const m = metricsFromTranscript([{ speaker: "adversary", content: "Only me here." }]);
     expect(m.agentTurns).toBe(0);
     expect(m.agentAvgSentences).toBe(0);
+  });
+});
+
+describe("shippedMetricsFromTranscript", () => {
+  it("scores the guarded (as-shipped) reply, not the raw one", () => {
+    const transcript = [
+      { speaker: "adversary", content: "Your move." },
+      // 12 raw sentences → over-length; shipped is capped at 8.
+      { speaker: "agent", content: "A. B. C. D. E. F. G. H. I. J. K. L." },
+    ];
+    expect(metricsFromTranscript(transcript).agentAvgSentences).toBe(12);
+    expect(metricsFromTranscript(transcript).longReplies).toBe(1);
+
+    const shipped = shippedMetricsFromTranscript(transcript, 8);
+    expect(shipped.agentAvgSentences).toBe(8); // trimmed to the cap
+    expect(shipped.longReplies).toBe(0); // 8 is within the 10-sentence ceiling
   });
 });
 

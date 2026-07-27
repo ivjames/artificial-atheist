@@ -12,10 +12,7 @@ import {
   minorRedirectMessage,
   articleReferenceBlock,
 } from "@/lib/agent/persona";
-import {
-  trimStackedClosingQuestions,
-  trimToSentenceLimit,
-} from "@/lib/agent/questions";
+import { applyReplyGuards } from "@/lib/agent/questions";
 import { searchArticles } from "@/lib/articles";
 import {
   threadTokenBudget,
@@ -175,9 +172,10 @@ export async function sendChatMessage(
   // never mid-word). Then trim any stacked closing questions down to the first.
   // Both operate on whole sentences, so the reply stays well-formed; both no-op
   // on a reply that already obeys the rule. The eval scores the RAW model output
-  // (not this guarded text), so /review/adversary still measures the true prompt.
-  const lengthCapped = trimToSentenceLimit(completion.text, maxReplySentences);
-  const replyText = trimStackedClosingQuestions(lengthCapped);
+  // (not this guarded text), so /review/adversary still measures the true prompt
+  // — while its "shipped" column re-derives this exact transform (applyReplyGuards)
+  // over the stored transcripts to show what visitors actually get.
+  const replyText = applyReplyGuards(completion.text, maxReplySentences);
 
   // (f) Persist both turns and update thread usage / closure atomically.
   // Split the billed input into conversation vs. reference-library tokens: the
