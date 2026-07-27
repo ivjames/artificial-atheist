@@ -4,6 +4,7 @@ title: "What the Fossil Record Actually Says and Does Not Say"
 date: 2026-03-21
 topic: science
 excerpt: "The fossil record is routinely misrepresented by both critics and defenders of evolution. Here is what it genuinely shows."
+buffered: true
 ---
 
 Fossils are among the most tangible evidence for the history of life on Earth, yet they are also among the most persistently misread. Understanding what the record actually demonstrates—and where its limits lie—is essential for anyone reasoning carefully about evolutionary biology.
