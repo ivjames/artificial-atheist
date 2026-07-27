@@ -5,6 +5,7 @@ import {
   createClaim,
   mapEntryToClaim,
   mergeClaims,
+  bulkUpdateClaimStatus,
   searchClaims,
   updateClaimStatus,
 } from "@/lib/prophecy/claims";
@@ -482,4 +483,113 @@ describe.skipIf(!process.env.DATABASE_URL)("prophecy data layer (DB)", async () 
     expect(row).toContain("t-test-list:2;t-test-list:3");
     expect(row).toContain("Test Micah 5:2");
   });
+
+  // -------------------------------------------------------------------------
+  // bulkUpdateClaimStatus — the only path that can put hundreds of claims on
+  // the public site at once, so its refusals matter as much as its updates.
+  // -------------------------------------------------------------------------
+
+  it("bulk-publishes every claim matching the filter and logs each transition", async () => {
+    const made = await Promise.all([
+      createClaim(prisma, { text: "T test bulkalpha one proposition" }),
+      createClaim(prisma, { text: "T test bulkalpha two proposition" }),
+      createClaim(prisma, { text: "T test bulkalpha three proposition" }),
+    ]);
+
+    const res = await bulkUpdateClaimStatus(prisma, {
+      q: "bulkalpha",
+      filterStatus: "draft",
+      status: "published",
+    });
+    expect(res.updated).toBe(3);
+
+    const after = await prisma.prophecyClaim.findMany({
+      where: { id: { in: made.map((c) => c.id) } },
+      select: { status: true },
+    });
+    expect(after.every((c) => c.status === "published")).toBe(true);
+
+    // Auditability is the reason this loops instead of issuing an updateMany.
+    const revs = await prisma.prophecyRevision.count({
+      where: { targetId: { in: made.map((c) => c.id) }, note: "status → published" },
+    });
+    expect(revs).toBe(3);
+
+    // Idempotent: a second run has nothing left to move.
+    const again = await bulkUpdateClaimStatus(prisma, {
+      q: "bulkalpha",
+      status: "published",
+    });
+    expect(again.updated).toBe(0);
+    expect(again.skippedAlready).toBe(3);
+  });
+
+  it("never revives a merged-away claim", async () => {
+    const canonical = await createClaim(prisma, { text: "T test bulkmerge survivor claim" });
+    const duplicate = await createClaim(prisma, { text: "T test bulkmerge duplicate claim" });
+    await mergeClaims(prisma, { duplicateId: duplicate.id, canonicalId: canonical.id });
+
+    const res = await bulkUpdateClaimStatus(prisma, {
+      q: "bulkmerge",
+      status: "published",
+    });
+    expect(res.updated).toBe(1);
+    expect(res.skippedSuperseded).toBe(1);
+
+    const dup = await prisma.prophecyClaim.findUniqueOrThrow({ where: { id: duplicate.id } });
+    expect(dup.status).toBe("superseded");
+  });
+
+  it("refuses to bulk-set superseded — only a merge may do that", async () => {
+    await expect(
+      bulkUpdateClaimStatus(prisma, { q: "bulkalpha", status: "superseded" }),
+    ).rejects.toThrow(/superseded/);
+    await expect(
+      bulkUpdateClaimStatus(prisma, { q: "bulkalpha", status: "not-a-status" }),
+    ).rejects.toThrow(/invalid status/);
+  });
+
+  it("with a score threshold, publishes rated-and-passing claims only", async () => {
+    const reviewer = await prisma.prophecyReviewer.create({
+      data: { slug: `${PREFIX}rater`, displayName: "Test rater", perspective: "test" },
+    });
+    const strong = await createClaim(prisma, { text: "T test bulkscore strong proposition" });
+    const weak = await createClaim(prisma, { text: "T test bulkscore weak proposition" });
+    const unrated = await createClaim(prisma, { text: "T test bulkscore unrated proposition" });
+
+    const rate = (targetId: string, score: number) =>
+      prisma.prophecyEvaluation.create({
+        data: {
+          reviewerId: reviewer.id,
+          targetType: "claim",
+          targetId,
+          dimension: "explicitness",
+          score,
+          label: "mixed",
+          rationale: "test fixture",
+          confidence: 3,
+        },
+      });
+    await rate(strong.id, 4);
+    await rate(weak.id, 1);
+
+    const res = await bulkUpdateClaimStatus(prisma, {
+      q: "bulkscore",
+      status: "published",
+      minMeanScore: 3,
+    });
+    expect(res.updated).toBe(1);
+    // The weak one AND the unrated one: unmeasured is not the same as passing.
+    expect(res.skippedBelowScore).toBe(2);
+
+    const rows = await prisma.prophecyClaim.findMany({
+      where: { id: { in: [strong.id, weak.id, unrated.id] } },
+      select: { id: true, status: true },
+    });
+    const byId = new Map(rows.map((r) => [r.id, r.status]));
+    expect(byId.get(strong.id)).toBe("published");
+    expect(byId.get(weak.id)).toBe("draft");
+    expect(byId.get(unrated.id)).toBe("draft");
+  });
+
 });

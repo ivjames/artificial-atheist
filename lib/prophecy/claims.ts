@@ -439,3 +439,126 @@ export async function searchClaims(
 export async function countClaims(prisma: PrismaClient, args: ClaimSearchArgs): Promise<number> {
   return prisma.prophecyClaim.count({ where: claimSearchWhere(args) });
 }
+
+export type BulkStatusResult = {
+  updated: number;
+  /** Merged-away claims, refused for the same reason the per-claim button does. */
+  skippedSuperseded: number;
+  /** Excluded by minMeanScore — either below it or holding no ratings at all. */
+  skippedBelowScore: number;
+  /** Already at the target status; counted so the tally always adds up. */
+  skippedAlready: number;
+};
+
+/**
+ * Mean evaluation score per claim, over the claims given.
+ *
+ * The mean is across every dimension and every rater — the same unweighted
+ * formula the review pages disclose (SUMMARY_FORMULA). It is a navigation aid,
+ * not a verdict, which is exactly why it's only ever used here as a FILTER over
+ * a human's chosen threshold rather than as an automatic publish decision.
+ */
+export async function claimMeanScores(
+  prisma: PrismaClient,
+  claimIds: string[],
+): Promise<Map<string, number>> {
+  if (claimIds.length === 0) return new Map();
+  const rows = await prisma.prophecyEvaluation.groupBy({
+    by: ["targetId"],
+    where: { targetType: "claim", targetId: { in: claimIds } },
+    _avg: { score: true },
+  });
+  const out = new Map<string, number>();
+  for (const r of rows) {
+    if (r._avg.score != null) out.set(r.targetId, r._avg.score);
+  }
+  return out;
+}
+
+/**
+ * Move every claim matching `filters` to `status` in one operation.
+ *
+ * Publishing is per-claim in the UI, which is right for editorial work but
+ * unusable against a corpus of hundreds: a normalization pass loads them all as
+ * drafts, and the public surface shows published claims only, so without this
+ * the site stays empty until someone clicks several hundred buttons.
+ *
+ * It deliberately goes through updateClaimStatus one row at a time rather than
+ * issuing an updateMany. That costs a query per claim (trivial at this scale)
+ * and buys the thing that matters: every transition still lands in the revision
+ * log, so a bulk publish is as auditable as a hand-made one.
+ *
+ * `minMeanScore` gates on evaluation ratings. Claims with NO ratings are
+ * excluded whenever a threshold is set — an unrated claim hasn't cleared the
+ * bar, it just hasn't been measured, and treating "unknown" as "passing" is how
+ * a filter quietly becomes a rubber stamp.
+ */
+export async function bulkUpdateClaimStatus(
+  prisma: PrismaClient,
+  args: Omit<ClaimSearchArgs, "status"> & {
+    /** Target status to move matching claims TO. */
+    status: string;
+    /** Selection filter — only claims currently at this status. Distinct from
+     *  `status` above, which is the destination. */
+    filterStatus?: string;
+    minMeanScore?: number;
+  },
+): Promise<BulkStatusResult> {
+  const { status, filterStatus, minMeanScore, ...rest } = args;
+  const filters: ClaimSearchArgs = { ...rest, status: filterStatus };
+  if (!(MODERATION_STATES as readonly string[]).includes(status)) {
+    throw new Error(`bulkUpdateClaimStatus: invalid status "${status}"`);
+  }
+  // Only mergeClaims may set this, and a merged claim must never be revived —
+  // it would put the duplicate back on the public surface while supersededById
+  // still points at the survivor.
+  if (status === "superseded") {
+    throw new Error("bulkUpdateClaimStatus: refusing to bulk-set superseded");
+  }
+
+  const candidates = await prisma.prophecyClaim.findMany({
+    where: claimSearchWhere(filters),
+    select: { id: true, status: true, supersededById: true },
+  });
+
+  const result: BulkStatusResult = {
+    updated: 0,
+    skippedSuperseded: 0,
+    skippedBelowScore: 0,
+    skippedAlready: 0,
+  };
+
+  const live = candidates.filter((c) => {
+    if (c.status === "superseded" || c.supersededById) {
+      result.skippedSuperseded += 1;
+      return false;
+    }
+    if (c.status === status) {
+      result.skippedAlready += 1;
+      return false;
+    }
+    return true;
+  });
+
+  let eligible = live;
+  if (minMeanScore != null) {
+    const means = await claimMeanScores(
+      prisma,
+      live.map((c) => c.id),
+    );
+    eligible = live.filter((c) => {
+      const mean = means.get(c.id);
+      if (mean == null || mean < minMeanScore) {
+        result.skippedBelowScore += 1;
+        return false;
+      }
+      return true;
+    });
+  }
+
+  for (const c of eligible) {
+    await updateClaimStatus(prisma, c.id, status);
+    result.updated += 1;
+  }
+  return result;
+}

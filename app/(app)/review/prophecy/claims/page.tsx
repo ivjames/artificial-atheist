@@ -16,7 +16,7 @@ import {
   requireProphecyPageAuth,
   truncate,
 } from "../shared";
-import { createClaimAction } from "./actions";
+import { bulkChangeClaimStatus, createClaimAction } from "./actions";
 
 // The minimal claim shape this page reads — searchClaims returns at least the
 // scalar ProphecyClaim columns.
@@ -33,6 +33,10 @@ export default async function ProphecyClaimsPage({
   const error = qp(sp.error);
   const detail = qp(sp.detail);
   const created = qp(sp.created);
+  const bulk = qp(sp.bulk);
+  const bulkUpdated = qp(sp.updated);
+  const bulkSkipped = qp(sp.skipped);
+  const bulkBelow = qp(sp.below);
   const q = qp(sp.q).trim();
   const statusRaw = qp(sp.status);
   const status = (MODERATION_STATES as readonly string[]).includes(statusRaw) ? statusRaw : "";
@@ -86,6 +90,16 @@ export default async function ProphecyClaimsPage({
 
       {error ? <ErrorBanner code={error} detail={detail} /> : null}
       {created ? <NoticeBanner>Claim created.</NoticeBanner> : null}
+      {bulk ? (
+        <NoticeBanner>
+          {bulkUpdated} claim{bulkUpdated === "1" ? "" : "s"} → {bulk.replace(/_/g, " ")}.
+          {Number(bulkSkipped) > 0
+            ? ` ${bulkSkipped} skipped (already at that status, merged away${
+                Number(bulkBelow) > 0 ? `, or ${bulkBelow} under the score threshold` : ""
+              }).`
+            : ""}
+        </NoticeBanner>
+      ) : null}
 
       <section className="card p-6">
         <h2 className="text-lg font-bold">Search</h2>
@@ -121,6 +135,80 @@ export default async function ProphecyClaimsPage({
           </button>
         </form>
       </section>
+
+      {/* Bulk transitions over the WHOLE filtered set, not just this page.
+          Publishing is per-claim on the detail page, which is right for
+          editorial work and unusable against hundreds of drafts — and since the
+          public surface renders published claims only, without this the site
+          stays empty after a normalization pass. Hidden inputs carry the active
+          filters so "all matching" means what the operator is looking at. */}
+      {total > 0 ? (
+        <section className="card p-6">
+          <h2 className="text-lg font-bold">Bulk status change</h2>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+            Applies to all <strong>{total.toLocaleString()}</strong> claims matching the current
+            filters — not just this page. Publishing is what puts a claim on the public site;
+            everything else is internal. Each change is written to the revision log individually,
+            so a bulk run is as auditable as a hand-made one.
+          </p>
+          <form action={bulkChangeClaimStatus} className="mt-4 flex flex-col gap-3">
+            <input type="hidden" name="q" value={q} />
+            <input type="hidden" name="statusFilter" value={status} />
+            <input type="hidden" name="category" value={category} />
+
+            <label className={`${LABEL_CLS} max-w-xs`}>
+              Minimum mean evaluation score (optional)
+              <input
+                name="minMeanScore"
+                type="number"
+                min="0"
+                max="5"
+                step="0.1"
+                placeholder="e.g. 3.0 — blank for no threshold"
+                className={INPUT_CLS}
+              />
+            </label>
+            <p className="-mt-1 text-xs text-slate-500 dark:text-slate-400">
+              Mean across every dimension and rater. Claims with <em>no</em> ratings are excluded
+              when a threshold is set — unrated isn&apos;t the same as passing.
+            </p>
+
+            <label className="flex items-start gap-2 text-sm">
+              <input type="checkbox" name="confirm" value="1" className="mt-1" />
+              <span>
+                I mean it — apply to all {total.toLocaleString()} matching claims.
+              </span>
+            </label>
+
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="submit"
+                name="target"
+                value="published"
+                className="btn-primary px-4 py-2 text-sm"
+              >
+                → published (public)
+              </button>
+              <button
+                type="submit"
+                name="target"
+                value="approved"
+                className="btn-ghost px-4 py-2 text-sm"
+              >
+                → approved
+              </button>
+              <button
+                type="submit"
+                name="target"
+                value="draft"
+                className="btn-ghost px-4 py-2 text-sm"
+              >
+                → draft (unpublish)
+              </button>
+            </div>
+          </form>
+        </section>
+      ) : null}
 
       <section>
         <h2 className="text-lg font-bold">
