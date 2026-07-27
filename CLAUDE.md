@@ -126,6 +126,13 @@ reference the corpus:
 - Admin surface: `/review/prophecy` (same `aa_admin` cookie as the pipeline
   queue; NOT gated on CHAT_ENABLED). Dashboard, sources, source lists +
   paste-import + entry→claim mapping, claims search/status/merge, export.
+- **Admin nav:** `app/(app)/review/layout.tsx` renders a tool switcher
+  (Pipeline / Prophecy / Adversary) on EVERY `/review` page, and
+  `app/(app)/review/prophecy/layout.tsx` adds the prophecy section nav
+  (dashboard / sources / lists / claims / evaluations / export + a "view public
+  site" link). Both no-op when `ADMIN_TOKEN` is unset, since the pages 404 then.
+  Add new `/review` tools to the `TOOLS` list — a tool with no nav entry is a
+  tool nobody can find.
 - **Bulk publish:** the claims index has a bulk status change that applies to
   the WHOLE filtered set, not just the page (`bulkUpdateClaimStatus`). Without
   it a normalization pass leaves hundreds of drafts and the public site stays

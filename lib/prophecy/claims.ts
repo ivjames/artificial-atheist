@@ -128,6 +128,48 @@ export async function createClaim(
 }
 
 /**
+ * Status change that REFUSES to revive a merged-away claim, checked atomically.
+ *
+ * The bulk path reads its candidate set once and then works through it, which
+ * can take a while. A claim merged in that window was live when the snapshot
+ * was taken and is superseded by the time its turn comes — and updating it
+ * would set `status` back to the target while `supersededById` still points at
+ * the survivor. Public queries filter on `status` alone, so a publish would put
+ * the duplicate back on the site next to the claim it was merged into.
+ *
+ * Pre-reading and branching wouldn't close that: the merge can land between the
+ * read and the write. The guard therefore lives in the WHERE clause, which
+ * Postgres re-evaluates against the current row under lock — `count === 0`
+ * means the row stopped being eligible and nothing was written. The revision is
+ * written in the same transaction, so a skipped update leaves no orphan
+ * snapshot claiming a change that didn't happen.
+ *
+ * Returns false when the claim was skipped for that reason.
+ */
+export async function updateClaimStatusIfLive(
+  prisma: PrismaClient,
+  claimId: string,
+  status: string,
+): Promise<boolean> {
+  if (!(MODERATION_STATES as readonly string[]).includes(status)) {
+    throw new Error(`updateClaimStatusIfLive: invalid status "${status}"`);
+  }
+  return prisma.$transaction(async (tx) => {
+    const before = await tx.prophecyClaim.findUnique({ where: { id: claimId } });
+    if (!before) throw new Error(`updateClaimStatusIfLive: claim ${claimId} not found`);
+
+    const res = await tx.prophecyClaim.updateMany({
+      where: { id: claimId, supersededById: null, status: { not: "superseded" } },
+      data: { status },
+    });
+    if (res.count === 0) return false;
+
+    await writeRevision(tx, "claim", claimId, before, "", `status → ${status}`);
+    return true;
+  });
+}
+
+/**
  * Move a claim through the moderation workflow. Validates the status against
  * MODERATION_STATES and snapshots the pre-edit state.
  */
@@ -442,7 +484,11 @@ export async function countClaims(prisma: PrismaClient, args: ClaimSearchArgs): 
 
 export type BulkStatusResult = {
   updated: number;
-  /** Merged-away claims, refused for the same reason the per-claim button does. */
+  /**
+   * Merged-away claims, refused for the same reason the per-claim button does.
+   * Counts both those already superseded when the candidate set was read and
+   * any merged during the run and caught by the write-time guard.
+   */
   skippedSuperseded: number;
   /** Excluded by minMeanScore — either below it or holding no ratings at all. */
   skippedBelowScore: number;
@@ -476,7 +522,16 @@ export async function claimMeanScores(
   if (claimIds.length === 0) return new Map();
   const rows = await prisma.prophecyEvaluation.groupBy({
     by: ["targetId", "dimension"],
-    where: { targetType: "claim", targetId: { in: claimIds } },
+    where: {
+      targetType: "claim",
+      targetId: { in: claimIds },
+      // Retracted ratings are not ratings. The schema's rule is to supersede or
+      // reject an evaluation rather than overwrite it, so both statuses are
+      // history — counting them would let a withdrawn low score block an
+      // eligible claim, or a rejected high score push one onto the public site.
+      // Same exclusion evaluationDisagreements already applies.
+      status: { notIn: ["superseded", "rejected"] },
+    },
     _avg: { score: true },
   });
 
@@ -504,10 +559,11 @@ export async function claimMeanScores(
  * drafts, and the public surface shows published claims only, so without this
  * the site stays empty until someone clicks several hundred buttons.
  *
- * It deliberately goes through updateClaimStatus one row at a time rather than
- * issuing an updateMany. That costs a query per claim (trivial at this scale)
- * and buys the thing that matters: every transition still lands in the revision
- * log, so a bulk publish is as auditable as a hand-made one.
+ * It deliberately writes one row at a time rather than issuing a single
+ * updateMany. That costs a transaction per claim (trivial at this scale) and
+ * buys two things: every transition lands in the revision log, so a bulk
+ * publish is as auditable as a hand-made one; and each write re-checks that the
+ * claim is still live, so one merged mid-run can't be revived.
  *
  * PARTIAL PROGRESS IS REPORTED, NOT HIDDEN. A row that throws mid-batch does
  * not abort the rest and does not discard the tally: the operation keeps going
@@ -592,8 +648,11 @@ export async function bulkUpdateClaimStatus(
 
   for (const c of eligible) {
     try {
-      await updateClaimStatus(prisma, c.id, status);
-      result.updated += 1;
+      // Live-checked at write time: the candidate snapshot above is stale by
+      // the time a long run reaches its tail, and a claim merged in between
+      // must not be revived.
+      if (await updateClaimStatusIfLive(prisma, c.id, status)) result.updated += 1;
+      else result.skippedSuperseded += 1;
     } catch (e) {
       result.failed += 1;
       if (result.errors.length < 5) {

@@ -7,6 +7,7 @@ import {
   mergeClaims,
   bulkUpdateClaimStatus,
   claimMeanScores,
+  updateClaimStatusIfLive,
   type BulkStatusResult,
   searchClaims,
   updateClaimStatus,
@@ -678,6 +679,74 @@ describe.skipIf(!process.env.DATABASE_URL)("prophecy data layer (DB)", async () 
     });
     expect(res.failed).toBe(0);
     expect(res.updated).toBe(2);
+  });
+
+
+  it("ignores superseded and rejected ratings in the publish score", async () => {
+    const reviewer = await prisma.prophecyReviewer.create({
+      data: { slug: `${PREFIX}rater-z`, displayName: "Rater Z", perspective: "test" },
+    });
+    const claim = await createClaim(prisma, { text: "T test bulkretract scored claim" });
+
+    const rate = (dimension: string, score: number, status: string) =>
+      prisma.prophecyEvaluation.create({
+        data: {
+          reviewerId: reviewer.id,
+          targetType: "claim",
+          targetId: claim.id,
+          dimension,
+          score,
+          label: "mixed",
+          rationale: "test fixture",
+          confidence: 3,
+          status,
+        },
+      });
+    // One live 5, plus a withdrawn 0 and a rejected 0. Counting the retracted
+    // rows would drag the mean to 1.67 and block a claim that actually rates 5.
+    await rate("explicitness", 5, "approved");
+    await rate("specificity", 0, "superseded");
+    await rate("falsifiability", 0, "rejected");
+
+    const means = await claimMeanScores(prisma, [claim.id]);
+    expect(means.get(claim.id)).toBeCloseTo(5, 6);
+
+    const res = await bulkUpdateClaimStatus(prisma, {
+      q: "bulkretract",
+      status: "published",
+      minMeanScore: 4,
+    });
+    expect(res.updated).toBe(1);
+    expect(res.skippedBelowScore).toBe(0);
+  });
+
+  it("will not revive a claim merged away after the candidate set was read", async () => {
+    const survivor = await createClaim(prisma, { text: "T test bulkrace survivor claim" });
+    const doomed = await createClaim(prisma, { text: "T test bulkrace doomed claim" });
+    await mergeClaims(prisma, { duplicateId: doomed.id, canonicalId: survivor.id });
+
+    // Called DIRECTLY, not through bulkUpdateClaimStatus: the bulk path's
+    // pre-filter would catch this claim before the write and the guard would
+    // never run. In production the race is the other way round — the claim is
+    // live at snapshot time and merged by the time its write lands — and this
+    // is the function that has to refuse it.
+    const revived = await updateClaimStatusIfLive(prisma, doomed.id, "published");
+    expect(revived).toBe(false);
+
+    const after = await prisma.prophecyClaim.findUniqueOrThrow({ where: { id: doomed.id } });
+    expect(after.status).toBe("superseded");
+    expect(after.supersededById).toBe(survivor.id);
+
+    // No revision may be written for an update that never happened.
+    const revs = await prisma.prophecyRevision.count({
+      where: { targetId: doomed.id, note: "status → published" },
+    });
+    expect(revs).toBe(0);
+
+    // And it still does its job on a live claim.
+    expect(await updateClaimStatusIfLive(prisma, survivor.id, "published")).toBe(true);
+    const surv = await prisma.prophecyClaim.findUniqueOrThrow({ where: { id: survivor.id } });
+    expect(surv.status).toBe("published");
   });
 
 });
