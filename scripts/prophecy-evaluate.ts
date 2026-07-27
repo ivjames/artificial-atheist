@@ -29,6 +29,22 @@ import { PROPHECY_VOCAB, SCORE_LABELS } from "@/lib/prophecy/vocab";
 const PROMPT_VERSION = "prophecy-evaluate-v1";
 const DATA_DIR = path.join(process.cwd(), "data", "prophecy");
 
+// Generic generator id written into every drafts file. The loader derives the
+// reviewer slug from it, so --only-missing must slugify the same way to find
+// which claims a given pass already covers.
+const META_MODEL = "ai-rater";
+
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function reviewerSlugFor(pass: string): string {
+  return slugify(`ai-${META_MODEL}-${pass}`) || "ai-rater";
+}
+
 const PREDICTION_DIMS = PROPHECY_VOCAB.filter((t) => t.kind === "prediction_dimension");
 const FULFILLMENT_DIMS = PROPHECY_VOCAB.filter((t) => t.kind === "fulfillment_dimension");
 
@@ -39,6 +55,8 @@ type Args = {
   model: string;
   limit: number;
   status: string;
+  onlyMissing: boolean;
+  maxTokens: number;
 };
 
 function parseArgs(argv: string[]): Args {
@@ -60,6 +78,16 @@ function parseArgs(argv: string[]): Args {
     model: get("--model", "claude-haiku-4-5"),
     limit: Number.parseInt(get("--limit", "0"), 10) || 0,
     status: get("--status", "draft"),
+    // Re-run only the claims this pass hasn't covered. A rater that truncates
+    // mid-JSON leaves a claim with one fewer opinion than its neighbours, and
+    // a claim rated once can never show disagreement — so the gap is worth
+    // closing, and re-rating the other 489 is pure waste.
+    onlyMissing: argv.includes("--only-missing"),
+    // Generous by default: 23 dimensions each needing a written rationale is a
+    // lot of output, and a model with longer prose (Sonnet vs Haiku) will run
+    // past a tight cap and return JSON cut off mid-object, which parses to
+    // nothing. Cheap insurance — unused output tokens aren't billed.
+    maxTokens: Number.parseInt(get("--max-tokens", "8192"), 10) || 8192,
   };
 }
 
@@ -136,9 +164,32 @@ function claimPrompt(c: ClaimForRating): string {
     .join("\n");
 }
 
+// Claims this pass has already rated. Evaluations are polymorphic
+// (targetType/targetId), so there's no Prisma relation to filter through —
+// resolve the reviewer, then collect its target ids.
+async function alreadyRatedIds(prisma: PrismaClient, pass: string): Promise<Set<string>> {
+  const reviewer = await prisma.prophecyReviewer.findUnique({
+    where: { slug: reviewerSlugFor(pass) },
+    select: { id: true },
+  });
+  if (!reviewer) return new Set();
+
+  const rated = await prisma.prophecyEvaluation.findMany({
+    where: { targetType: "claim", reviewerId: reviewer.id },
+    distinct: ["targetId"],
+    select: { targetId: true },
+  });
+  return new Set(rated.map((r) => r.targetId));
+}
+
 async function loadClaims(prisma: PrismaClient, args: Args): Promise<ClaimForRating[]> {
+  const skip = args.onlyMissing ? await alreadyRatedIds(prisma, args.pass) : new Set<string>();
+
   const claims = await prisma.prophecyClaim.findMany({
-    where: args.status === "any" ? {} : { status: args.status },
+    where: {
+      ...(args.status === "any" ? {} : { status: args.status }),
+      ...(skip.size ? { id: { notIn: [...skip] } } : {}),
+    },
     orderBy: { slug: "asc" },
     ...(args.limit ? { take: args.limit } : {}),
     include: {
@@ -176,7 +227,7 @@ function buildRequests(claims: ClaimForRating[], args: Args) {
     custom_id: c.slug.slice(0, 64),
     params: {
       model: args.model,
-      max_tokens: 4096,
+      max_tokens: args.maxTokens,
       system: [
         {
           type: "text" as const,
@@ -221,8 +272,15 @@ async function main() {
 
     const claims = await loadClaims(prisma, args);
     if (claims.length === 0) {
-      console.log(`No claims with status "${args.status}". Nothing to rate.`);
+      console.log(
+        args.onlyMissing
+          ? `Pass "${args.pass}" already covers every claim with status "${args.status}". Nothing to do.`
+          : `No claims with status "${args.status}". Nothing to rate.`,
+      );
       return;
+    }
+    if (args.onlyMissing) {
+      console.log(`Only-missing: ${claims.length} claim(s) not yet rated by pass "${args.pass}".`);
     }
     const requests = buildRequests(claims, args);
     const est = estimate(requests);
@@ -231,7 +289,7 @@ async function main() {
     console.log(`Cached prefix:     ~${est.cachedPrefixTokens.toLocaleString()} tokens (charged once, then ~0.1x)`);
     console.log(`Per-claim input:   ~${est.uncachedInputTokens.toLocaleString()} tokens total`);
     console.log(`Expected output:   ~${est.outputTokens.toLocaleString()} tokens`);
-    console.log(`Model:             ${args.model}   Pass: ${args.pass}`);
+    console.log(`Model:             ${args.model}   Pass: ${args.pass}   max_tokens: ${args.maxTokens}`);
     console.log("Billing:           API credits, batch rate (50% off). Not subscription usage;");
     console.log("                   the 5-hour window does not apply to API keys.");
 
@@ -295,7 +353,7 @@ async function collect(args: Args) {
     meta: {
       // Deliberately generic — a run is pinned by promptVersion + generatedAt,
       // and vendor strings don't belong in committed artifacts.
-      model: "ai-rater",
+      model: META_MODEL,
       promptVersion: PROMPT_VERSION,
       generatedAt: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
       pass: args.pass,
