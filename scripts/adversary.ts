@@ -486,6 +486,24 @@ async function mapPool<T, R>(
 
 // --- main ------------------------------------------------------------------
 
+// The DB the harness is actually connected to, as host[:port]/dbname with the
+// credentials stripped. Printed alongside the row counts so a persistence
+// "success" against a *different but reachable* database (the site's DB left
+// untouched) is visible — connectivity alone isn't proof the writes land where
+// the site reads. The operator compares this to the site's DATABASE_URL.
+function dbTarget(): string {
+  const url = process.env.DATABASE_URL;
+  if (!url) return "DATABASE_URL unset";
+  try {
+    const u = new URL(url);
+    const port = u.port ? `:${u.port}` : "";
+    const db = u.pathname.replace(/^\//, "") || "?";
+    return `${u.hostname || "?"}${port}/${db}`;
+  } catch {
+    return "unparseable DATABASE_URL";
+  }
+}
+
 async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
 
@@ -532,13 +550,21 @@ async function main(): Promise<void> {
   } else {
     try {
       const existing = await prisma.adversaryRun.count();
-      console.log(`DB: connected — ${existing} run(s) already stored.\n`);
+      console.log(`DB: connected — ${dbTarget()} — ${existing} run(s) already stored.\n`);
     } catch (e) {
-      console.warn(
-        `DB: preflight failed — ${(e as Error).message}\n` +
-          `     Runs will NOT persist to /review/adversary. Check that DATABASE_URL points at\n` +
-          `     the same database the site reads and that migrations are applied (npm run db:deploy).\n`,
+      // Abort before spending on model calls: the preflight exists precisely to
+      // catch an unreachable DB / missing table before a full multi-persona run
+      // pays for calls that can't persist. Deliberate --no-db/--mock runs never
+      // reach here (they took the persistence-OFF branch above).
+      console.error(
+        `DB: preflight FAILED — ${(e as Error).message}\n` +
+          `     Target: ${dbTarget()}\n` +
+          `     Aborting before spending on model calls — nothing would persist to /review/adversary.\n` +
+          `     Point DATABASE_URL at the same database the site reads and apply migrations\n` +
+          `     (npm run db:deploy), or pass --no-db to run anyway (transcripts only).\n`,
       );
+      process.exitCode = 1;
+      return;
     }
   }
 
@@ -568,7 +594,7 @@ async function main(): Promise<void> {
     } catch {
       /* the failure is reported per-run below */
     }
-    const nowHas = after != null ? ` — table now holds ${after} run(s)` : "";
+    const nowHas = after != null ? ` — ${dbTarget()} now holds ${after} run(s)` : "";
     console.log(`DB: saved ${savedRuns.length}/${written.length} run(s)${nowHas}.`);
     if (failedRuns.length) {
       console.error(`DB: ${failedRuns.length} run(s) FAILED to save and are NOT on /review/adversary:`);

@@ -178,10 +178,12 @@ reference the corpus:
   watch Anthropic rate limits), and dial overrides. Writes a markdown transcript to the
   gitignored `drafts/adversary/` AND persists each run to the `AdversaryRun`
   table (DB is droplet-local, so run it there). The harness preflights the DB
-  and prints a saved/failed tally plus the live row count at the end (exiting
-  non-zero if any save fails), so a swallowed DB error, a `--mock`/`--no-db`
-  run, or a wrong `DATABASE_URL` can't silently leave `/review/adversary` stuck
-  at an old run count.
+  and prints the connected target (host/db from `DATABASE_URL`, credentials
+  stripped) plus a saved/failed tally and the live row count (exiting non-zero
+  if any save fails); a failed preflight aborts before spending on model calls
+  unless `--no-db` is set. So a swallowed DB error, a `--mock`/`--no-db` run, or
+  a `DATABASE_URL` pointing at the wrong (even if reachable) database can't
+  silently leave `/review/adversary` stuck at an old run count.
 - `lib/adversaryRuns.ts` — read model + `aggregateStats` for the runs.
 - **Review surface:** `/review/adversary` (admin-token gated, reuses the pipeline
   auth cookie; NOT gated on CHAT_ENABLED since it's an operator/eval tool). Shows
