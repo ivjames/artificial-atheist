@@ -59,16 +59,49 @@ export function runCostAvailable(run: ParsedRun): boolean {
   return perLine > 0 || rowTotal === 0;
 }
 
+// The two models a run was billed against: the agent ran on the tier's slot
+// model, the apologist on run.adversaryModel (stored as "provider:model").
+function runModels(run: ParsedRun): { agent: string; adversary: string } {
+  return {
+    agent: modelForSlot(run.tier === "premium" ? "premium" : "standard").model,
+    adversary: run.adversaryModel.includes(":")
+      ? run.adversaryModel.slice(run.adversaryModel.indexOf(":") + 1)
+      : run.adversaryModel,
+  };
+}
+
+/**
+ * Cost bracket for a run whose per-speaker token split wasn't preserved.
+ *
+ * What the transcript DID keep is the input and output totals separately, and
+ * both models' rates are known — so the unknown is only *which side* spent
+ * them. Pricing each direction at the cheaper of the two models gives a floor,
+ * at the dearer one a ceiling, and the true cost is guaranteed to sit between.
+ * Input and output are bracketed independently rather than as one blended
+ * token pool, which tightens the bracket and stays correct even if a model is
+ * cheaper on input but dearer on output.
+ *
+ * This is a bound, not an estimate: no assumption about the split is made, so
+ * nothing here is invented.
+ */
+export function runCostBoundUsd(run: ParsedRun): { min: number; max: number } {
+  const { agent, adversary } = runModels(run);
+  const inA = modelCostUsd(agent, run.inputTokens, 0);
+  const inB = modelCostUsd(adversary, run.inputTokens, 0);
+  const outA = modelCostUsd(agent, 0, run.outputTokens);
+  const outB = modelCostUsd(adversary, 0, run.outputTokens);
+  return {
+    min: Math.min(inA, inB) + Math.min(outA, outB),
+    max: Math.max(inA, inB) + Math.max(outA, outB),
+  };
+}
+
 // Real provider cost of a run in USD. The run stores COMBINED tokens, so we
 // split them back out via the transcript (each line carries its speaker +
-// tokens) and cost each side at its own model's rate: the agent ran on the
-// tier's slot model, the apologist on run.adversaryModel (stored as
-// "provider:model"). Same method the CLI uses at report time (lib/pricing.ts).
+// tokens) and cost each side at its own model's rate. Same method the CLI uses
+// at report time (lib/pricing.ts).
 export function runCostUsd(run: ParsedRun): number {
-  const agentModel = modelForSlot(run.tier === "premium" ? "premium" : "standard").model;
-  const advModel = run.adversaryModel.includes(":")
-    ? run.adversaryModel.slice(run.adversaryModel.indexOf(":") + 1)
-    : run.adversaryModel;
+  const { agent: agentModel, adversary: advModel } = runModels(run);
 
   let agIn = 0, agOut = 0, advIn = 0, advOut = 0;
   for (const l of run.transcript) {
@@ -111,6 +144,11 @@ export type AggregateStats = {
   // preserved (backfilled from a transcript). Surfaced so the total is never
   // silently understated.
   costUnavailableRuns: number;
+  // Corpus-wide bracket including those runs: exact runs contribute their exact
+  // cost to both ends, bracketed ones contribute their floor and ceiling. With
+  // no bracketed runs both equal costUsd.
+  costMinUsd: number;
+  costMaxUsd: number;
   avgAgentWords: number;
   hookViolations: number;
   trailingQuestions: number;
@@ -129,6 +167,8 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
     outputTokens: 0,
     costUsd: 0,
     costUnavailableRuns: 0,
+    costMinUsd: 0,
+    costMaxUsd: 0,
     avgAgentWords: 0,
     hookViolations: 0,
     trailingQuestions: 0,
@@ -144,8 +184,17 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
     agg.agentTurns += m.agentTurns;
     agg.inputTokens += r.inputTokens;
     agg.outputTokens += r.outputTokens;
-    if (runCostAvailable(r)) agg.costUsd += runCostUsd(r);
-    else agg.costUnavailableRuns += 1;
+    if (runCostAvailable(r)) {
+      const c = runCostUsd(r);
+      agg.costUsd += c;
+      agg.costMinUsd += c;
+      agg.costMaxUsd += c;
+    } else {
+      const b = runCostBoundUsd(r);
+      agg.costUnavailableRuns += 1;
+      agg.costMinUsd += b.min;
+      agg.costMaxUsd += b.max;
+    }
     agg.hookViolations += m.hookViolations;
     agg.trailingQuestions += m.trailingQuestions;
     agg.multiQuestionTurns += m.multiQuestionTurns;

@@ -190,8 +190,12 @@ reference the corpus:
   down, pre-migration, `--no-db`, "Clear all") survives as markdown. This
   re-inserts anything in `drafts/adversary/` that isn't in the DB, idempotent on
   (run stamp + persona), skipping `--mock` transcripts. Files never stored the
-  PER-LINE token split, so backfilled runs keep true totals but show
-  "cost n/a · backfilled" rather than a fabricated $0.00 (`runCostAvailable`).
+  PER-LINE token split, so backfilled runs keep true totals but can't be costed
+  exactly (`runCostAvailable`). They show a RANGE instead (`runCostBoundUsd`):
+  input and output totals are known and both models' rates are known, so pricing
+  each direction at the cheaper model gives a floor and the dearer one a ceiling
+  — a bound, not an estimate. The aggregate's Total cost becomes a range when any
+  backfilled run is present, with the exact-only figure in the hint.
 - **Review surface:** `/review/adversary` (admin-token gated, reuses the pipeline
   auth cookie; NOT gated on CHAT_ENABLED since it's an operator/eval tool). Shows
   aggregate + per-persona stats and every transcript. This is how you review the

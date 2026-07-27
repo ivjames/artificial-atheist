@@ -6,6 +6,7 @@ import {
   listRuns,
   aggregateStats,
   runCostAvailable,
+  runCostBoundUsd,
   runCostUsd,
   type ParsedRun,
 } from "@/lib/adversaryRuns";
@@ -18,6 +19,13 @@ function fmtDate(d: Date): string {
 // Sub-dollar amounts need cents-of-a-cent to be legible; larger totals don't.
 function fmtUsd(n: number): string {
   return "$" + (n < 1 ? n.toFixed(4) : n.toFixed(2));
+}
+
+// A cost known only to lie within a bracket. Rendered as a range so it reads as
+// what it is — bounds, not a point estimate — and collapses to one figure when
+// both models happen to price the same.
+function fmtUsdRange(min: number, max: number): string {
+  return min === max ? fmtUsd(min) : `${fmtUsd(min)}–${fmtUsd(max)}`;
 }
 
 // A small labelled number tile for the stats strip.
@@ -36,9 +44,11 @@ function Stat({ label, value, hint }: { label: string; value: string | number; h
 function RunCard({ run }: { run: ParsedRun }) {
   const m = run.metrics;
   // Backfilled runs kept their token totals but not the per-speaker split that
-  // costing needs, so they say so instead of showing a $0.00 that would read as
-  // "this run was free".
+  // exact costing needs. The totals plus both models' rates still bracket the
+  // real figure, so they show that bracket rather than a $0.00 that would read
+  // as "this run was free".
   const costed = runCostAvailable(run);
+  const bound = costed ? null : runCostBoundUsd(run);
   return (
     <div className="card p-5">
       <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -56,14 +66,14 @@ function RunCard({ run }: { run: ParsedRun }) {
       <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
         <span>{run.turns} rounds</span>
         <span>{run.inputTokens} in / {run.outputTokens} out tok</span>
-        {costed ? (
+        {costed || !bound ? (
           <span className="font-medium">{fmtUsd(runCostUsd(run))}</span>
         ) : (
           <span
-            className="text-slate-400 dark:text-slate-500"
-            title="Recovered from its transcript, which never stored the per-speaker token split costing needs."
+            className="font-medium text-slate-500 dark:text-slate-400"
+            title="Backfilled from a transcript, which stored the token totals but not which side spent them. Pricing each direction at the cheaper of the two models gives the floor, the dearer one the ceiling — the real cost is inside this range."
           >
-            cost n/a · backfilled
+            {fmtUsdRange(bound.min, bound.max)} <span className="font-normal">· backfilled</span>
           </span>
         )}
         <span>~{m.agentAvgWords} words/reply</span>
@@ -202,10 +212,14 @@ export default async function AdversaryReviewPage({
               <Stat label="Output tokens" value={stats.outputTokens.toLocaleString()} />
               <Stat
                 label="Total cost"
-                value={fmtUsd(stats.costUsd)}
+                value={
+                  stats.costUnavailableRuns > 0
+                    ? fmtUsdRange(stats.costMinUsd, stats.costMaxUsd)
+                    : fmtUsd(stats.costUsd)
+                }
                 hint={
                   stats.costUnavailableRuns > 0
-                    ? `list prices · excludes ${stats.costUnavailableRuns} backfilled run${stats.costUnavailableRuns === 1 ? "" : "s"}`
+                    ? `list prices · range because ${stats.costUnavailableRuns} backfilled run${stats.costUnavailableRuns === 1 ? "" : "s"} lost the per-side split; ${fmtUsd(stats.costUsd)} is exact`
                     : "provider list prices"
                 }
               />
