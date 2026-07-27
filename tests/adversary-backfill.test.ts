@@ -82,6 +82,39 @@ describe("parseTranscriptBody", () => {
   it("returns nothing for a body with no sections", () => {
     expect(parseTranscriptBody("# Adversary eval\n\nno turns here")).toEqual([]);
   });
+
+  it("keeps a reply's own ### headings inside the message", () => {
+    // Replies are written verbatim, so a model that formats its answer with
+    // headings must not be split into phantom turns — that would invent agent
+    // replies and skew every turn-count metric.
+    const lines = parseTranscriptBody(
+      [
+        "### DEBATE AGENT",
+        "",
+        "Two problems here.",
+        "",
+        "### First",
+        "",
+        "The premise is unearned.",
+        "",
+        "### APOLOGIST (professor)",
+        "",
+        "Then defend the alternative.",
+      ].join("\n"),
+    );
+    expect(lines).toHaveLength(2);
+    expect(lines[0].speaker).toBe("agent");
+    expect(lines[0].content).toContain("### First");
+    expect(lines[1].speaker).toBe("adversary");
+  });
+
+  it("only treats an exact delimiter line as a speaker change", () => {
+    const lines = parseTranscriptBody(
+      ["### DEBATE AGENT", "", "### DEBATE AGENT NOTES", "", "still me"].join("\n"),
+    );
+    expect(lines).toHaveLength(1);
+    expect(lines[0].content).toContain("### DEBATE AGENT NOTES");
+  });
 });
 
 describe("createdAtFromStamp", () => {

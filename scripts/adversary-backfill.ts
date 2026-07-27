@@ -73,27 +73,42 @@ export type ParsedTranscript = {
   createdAt: Date;
 };
 
+// The two speaker delimiters writeTranscript() emits, and ONLY those. Replies
+// are written verbatim, so a model that formats its answer with its own `###`
+// heading would otherwise be split into a phantom turn — fragmenting the
+// message, inventing an agent reply, and skewing every metric derived from the
+// turn count. Anything that isn't an exact delimiter stays message content.
+const SPEAKER_HEADING = /^### (APOLOGIST \(.*\)|DEBATE AGENT)[ \t]*$/;
+
 // Body sections are `### APOLOGIST (<persona>)` / `### DEBATE AGENT` followed by
 // the reply. Per-line token counts were never written, hence the zeros — the
 // row's totals stay truthful, and runCostAvailable() reads this shape to know
 // the split is missing.
 export function parseTranscriptBody(body: string): ParsedTranscript["transcript"] {
-  const lines: ParsedTranscript["transcript"] = [];
-  const parts = body.split(/^### /m).slice(1);
-  for (const part of parts) {
-    const nl = part.indexOf("\n");
-    if (nl < 0) continue;
-    const heading = part.slice(0, nl).trim();
-    const content = part.slice(nl + 1).trim();
-    if (!content) continue;
-    lines.push({
-      speaker: /^APOLOGIST\b/i.test(heading) ? "adversary" : "agent",
-      content,
-      inTok: 0,
-      outTok: 0,
-    });
+  const out: ParsedTranscript["transcript"] = [];
+  let speaker: "adversary" | "agent" | null = null;
+  let buf: string[] = [];
+
+  const flush = () => {
+    const content = buf.join("\n").trim();
+    if (speaker && content) out.push({ speaker, content, inTok: 0, outTok: 0 });
+    buf = [];
+  };
+
+  for (const line of body.split("\n")) {
+    const m = SPEAKER_HEADING.exec(line);
+    if (m) {
+      flush();
+      speaker = m[1].startsWith("APOLOGIST") ? "adversary" : "agent";
+      continue;
+    }
+    // Text before the first delimiter is the file's own title block; `speaker`
+    // is still null there, so flush() drops it.
+    buf.push(line);
   }
-  return lines;
+  flush();
+
+  return out;
 }
 
 // The stamp is `stamp()` in scripts/adversary.ts: a UTC ISO string with `:`
