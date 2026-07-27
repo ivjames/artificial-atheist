@@ -132,6 +132,7 @@ export type PersonaStat = {
   avgAgentWords: number;
   hookViolations: number;
   multiQuestionTurns: number;
+  longReplies: number;
 };
 
 export type AggregateStats = {
@@ -153,6 +154,7 @@ export type AggregateStats = {
   hookViolations: number;
   trailingQuestions: number;
   multiQuestionTurns: number;
+  longReplies: number;
   byPersona: PersonaStat[];
 };
 
@@ -173,6 +175,7 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
     hookViolations: 0,
     trailingQuestions: 0,
     multiQuestionTurns: 0,
+    longReplies: 0,
     byPersona: [],
   };
 
@@ -198,6 +201,9 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
     agg.hookViolations += m.hookViolations;
     agg.trailingQuestions += m.trailingQuestions;
     agg.multiQuestionTurns += m.multiQuestionTurns;
+    // `longReplies` is newer than some stored runs — those JSON blobs lack the
+    // key, so coalesce to 0 rather than adding undefined.
+    agg.longReplies += m.longReplies ?? 0;
     weightedWords += m.agentAvgWords * m.agentTurns;
 
     const p = byPersona.get(r.persona) ?? {
@@ -208,12 +214,14 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
       avgAgentWords: 0,
       hookViolations: 0,
       multiQuestionTurns: 0,
+      longReplies: 0,
       weightedWords: 0,
     };
     p.runs += 1;
     p.agentTurns += m.agentTurns;
     p.hookViolations += m.hookViolations;
     p.multiQuestionTurns += m.multiQuestionTurns;
+    p.longReplies += m.longReplies ?? 0;
     p.weightedWords += m.agentAvgWords * m.agentTurns;
     byPersona.set(r.persona, p);
   }
@@ -228,6 +236,7 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
       avgAgentWords: p.agentTurns ? Math.round(p.weightedWords / p.agentTurns) : 0,
       hookViolations: p.hookViolations,
       multiQuestionTurns: p.multiQuestionTurns,
+      longReplies: p.longReplies,
     }))
     .sort((a, b) => b.runs - a.runs || a.persona.localeCompare(b.persona));
 

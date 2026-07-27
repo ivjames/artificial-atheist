@@ -1,4 +1,5 @@
-// Shared, pure helpers for reasoning about the questions in an agent reply.
+// Shared, pure helpers for reasoning about the shape of an agent reply — the
+// questions it asks and how long it runs.
 //
 // The debate persona (persona.ts) forbids the agent from STACKING questions at
 // the visitor — "ask AT MOST ONE pointed question … never stack multiple
@@ -68,6 +69,20 @@ function trailingQuestionSpan(sentences: string[]): { count: number; firstQ: num
     break;
   }
   return { count, firstQ };
+}
+
+// How many sentences a reply contains. Backs the eval's length metric
+// (scoreAgentTurns) so the "keep it to roughly five to ten sentences" persona
+// rule can be flagged the same way the question rules are — position-agnostic,
+// counting every terminated sentence plus any unterminated trailing fragment
+// (a reply ending mid-clause still spent a sentence's worth of length). Ordinal
+// list markers ("1.", "2)") are not sentences, matching the run scan above.
+export function sentenceCount(text: string): number {
+  const t = text.trim();
+  if (!t) return 0;
+  const { sentences, tail } = splitSentences(t);
+  const n = sentences.filter((s) => !ORDINAL_MARKER.test(s.trim())).length;
+  return n + (tail.trim().length > 0 ? 1 : 0);
 }
 
 // How many questions sit in the reply's closing run. This is the line between an

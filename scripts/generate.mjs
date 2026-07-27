@@ -71,7 +71,7 @@ Return ONLY valid JSON, no markdown fences, with exactly these keys:
 {
   "title": "Title Case, under 70 characters, no clickbait",
   "excerpt": "One sentence, under 160 characters, plain and informative",
-  "body_markdown": "700-900 words. Start with a 1-2 sentence intro paragraph (no heading). Then 3-4 sections each introduced by a '## Sentence case heading'. Use prose, occasional bold for key terms. No H1. No 'In conclusion' cliche."
+  "body_markdown": "1,200-2,000 words, sized to the depth the topic warrants — a focused piece can sit near the low end, a meatier one near the high end; don't pad to hit a number. Start with a 1-2 sentence intro paragraph (no heading). Then 4-6 sections each introduced by a '## Sentence case heading'. Develop each point fully with reasoning and concrete examples rather than adding more headings. Use prose, occasional bold for key terms. No H1. No 'In conclusion' cliche."
 }`;
   return { system, prompt };
 }

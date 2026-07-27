@@ -83,6 +83,9 @@ function RunCard({ run }: { run: ParsedRun }) {
         <span className={m.multiQuestionTurns ? "font-semibold text-amber-600 dark:text-amber-400" : ""}>
           {m.multiQuestionTurns} stacked-question
         </span>
+        <span className={(m.longReplies ?? 0) ? "font-semibold text-amber-600 dark:text-amber-400" : ""}>
+          {m.longReplies ?? 0} over-length
+        </span>
         <span>{m.trailingQuestions} end on a question</span>
         <span className="text-slate-400 dark:text-slate-500">{run.adversaryModel}</span>
       </div>
@@ -207,6 +210,11 @@ export default async function AdversaryReviewPage({
                 value={stats.multiQuestionTurns}
                 hint="≤1 closing question; rhetoricals OK"
               />
+              <Stat
+                label="Over-length replies"
+                value={stats.longReplies}
+                hint="> 10 sentences; persona caps at ~5-10"
+              />
               <Stat label="Replies ending on a ?" value={stats.trailingQuestions} />
               <Stat label="Input tokens" value={stats.inputTokens.toLocaleString()} />
               <Stat label="Output tokens" value={stats.outputTokens.toLocaleString()} />
@@ -242,7 +250,8 @@ export default async function AdversaryReviewPage({
                       <th className="py-2 pr-4 text-right">Replies</th>
                       <th className="py-2 pr-4 text-right">Avg words</th>
                       <th className="py-2 pr-4 text-right">Hooks</th>
-                      <th className="py-2 text-right">Stacked-Q</th>
+                      <th className="py-2 pr-4 text-right">Stacked-Q</th>
+                      <th className="py-2 text-right">Long</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -255,8 +264,11 @@ export default async function AdversaryReviewPage({
                         <td className={"py-2 pr-4 text-right tabular-nums " + (p.hookViolations ? "font-semibold text-amber-600 dark:text-amber-400" : "")}>
                           {p.hookViolations}
                         </td>
-                        <td className={"py-2 text-right tabular-nums " + (p.multiQuestionTurns ? "font-semibold text-amber-600 dark:text-amber-400" : "")}>
+                        <td className={"py-2 pr-4 text-right tabular-nums " + (p.multiQuestionTurns ? "font-semibold text-amber-600 dark:text-amber-400" : "")}>
                           {p.multiQuestionTurns}
+                        </td>
+                        <td className={"py-2 text-right tabular-nums " + (p.longReplies ? "font-semibold text-amber-600 dark:text-amber-400" : "")}>
+                          {p.longReplies}
                         </td>
                       </tr>
                     ))}

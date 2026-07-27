@@ -45,6 +45,7 @@ type FrontMatter = {
   hook_violations?: number;
   trailing_questions?: number;
   multi_question_turns?: number;
+  long_replies?: number;
   run?: string;
 };
 
@@ -68,6 +69,7 @@ export type ParsedTranscript = {
     hookViolations: number;
     trailingQuestions: number;
     multiQuestionTurns: number;
+    longReplies: number;
   };
   runStamp: string;
   createdAt: Date;
@@ -181,6 +183,7 @@ export function parseTranscriptFile(
       hookViolations: Number(fm.hook_violations ?? 0) || 0,
       trailingQuestions: Number(fm.trailing_questions ?? 0) || 0,
       multiQuestionTurns: Number(fm.multi_question_turns ?? 0) || 0,
+      longReplies: Number(fm.long_replies ?? 0) || 0,
     },
     runStamp,
     createdAt: createdAtFor(runStamp, file),

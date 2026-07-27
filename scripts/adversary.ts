@@ -356,6 +356,7 @@ agent_avg_words: ${metrics.agentAvgWords}
 hook_violations: ${metrics.hookViolations}
 trailing_questions: ${metrics.trailingQuestions}
 multi_question_turns: ${metrics.multiQuestionTurns}
+long_replies: ${metrics.longReplies}
 run: ${runStamp}
 ---
 
@@ -478,7 +479,7 @@ async function runPersona(
     }
 
     console.log(
-      `✓ ${persona.name} → drafts/adversary/${path.basename(file)}  (${inTok} in / ${outTok} out tokens; ${metrics.hookViolations} hook, ${metrics.multiQuestionTurns} multi-Q${savedNote})`,
+      `✓ ${persona.name} → drafts/adversary/${path.basename(file)}  (${inTok} in / ${outTok} out tokens; ${metrics.hookViolations} hook, ${metrics.multiQuestionTurns} multi-Q, ${metrics.longReplies} long${savedNote})`,
     );
     return { ok: true, name: persona.name, file, inTok, outTok, byModel, saveStatus, saveError };
   } catch (e) {
