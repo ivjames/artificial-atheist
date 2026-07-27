@@ -4,7 +4,12 @@ import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { MODERATION_STATES, PROPHECY_VOCAB } from "@/lib/prophecy/vocab";
-import { createClaim, mergeClaims, updateClaimStatus } from "@/lib/prophecy/claims";
+import {
+  bulkUpdateClaimStatus,
+  createClaim,
+  mergeClaims,
+  updateClaimStatus,
+} from "@/lib/prophecy/claims";
 import { assertProphecyAdmin } from "../actions";
 
 const BASE = "/review/prophecy/claims/";
@@ -85,6 +90,90 @@ export async function changeClaimStatus(id: string, status: string): Promise<voi
 
   revalidatePath(`/review/prophecy/claims/${id}`);
   revalidatePath("/review/prophecy/claims");
+}
+
+// Bulk status transition over everything matching the index's current filters.
+//
+// Publishing is what makes a claim public, so this is the one control here that
+// changes what the world can see — hence the explicit confirm checkbox in the
+// form and the fact that the reverse (→ draft) is offered alongside it, so a
+// mistaken publish is one click to undo rather than a support incident.
+export async function bulkChangeClaimStatus(formData: FormData): Promise<void> {
+  await assertProphecyAdmin();
+
+  // Round-trip the filters so the redirect lands back on the same view the
+  // operator was looking at when they pressed the button.
+  const q = String(formData.get("q") ?? "").trim();
+  const statusFilter = String(formData.get("statusFilter") ?? "").trim();
+  const category = String(formData.get("category") ?? "").trim();
+  const back = new URLSearchParams();
+  if (q) back.set("q", q);
+  if (statusFilter) back.set("status", statusFilter);
+  if (category) back.set("category", category);
+  const backTo = (extra: Record<string, string>) => {
+    const p = new URLSearchParams(back);
+    for (const [k, v] of Object.entries(extra)) p.set(k, v);
+    return `${BASE}?${p.toString()}`;
+  };
+
+  const target = String(formData.get("target") ?? "").trim();
+  if (!(MODERATION_STATES as readonly string[]).includes(target) || target === "superseded") {
+    redirect(backTo({ error: "status" }));
+  }
+  // Unchecked checkboxes aren't submitted at all, so this is a real gate: a
+  // stray click on "Publish" can't put hundreds of claims on the live site.
+  if (!formData.get("confirm")) {
+    redirect(backTo({ error: "bulk_unconfirmed" }));
+  }
+
+  const minRaw = String(formData.get("minMeanScore") ?? "").trim();
+  const minParsed = minRaw === "" ? undefined : Number.parseFloat(minRaw);
+  if (minParsed != null && (!Number.isFinite(minParsed) || minParsed < 0 || minParsed > 5)) {
+    redirect(backTo({ error: "bulk_min_score" }));
+  }
+
+  let failure = "";
+  let result: Awaited<ReturnType<typeof bulkUpdateClaimStatus>> | null = null;
+  try {
+    // NOTE: `status` on this argument object is the TARGET to move claims to.
+    // The selection filter is `statusFilter`, passed as `filterStatus`. Same
+    // word, opposite roles — an easy pair to transpose.
+    result = await bulkUpdateClaimStatus(prisma, {
+      q: q || undefined,
+      filterStatus: statusFilter || undefined,
+      categoryKey: category || undefined,
+      status: target,
+      minMeanScore: minParsed,
+    });
+  } catch (e) {
+    failure = e instanceof Error ? e.message : "unknown error";
+  }
+  if (failure) {
+    redirect(backTo({ error: "bulk_failed", detail: failure.slice(0, 200) }));
+  }
+
+  revalidatePath("/review/prophecy/claims");
+  // The public surface reads published claims, so it has to be rebuilt too or
+  // the site stays empty after a successful publish.
+  revalidatePath("/prophecy");
+  revalidatePath("/prophecy/claims");
+
+  const r = result!;
+  if (r.failed > 0) {
+    // A partial run must never look like a clean one — the operator has to know
+    // some claims are still at the old status before they walk away.
+    console.error(`bulkChangeClaimStatus: ${r.failed} failed\n${r.errors.join("\n")}`);
+  }
+  redirect(
+    backTo({
+      bulk: target,
+      updated: String(r.updated),
+      skipped: String(r.skippedSuperseded + r.skippedBelowScore + r.skippedAlready),
+      below: String(r.skippedBelowScore),
+      failed: String(r.failed),
+      detail: r.errors[0]?.slice(0, 200) ?? "",
+    }),
+  );
 }
 
 // Merge ANOTHER claim (the duplicate) INTO the claim whose detail page hosts

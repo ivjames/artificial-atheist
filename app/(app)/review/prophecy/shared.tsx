@@ -112,6 +112,10 @@ const ERROR_MESSAGES: Record<string, string> = {
   merge_self: "A claim cannot be merged into itself.",
   merge_failed: "Merge failed.",
   map_failed: "Mapping failed.",
+  bulk_unconfirmed:
+    "Tick the confirmation box first — a bulk change applies to every claim matching the filters.",
+  bulk_min_score: "Minimum mean score must be a number between 0 and 5.",
+  bulk_failed: "Bulk status change failed.",
   import_failed: "Import failed.",
   create_failed: "Create failed.",
   draftload_missing: "Draft file data/prophecy/claims-draft-v1.json not found on the server.",

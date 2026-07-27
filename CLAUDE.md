@@ -126,6 +126,15 @@ reference the corpus:
 - Admin surface: `/review/prophecy` (same `aa_admin` cookie as the pipeline
   queue; NOT gated on CHAT_ENABLED). Dashboard, sources, source lists +
   paste-import + entry→claim mapping, claims search/status/merge, export.
+- **Bulk publish:** the claims index has a bulk status change that applies to
+  the WHOLE filtered set, not just the page (`bulkUpdateClaimStatus`). Without
+  it a normalization pass leaves hundreds of drafts and the public site stays
+  empty, since only `published` claims render. It loops through
+  `updateClaimStatus` so every transition still lands in the revision log,
+  refuses `superseded` (merges only), skips merged-away claims, requires an
+  explicit confirm checkbox, and offers → draft as the one-click undo. Optional
+  `minMeanScore` gates on evaluation ratings; unrated claims are excluded when a
+  threshold is set.
 - Tests: `tests/prophecy-vocab.test.ts` (pure) + `tests/prophecy-domain.test.ts`
   (pure + DB-integration gated on DATABASE_URL).
 - Datasets (`data/prophecy/<slug>.{json,md}`, verbatim entries + provenance;
