@@ -393,10 +393,17 @@ type Tally = { in: number; out: number };
 type ModelTallies = Record<string, Tally>;
 type PersonaResult = {
   ok: boolean;
+  name: string;
   file?: string;
   inTok: number;
   outTok: number;
   byModel: ModelTallies;
+  // Whether this run made it into the DB. "skipped" = persistence was off
+  // (--mock/--no-db) or the conversation failed before we tried; "failed" =
+  // the DB write threw. main() rolls these up into a saved/failed tally so a
+  // run never "vanishes" from /review/adversary without a visible reason.
+  saveStatus: "saved" | "skipped" | "failed";
+  saveError?: string;
 };
 
 function addTally(into: ModelTallies, model: string, inTok: number, outTok: number): void {
@@ -429,24 +436,31 @@ async function runPersona(
       addTally(byModel, l.speaker === "agent" ? agentModel : ADVERSARY_MODEL, l.inTok, l.outTok);
     }
 
-    // Persist for the /review/adversary surface (best-effort; not in mock).
-    let saved = "";
+    // Persist for the /review/adversary surface. The outcome is returned (not
+    // swallowed into a log line) so main() can print a saved/failed tally — a
+    // silently-skipped DB write was how runs "vanished" from the review page.
+    let saveStatus: PersonaResult["saveStatus"] = "skipped";
+    let saveError: string | undefined;
+    let savedNote = "";
     if (!opts.mock && !opts.noDb) {
       try {
         await persistRun(persona, opts, lines, metrics, runStamp);
-        saved = ", saved to DB";
+        saveStatus = "saved";
+        savedNote = ", saved to DB";
       } catch (e) {
-        saved = `, DB save skipped (${(e as Error).message})`;
+        saveStatus = "failed";
+        saveError = (e as Error).message;
+        savedNote = `, DB SAVE FAILED (${saveError})`;
       }
     }
 
     console.log(
-      `✓ ${persona.name} → drafts/adversary/${path.basename(file)}  (${inTok} in / ${outTok} out tokens; ${metrics.hookViolations} hook, ${metrics.multiQuestionTurns} multi-Q${saved})`,
+      `✓ ${persona.name} → drafts/adversary/${path.basename(file)}  (${inTok} in / ${outTok} out tokens; ${metrics.hookViolations} hook, ${metrics.multiQuestionTurns} multi-Q${savedNote})`,
     );
-    return { ok: true, file, inTok, outTok, byModel };
+    return { ok: true, name: persona.name, file, inTok, outTok, byModel, saveStatus, saveError };
   } catch (e) {
     console.error(`✗ ${persona.name} FAILED: ${(e as Error).message}`);
-    return { ok: false, inTok: 0, outTok: 0, byModel: {} };
+    return { ok: false, name: persona.name, inTok: 0, outTok: 0, byModel: {}, saveStatus: "skipped" };
   }
 }
 
@@ -471,6 +485,24 @@ async function mapPool<T, R>(
 }
 
 // --- main ------------------------------------------------------------------
+
+// The DB the harness is actually connected to, as host[:port]/dbname with the
+// credentials stripped. Printed alongside the row counts so a persistence
+// "success" against a *different but reachable* database (the site's DB left
+// untouched) is visible — connectivity alone isn't proof the writes land where
+// the site reads. The operator compares this to the site's DATABASE_URL.
+function dbTarget(): string {
+  const url = process.env.DATABASE_URL;
+  if (!url) return "DATABASE_URL unset";
+  try {
+    const u = new URL(url);
+    const port = u.port ? `:${u.port}` : "";
+    const db = u.pathname.replace(/^\//, "") || "?";
+    return `${u.hostname || "?"}${port}/${db}`;
+  } catch {
+    return "unparseable DATABASE_URL";
+  }
+}
 
 async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
@@ -507,6 +539,35 @@ async function main(): Promise<void> {
       `concurrency=${concurrency}, model=${opts.mock ? "mock" : `${ADVERSARY_PROVIDER}:${ADVERSARY_MODEL}`}\n`,
   );
 
+  // Preflight the DB up front so a persistence problem is visible before we
+  // spend on model calls. A run that can't reach the table would otherwise
+  // write transcripts and silently save nothing — the usual cause of the
+  // review page being "stuck" at N runs.
+  if (opts.mock || opts.noDb) {
+    console.log(
+      `DB: persistence OFF (${opts.mock ? "--mock" : "--no-db"}) — transcripts only, nothing will be saved to /review/adversary.\n`,
+    );
+  } else {
+    try {
+      const existing = await prisma.adversaryRun.count();
+      console.log(`DB: connected — ${dbTarget()} — ${existing} run(s) already stored.\n`);
+    } catch (e) {
+      // Abort before spending on model calls: the preflight exists precisely to
+      // catch an unreachable DB / missing table before a full multi-persona run
+      // pays for calls that can't persist. Deliberate --no-db/--mock runs never
+      // reach here (they took the persistence-OFF branch above).
+      console.error(
+        `DB: preflight FAILED — ${(e as Error).message}\n` +
+          `     Target: ${dbTarget()}\n` +
+          `     Aborting before spending on model calls — nothing would persist to /review/adversary.\n` +
+          `     Point DATABASE_URL at the same database the site reads and apply migrations\n` +
+          `     (npm run db:deploy), or pass --no-db to run anyway (transcripts only).\n`,
+      );
+      process.exitCode = 1;
+      return;
+    }
+  }
+
   const results = await mapPool(personas, concurrency, (persona) =>
     runPersona(persona, opts, runStamp, concurrency > 1),
   );
@@ -516,8 +577,35 @@ async function main(): Promise<void> {
   const totalOut = results.reduce((s, r) => s + r.outTok, 0);
 
   console.log(`\nDone. ${written.length} transcript(s) in drafts/adversary/.`);
-  if (!opts.mock && !opts.noDb) {
-    console.log(`Review them at /review/adversary (admin-gated).`);
+
+  // Report the DB outcome explicitly. "Review them at /review/adversary" only
+  // prints when something actually saved — so a mock/no-db/failed run can't
+  // masquerade as a successful one (which is how the page got stuck at 2).
+  if (opts.mock || opts.noDb) {
+    console.log(
+      `Persistence was OFF (${opts.mock ? "--mock" : "--no-db"}); /review/adversary was not updated.`,
+    );
+  } else {
+    const savedRuns = results.filter((r) => r.saveStatus === "saved");
+    const failedRuns = results.filter((r) => r.saveStatus === "failed");
+    let after: number | null = null;
+    try {
+      after = await prisma.adversaryRun.count();
+    } catch {
+      /* the failure is reported per-run below */
+    }
+    const nowHas = after != null ? ` — ${dbTarget()} now holds ${after} run(s)` : "";
+    console.log(`DB: saved ${savedRuns.length}/${written.length} run(s)${nowHas}.`);
+    if (failedRuns.length) {
+      console.error(`DB: ${failedRuns.length} run(s) FAILED to save and are NOT on /review/adversary:`);
+      for (const f of failedRuns) console.error(`  ✗ ${f.name}: ${f.saveError}`);
+      console.error(
+        `Fix the error above (commonly DATABASE_URL pointing at a different database than the\n` +
+          `site reads, or missing migrations) and re-run.`,
+      );
+      process.exitCode = 1;
+    }
+    if (savedRuns.length) console.log(`Review them at /review/adversary (admin-gated).`);
   }
   if (!opts.mock) {
     // Merge every persona's per-model tallies and cost each model at the
