@@ -185,6 +185,13 @@ reference the corpus:
   a `DATABASE_URL` pointing at the wrong (even if reachable) database can't
   silently leave `/review/adversary` stuck at an old run count.
 - `lib/adversaryRuns.ts` — read model + `aggregateStats` for the runs.
+- `scripts/adversary-backfill.ts` (`npm run adversary:backfill`, `--dry-run`) —
+  the transcript is written before the DB row, so a run whose save failed (DB
+  down, pre-migration, `--no-db`, "Clear all") survives as markdown. This
+  re-inserts anything in `drafts/adversary/` that isn't in the DB, idempotent on
+  (run stamp + persona), skipping `--mock` transcripts. Files never stored the
+  PER-LINE token split, so backfilled runs keep true totals but show
+  "cost n/a · backfilled" rather than a fabricated $0.00 (`runCostAvailable`).
 - **Review surface:** `/review/adversary` (admin-token gated, reuses the pipeline
   auth cookie; NOT gated on CHAT_ENABLED since it's an operator/eval tool). Shows
   aggregate + per-persona stats and every transcript. This is how you review the

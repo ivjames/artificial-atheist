@@ -20,6 +20,7 @@
     "pipeline:draft": "tsx scripts/pipeline.ts draft",
     "pipeline:auto": "tsx scripts/pipeline.ts auto",
     "adversary": "tsx scripts/adversary.ts",
+    "adversary:backfill": "tsx scripts/adversary-backfill.ts",
     "prophecy:bootstrap": "tsx scripts/prophecy-bootstrap.ts",
     "prophecy:evals": "tsx scripts/prophecy-evaluations.ts",
     "prophecy:evaluate": "tsx scripts/prophecy-evaluate.ts",
