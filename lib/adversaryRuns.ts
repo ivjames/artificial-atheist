@@ -39,6 +39,26 @@ export function parseRun(run: AdversaryRun): ParsedRun {
   };
 }
 
+/**
+ * Whether a real per-run cost can be computed.
+ *
+ * Costing splits tokens by speaker so each side prices at its own model's
+ * rate, which needs PER-LINE token counts. Runs backfilled from a markdown
+ * transcript only preserve the totals — the file never stored the split — so
+ * they carry per-line zeros against a non-zero row total. Detecting that shape
+ * needs no schema column and no guessing.
+ *
+ * These runs report no cost rather than a fabricated one: distributing the
+ * totals across lines by length would invent a number, and "$0.00" would be a
+ * false statement about a run that really did cost money.
+ */
+export function runCostAvailable(run: ParsedRun): boolean {
+  if (run.transcript.length === 0) return false;
+  const perLine = run.transcript.reduce((s, l) => s + l.inTok + l.outTok, 0);
+  const rowTotal = run.inputTokens + run.outputTokens;
+  return perLine > 0 || rowTotal === 0;
+}
+
 // Real provider cost of a run in USD. The run stores COMBINED tokens, so we
 // split them back out via the transcript (each line carries its speaker +
 // tokens) and cost each side at its own model's rate: the agent ran on the
@@ -86,7 +106,11 @@ export type AggregateStats = {
   agentTurns: number;
   inputTokens: number;
   outputTokens: number;
-  costUsd: number; // real provider cost across all runs
+  costUsd: number; // real provider cost across runs that can be costed
+  // Runs excluded from costUsd because their per-line token split wasn't
+  // preserved (backfilled from a transcript). Surfaced so the total is never
+  // silently understated.
+  costUnavailableRuns: number;
   avgAgentWords: number;
   hookViolations: number;
   trailingQuestions: number;
@@ -104,6 +128,7 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
     inputTokens: 0,
     outputTokens: 0,
     costUsd: 0,
+    costUnavailableRuns: 0,
     avgAgentWords: 0,
     hookViolations: 0,
     trailingQuestions: 0,
@@ -119,7 +144,8 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
     agg.agentTurns += m.agentTurns;
     agg.inputTokens += r.inputTokens;
     agg.outputTokens += r.outputTokens;
-    agg.costUsd += runCostUsd(r);
+    if (runCostAvailable(r)) agg.costUsd += runCostUsd(r);
+    else agg.costUnavailableRuns += 1;
     agg.hookViolations += m.hookViolations;
     agg.trailingQuestions += m.trailingQuestions;
     agg.multiQuestionTurns += m.multiQuestionTurns;

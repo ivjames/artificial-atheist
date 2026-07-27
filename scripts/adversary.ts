@@ -601,7 +601,8 @@ async function main(): Promise<void> {
       for (const f of failedRuns) console.error(`  ✗ ${f.name}: ${f.saveError}`);
       console.error(
         `Fix the error above (commonly DATABASE_URL pointing at a different database than the\n` +
-          `site reads, or missing migrations) and re-run.`,
+          `site reads, or missing migrations). The transcripts are already on disk, so once the\n` +
+          `DB is reachable recover these runs with: npm run adversary:backfill`,
       );
       process.exitCode = 1;
     }

@@ -10,7 +10,12 @@ import {
   ARGUMENTS,
   argumentKeys,
 } from "@/lib/agent/adversary";
-import { aggregateStats, runCostUsd, type ParsedRun } from "@/lib/adversaryRuns";
+import {
+  aggregateStats,
+  runCostAvailable,
+  runCostUsd,
+  type ParsedRun,
+} from "@/lib/adversaryRuns";
 
 // The adversary persona library is pure (no model calls), so it's fully unit
 // testable. These guard the invariants the harness relies on and the safety
@@ -292,5 +297,66 @@ describe("aggregateStats", () => {
     expect(s.runs).toBe(0);
     expect(s.avgAgentWords).toBe(0);
     expect(s.byPersona).toEqual([]);
+    expect(s.costUnavailableRuns).toBe(0);
+  });
+
+  it("excludes uncostable runs from the total and counts them instead", () => {
+    const costable = mkRun({
+      persona: "professor",
+      tier: "standard",
+      transcript: [{ speaker: "agent", content: "", inTok: 1000, outTok: 100 }],
+    });
+    // Backfilled shape: real totals on the row, no per-line split in the body.
+    const backfilled = mkRun({
+      persona: "zealot",
+      inputTokens: 5000,
+      outputTokens: 800,
+      transcript: [{ speaker: "agent", content: "hi", inTok: 0, outTok: 0 }],
+    });
+    const s = aggregateStats([costable, backfilled]);
+    expect(s.costUnavailableRuns).toBe(1);
+    // Only the costable run contributes; the backfilled one adds nothing
+    // rather than adding a fabricated figure.
+    expect(s.costUsd).toBeCloseTo(runCostUsd(costable), 6);
+    // Its tokens still count — those numbers ARE recoverable from the file.
+    expect(s.inputTokens).toBe(costable.inputTokens + 5000);
+  });
+});
+
+describe("runCostAvailable", () => {
+  it("is true for a run whose transcript carries per-line tokens", () => {
+    expect(
+      runCostAvailable(
+        mkRun({ transcript: [{ speaker: "agent", content: "", inTok: 10, outTok: 2 }] }),
+      ),
+    ).toBe(true);
+  });
+
+  it("is false when the row spent tokens but the per-line split is missing", () => {
+    expect(
+      runCostAvailable(
+        mkRun({
+          inputTokens: 900,
+          outputTokens: 100,
+          transcript: [{ speaker: "agent", content: "x", inTok: 0, outTok: 0 }],
+        }),
+      ),
+    ).toBe(false);
+  });
+
+  it("is true for a genuinely free run — zeros everywhere are not a gap", () => {
+    expect(
+      runCostAvailable(
+        mkRun({
+          inputTokens: 0,
+          outputTokens: 0,
+          transcript: [{ speaker: "agent", content: "x", inTok: 0, outTok: 0 }],
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("is false for an empty transcript — nothing to attribute tokens to", () => {
+    expect(runCostAvailable(mkRun({}))).toBe(false);
   });
 });
