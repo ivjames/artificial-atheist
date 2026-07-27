@@ -77,6 +77,7 @@ function RunCard({ run }: { run: ParsedRun }) {
           </span>
         )}
         <span>~{m.agentAvgWords} words/reply</span>
+        <span>~{m.agentAvgSentences ?? 0} sentences/reply</span>
         <span className={m.hookViolations ? "font-semibold text-amber-600 dark:text-amber-400" : ""}>
           {m.hookViolations} engagement-hook{m.hookViolations === 1 ? "" : "s"}
         </span>
@@ -201,6 +202,11 @@ export default async function AdversaryReviewPage({
               <Stat label="Agent replies" value={stats.agentTurns} />
               <Stat label="Avg words / reply" value={stats.avgAgentWords} />
               <Stat
+                label="Avg sentences / reply"
+                value={stats.avgAgentSentences}
+                hint="persona caps at ~5-10"
+              />
+              <Stat
                 label="Engagement hooks"
                 value={stats.hookViolations}
                 hint="should be 0"
@@ -249,6 +255,7 @@ export default async function AdversaryReviewPage({
                       <th className="py-2 pr-4 text-right">Runs</th>
                       <th className="py-2 pr-4 text-right">Replies</th>
                       <th className="py-2 pr-4 text-right">Avg words</th>
+                      <th className="py-2 pr-4 text-right">Avg sentences</th>
                       <th className="py-2 pr-4 text-right">Hooks</th>
                       <th className="py-2 pr-4 text-right">Stacked-Q</th>
                       <th className="py-2 text-right">Long</th>
@@ -261,6 +268,7 @@ export default async function AdversaryReviewPage({
                         <td className="py-2 pr-4 text-right tabular-nums">{p.runs}</td>
                         <td className="py-2 pr-4 text-right tabular-nums">{p.agentTurns}</td>
                         <td className="py-2 pr-4 text-right tabular-nums">{p.avgAgentWords}</td>
+                        <td className="py-2 pr-4 text-right tabular-nums">{p.avgAgentSentences}</td>
                         <td className={"py-2 pr-4 text-right tabular-nums " + (p.hookViolations ? "font-semibold text-amber-600 dark:text-amber-400" : "")}>
                           {p.hookViolations}
                         </td>

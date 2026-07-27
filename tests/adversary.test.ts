@@ -113,6 +113,13 @@ describe("scoreAgentTurns", () => {
     const m = scoreAgentTurns([]);
     expect(m.agentTurns).toBe(0);
     expect(m.agentAvgWords).toBe(0);
+    expect(m.agentAvgSentences).toBe(0);
+  });
+
+  it("averages sentence length across replies", () => {
+    // 2 sentences and 4 sentences → mean 3.
+    const m = scoreAgentTurns(["One point. And a second.", "A. B. C. D."]);
+    expect(m.agentAvgSentences).toBe(3);
   });
 
   it("flags engagement hooks at the end of a reply", () => {
@@ -234,6 +241,7 @@ const mkRun = (over: Partial<ParsedRun>): ParsedRun =>
         agentTurns: 2,
         agentAvgChars: 200,
         agentAvgWords: 40,
+        agentAvgSentences: 3,
         hookViolations: 1,
         trailingQuestions: 1,
         multiQuestionTurns: 0,
@@ -281,6 +289,7 @@ describe("aggregateStats", () => {
           agentTurns: 4,
           agentAvgChars: 0,
           agentAvgWords: 50,
+          agentAvgSentences: 4,
           hookViolations: 2,
           trailingQuestions: 0,
           multiQuestionTurns: 1,
@@ -294,6 +303,7 @@ describe("aggregateStats", () => {
           agentTurns: 1,
           agentAvgChars: 0,
           agentAvgWords: 100,
+          agentAvgSentences: 9,
           hookViolations: 0,
           trailingQuestions: 0,
           multiQuestionTurns: 0,
@@ -309,12 +319,15 @@ describe("aggregateStats", () => {
     expect(s.longReplies).toBe(4);
     // weighted: (50*4 + 100*1) / 5 = 60
     expect(s.avgAgentWords).toBe(60);
+    // weighted sentences: (4*4 + 9*1) / 5 = 5
+    expect(s.avgAgentSentences).toBe(5);
     expect(s.byPersona).toHaveLength(2);
   });
 
-  it("treats a stored run missing longReplies as zero (older rows)", () => {
-    // Runs saved before the length metric existed have no `longReplies` key in
-    // their JSON blob. The roll-up must coalesce it, not add undefined.
+  it("treats a stored run missing longReplies/agentAvgSentences as zero (older rows)", () => {
+    // Runs saved before these metrics existed have no `longReplies` or
+    // `agentAvgSentences` key in their JSON blob. The roll-up must coalesce
+    // them, not add undefined (which would poison the weighted mean with NaN).
     const legacyMetrics = {
       agentTurns: 2,
       agentAvgChars: 0,
@@ -322,10 +335,12 @@ describe("aggregateStats", () => {
       hookViolations: 0,
       trailingQuestions: 0,
       multiQuestionTurns: 0,
-    } as ParsedRun["metrics"]; // deliberately omits longReplies
+    } as ParsedRun["metrics"]; // deliberately omits longReplies + agentAvgSentences
     const s = aggregateStats([mkRun({ metrics: legacyMetrics })]);
     expect(s.longReplies).toBe(0);
     expect(s.byPersona[0].longReplies).toBe(0);
+    expect(s.avgAgentSentences).toBe(0);
+    expect(s.byPersona[0].avgAgentSentences).toBe(0);
   });
 
   it("handles an empty run set", () => {

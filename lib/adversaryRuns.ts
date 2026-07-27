@@ -130,6 +130,7 @@ export type PersonaStat = {
   runs: number;
   agentTurns: number;
   avgAgentWords: number;
+  avgAgentSentences: number;
   hookViolations: number;
   multiQuestionTurns: number;
   longReplies: number;
@@ -151,6 +152,7 @@ export type AggregateStats = {
   costMinUsd: number;
   costMaxUsd: number;
   avgAgentWords: number;
+  avgAgentSentences: number;
   hookViolations: number;
   trailingQuestions: number;
   multiQuestionTurns: number;
@@ -172,6 +174,7 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
     costMinUsd: 0,
     costMaxUsd: 0,
     avgAgentWords: 0,
+    avgAgentSentences: 0,
     hookViolations: 0,
     trailingQuestions: 0,
     multiQuestionTurns: 0,
@@ -180,7 +183,11 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
   };
 
   let weightedWords = 0;
-  const byPersona = new Map<string, PersonaStat & { weightedWords: number }>();
+  let weightedSentences = 0;
+  const byPersona = new Map<
+    string,
+    PersonaStat & { weightedWords: number; weightedSentences: number }
+  >();
 
   for (const r of runs) {
     const m = r.metrics;
@@ -205,6 +212,9 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
     // key, so coalesce to 0 rather than adding undefined.
     agg.longReplies += m.longReplies ?? 0;
     weightedWords += m.agentAvgWords * m.agentTurns;
+    // `agentAvgSentences` is newer than some stored runs — coalesce the missing
+    // key to 0 so an old row doesn't poison the weighted mean with NaN.
+    weightedSentences += (m.agentAvgSentences ?? 0) * m.agentTurns;
 
     const p = byPersona.get(r.persona) ?? {
       persona: r.persona,
@@ -212,10 +222,12 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
       runs: 0,
       agentTurns: 0,
       avgAgentWords: 0,
+      avgAgentSentences: 0,
       hookViolations: 0,
       multiQuestionTurns: 0,
       longReplies: 0,
       weightedWords: 0,
+      weightedSentences: 0,
     };
     p.runs += 1;
     p.agentTurns += m.agentTurns;
@@ -223,10 +235,12 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
     p.multiQuestionTurns += m.multiQuestionTurns;
     p.longReplies += m.longReplies ?? 0;
     p.weightedWords += m.agentAvgWords * m.agentTurns;
+    p.weightedSentences += (m.agentAvgSentences ?? 0) * m.agentTurns;
     byPersona.set(r.persona, p);
   }
 
   agg.avgAgentWords = agg.agentTurns ? Math.round(weightedWords / agg.agentTurns) : 0;
+  agg.avgAgentSentences = agg.agentTurns ? Math.round(weightedSentences / agg.agentTurns) : 0;
   agg.byPersona = [...byPersona.values()]
     .map((p) => ({
       persona: p.persona,
@@ -234,6 +248,7 @@ export function aggregateStats(runs: ParsedRun[]): AggregateStats {
       runs: p.runs,
       agentTurns: p.agentTurns,
       avgAgentWords: p.agentTurns ? Math.round(p.weightedWords / p.agentTurns) : 0,
+      avgAgentSentences: p.agentTurns ? Math.round(p.weightedSentences / p.agentTurns) : 0,
       hookViolations: p.hookViolations,
       multiQuestionTurns: p.multiQuestionTurns,
       longReplies: p.longReplies,
