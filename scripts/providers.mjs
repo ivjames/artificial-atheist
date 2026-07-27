@@ -33,7 +33,7 @@ function model() {
 // Use a forced tool call for structured output. The API guarantees that a
 // tool_use block's `input` is valid JSON matching the schema, so we never have
 // to parse model-hand-escaped JSON (the recurring cause of generate failures:
-// an unescaped quote anywhere in ~800 words of markdown broke JSON.parse).
+// an unescaped quote anywhere in ~2,000 words of markdown broke JSON.parse).
 const ARTICLE_TOOL = {
   name: "publish_article",
   description: "Submit the finished article for publication.",
@@ -42,7 +42,7 @@ const ARTICLE_TOOL = {
     properties: {
       title: { type: "string", description: "Title Case, under 70 characters, no clickbait" },
       excerpt: { type: "string", description: "One sentence, under 160 characters" },
-      body_markdown: { type: "string", description: "700-900 words of Markdown; see prompt for structure" },
+      body_markdown: { type: "string", description: "1,200-2,000 words of Markdown; see prompt for structure" },
     },
     required: ["title", "excerpt", "body_markdown"],
   },
@@ -53,7 +53,10 @@ async function viaClaude({ system, prompt }) {
   const client = new Anthropic(); // reads ANTHROPIC_API_KEY
   const resp = await client.messages.create({
     model: model(),
-    max_tokens: 2000,
+    // Headroom for a ~2,000-word body (see the prompt/tool target). Too low a
+    // cap truncates the response mid-JSON and the whole article is rejected, so
+    // this must stay comfortably above the word target's token cost.
+    max_tokens: 4096,
     system,
     messages: [{ role: "user", content: prompt }],
     tools: [ARTICLE_TOOL],
@@ -80,7 +83,7 @@ async function viaCloudflare({ system, prompt }) {
         { role: "system", content: system },
         { role: "user", content: prompt },
       ],
-      max_tokens: 2000,
+      max_tokens: 4096,
     }),
   });
   if (!r.ok) throw new Error(`Cloudflare AI ${r.status}: ${await r.text()}`);
@@ -98,7 +101,7 @@ async function viaDigitalOcean({ system, prompt }) {
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       model: model(),
-      max_tokens: 2000,
+      max_tokens: 4096,
       messages: [
         { role: "system", content: system },
         { role: "user", content: prompt },

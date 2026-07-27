@@ -73,7 +73,7 @@ async function main() {
 Do NOT overlap with these existing titles:
 ${titles.map((t) => "- " + t).join("\n")}
 Pick a fresh, specific angle.
-Return ONLY valid JSON with keys: title, excerpt, body_markdown (700-900 words, intro paragraph then 3-4 '## sentence case' sections, no H1).`;
+Return ONLY valid JSON with keys: title, excerpt, body_markdown (1,200-2,000 words sized to the topic, intro paragraph then 4-6 '## sentence case' sections, no H1).`;
 
   fs.mkdirSync(DRAFTS_DIR, { recursive: true });
   console.log(`Topic: ${topic}\nComparing: ${providers.join(", ")}\n`);
