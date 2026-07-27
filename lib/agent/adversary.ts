@@ -14,7 +14,12 @@
 // The adversary is a role-play. Its only job is to be a realistic, in-character
 // interlocutor so we can see how the real debate agent holds up.
 
-import { sentenceCount, stripQuotedSpans, trailingQuestionRun } from "./questions";
+import {
+  applyReplyGuards,
+  sentenceCount,
+  stripQuotedSpans,
+  trailingQuestionRun,
+} from "./questions";
 
 // --- Dials -----------------------------------------------------------------
 
@@ -508,6 +513,22 @@ export function metricsFromTranscript(
     .filter((l) => l.speaker === "agent")
     .map((l) => l.content);
   return scoreAgentTurns(agentReplies);
+}
+
+// Metrics for the AS-SHIPPED reply: the same derivation as metricsFromTranscript
+// but each raw reply is first run through `applyReplyGuards` — the exact length +
+// stacked-question trim chat.ts applies before a reply reaches a visitor. So
+// these are the numbers a real visitor's replies would score, vs the raw prompt
+// output metricsFromTranscript reports. `maxSentences` is the live cap
+// (config.maxReplySentences), passed in so this stays free of app config.
+export function shippedMetricsFromTranscript(
+  transcript: { speaker: string; content: string }[],
+  maxSentences: number,
+): AgentMetrics {
+  const shippedReplies = transcript
+    .filter((l) => l.speaker === "agent")
+    .map((l) => applyReplyGuards(l.content, maxSentences));
+  return scoreAgentTurns(shippedReplies);
 }
 
 // The instruction that seeds the very first adversary turn (and stays at the

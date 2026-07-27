@@ -160,3 +160,13 @@ export function trimToSentenceLimit(text: string, max: number): string {
 
   return sentences.slice(0, end).join("") + trailingWs;
 }
+
+// The exact guardrail sequence chat.ts applies to a live reply before it ships:
+// cap the length (whole sentences), then drop any stacked closing questions.
+// Extracted so the adversary eval can score the AS-SHIPPED reply through the
+// same transform production uses — making the dashboard's "shipped" figures
+// match what a visitor actually sees, by construction rather than by a second
+// copy of the logic drifting out of sync.
+export function applyReplyGuards(text: string, maxSentences: number): string {
+  return trimStackedClosingQuestions(trimToSentenceLimit(text, maxSentences));
+}

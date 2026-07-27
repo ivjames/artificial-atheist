@@ -10,7 +10,16 @@ import {
   runCostUsd,
   type ParsedRun,
 } from "@/lib/adversaryRuns";
+import { shippedMetricsFromTranscript } from "@/lib/agent/adversary";
+import { maxReplySentences } from "@/lib/config";
 import { loginWithToken, logoutAdmin, deleteRun, clearAllRuns } from "./actions";
+
+// The metrics a run's replies score AFTER the live length/question guardrails —
+// i.e. what a visitor actually sees. Derived from the stored transcript with the
+// exact production transform (applyReplyGuards), so no re-run is needed.
+function shippedMetrics(run: ParsedRun) {
+  return shippedMetricsFromTranscript(run.transcript, maxReplySentences);
+}
 
 function fmtDate(d: Date): string {
   return new Date(d).toISOString().replace("T", " ").slice(0, 16) + " UTC";
@@ -43,6 +52,8 @@ function Stat({ label, value, hint }: { label: string; value: string | number; h
 
 function RunCard({ run }: { run: ParsedRun }) {
   const m = run.metrics;
+  // As-shipped metrics for this run (raw replies through the live guardrails).
+  const s = shippedMetrics(run);
   // Backfilled runs kept their token totals but not the per-speaker split that
   // exact costing needs. The totals plus both models' rates still bracket the
   // real figure, so they show that bracket rather than a $0.00 that would read
@@ -76,8 +87,8 @@ function RunCard({ run }: { run: ParsedRun }) {
             {fmtUsdRange(bound.min, bound.max)} <span className="font-normal">· backfilled</span>
           </span>
         )}
-        <span>~{m.agentAvgWords} words/reply</span>
-        <span>~{m.agentAvgSentences ?? 0} sentences/reply</span>
+        <span>~{m.agentAvgWords} → {s.agentAvgWords} words/reply</span>
+        <span>~{m.agentAvgSentences ?? 0} → {s.agentAvgSentences} sentences/reply</span>
         <span className={m.hookViolations ? "font-semibold text-amber-600 dark:text-amber-400" : ""}>
           {m.hookViolations} engagement-hook{m.hookViolations === 1 ? "" : "s"}
         </span>
@@ -168,6 +179,12 @@ export default async function AdversaryReviewPage({
 
   const runs = await listRuns();
   const stats = aggregateStats(runs);
+  // Same aggregate, but over each run's AS-SHIPPED metrics (raw replies run
+  // through the live guardrails). Lets the strip show raw → shipped: raw is what
+  // the prompt produced, shipped is what a visitor would actually get.
+  const statsShipped = aggregateStats(
+    runs.map((r) => ({ ...r, metrics: shippedMetrics(r) })),
+  );
 
   return (
     <div className="mx-auto mt-8 flex max-w-3xl flex-col gap-8">
@@ -179,7 +196,10 @@ export default async function AdversaryReviewPage({
             vs. the real debate agent. The flagged counts below track the debate persona&apos;s own
             rules: it should never end a reply by soliciting more engagement, and never stack
             questions at the visitor in its closing. Rhetorical questions woven into the
-            argument (e.g. Euthyphro) are allowed and are not counted.
+            argument (e.g. Euthyphro) are allowed and are not counted. Length figures read{" "}
+            <strong>raw → shipped</strong>: raw is the model&apos;s unguarded output (the true
+            measure of the prompt), shipped is that reply after the live length/question trim a
+            visitor actually receives.
           </p>
         </div>
         <form action={logoutAdmin}>
@@ -200,11 +220,15 @@ export default async function AdversaryReviewPage({
             <h2 className="text-lg font-bold">Across {stats.runs} run{stats.runs === 1 ? "" : "s"}</h2>
             <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
               <Stat label="Agent replies" value={stats.agentTurns} />
-              <Stat label="Avg words / reply" value={stats.avgAgentWords} />
+              <Stat
+                label="Avg words / reply"
+                value={`${stats.avgAgentWords} → ${statsShipped.avgAgentWords}`}
+                hint="raw → shipped"
+              />
               <Stat
                 label="Avg sentences / reply"
-                value={stats.avgAgentSentences}
-                hint="persona caps at ~5-10"
+                value={`${stats.avgAgentSentences} → ${statsShipped.avgAgentSentences}`}
+                hint={`raw → shipped (cap ${maxReplySentences})`}
               />
               <Stat
                 label="Engagement hooks"
@@ -218,8 +242,8 @@ export default async function AdversaryReviewPage({
               />
               <Stat
                 label="Over-length replies"
-                value={stats.longReplies}
-                hint="> 10 sentences; persona caps at ~5-10"
+                value={`${stats.longReplies} → ${statsShipped.longReplies}`}
+                hint="> 10 sentences; raw → shipped"
               />
               <Stat label="Replies ending on a ?" value={stats.trailingQuestions} />
               <Stat label="Input tokens" value={stats.inputTokens.toLocaleString()} />

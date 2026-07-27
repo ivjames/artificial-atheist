@@ -250,6 +250,16 @@ reference the corpus:
   auth cookie; NOT gated on CHAT_ENABLED since it's an operator/eval tool). Shows
   aggregate + per-persona stats and every transcript. This is how you review the
   chats/stats from a browser instead of SSHing to read the markdown.
+- **Raw → shipped length view:** the eval stores/scores the RAW model output (the
+  true measure of the prompt), but the length figures on the dashboard read
+  `raw → shipped` — shipped being the same reply after the live guardrails a
+  visitor actually receives. `applyReplyGuards` (questions.ts) is the exact
+  chat.ts transform (length trim + stacked-question trim) extracted so both use
+  one copy; `shippedMetricsFromTranscript` (adversary.ts) re-runs it over each
+  stored transcript and re-scores, so "shipped" is derived on the fly from
+  history — no re-run, no migration. So a prompt that rambles (high raw) but ships
+  short (low shipped) is visible as exactly that: prompt not complying, backstop
+  catching it.
 
 ## Conventions
 - Concise, blunt, analytical communication. Minimize formatting fluff.
