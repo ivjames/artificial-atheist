@@ -70,4 +70,21 @@ describe("trimStackedClosingQuestions", () => {
   it("preserves trailing whitespace", () => {
     expect(trimStackedClosingQuestions("X. Why A? Why B?\n")).toBe("X. Why A?\n");
   });
+
+  it("catches questions stacked as a numbered list", () => {
+    expect(trailingQuestionRun("The claim fails. 1. Why A? 2. Why B?")).toBe(2);
+    expect(trimStackedClosingQuestions("The claim fails. 1. Why A? 2. Why B?")).toBe(
+      "The claim fails. 1. Why A?",
+    );
+    expect(trimStackedClosingQuestions("1. Why A?\n2. Why B?\n3. Why C?")).toBe("1. Why A?");
+  });
+
+  it("does not cut into a single-quoted quotation of stacked questions", () => {
+    const input = "You keep pressing, 'Why A? Why B?'";
+    expect(trimStackedClosingQuestions(input)).toBe(input);
+  });
+
+  it("still trims real stacked questions when the reply contains a contraction", () => {
+    expect(trimStackedClosingQuestions("It's clear. Why A? Why B?")).toBe("It's clear. Why A?");
+  });
 });
