@@ -65,11 +65,14 @@ type Options = {
   tier: "standard" | "premium";
   mock: boolean;
   noDb: boolean; // skip persisting to the DB (transcript file still written)
-  // How many personas (independent conversations) to run at once. A single
-  // conversation is inherently sequential — the agent answers the apologist and
-  // vice versa — so this only parallelizes across personas (`--persona all`).
-  // Keep it modest: each round fires 2 model calls, so N concurrent personas
-  // means up to 2N in flight, which can hit Anthropic rate limits.
+  // How many independent runs to execute at once. A single conversation is
+  // inherently sequential — the agent answers the apologist and vice versa — so
+  // this parallelizes ACROSS runs, i.e. whenever an invocation produces more
+  // than one: `--persona all`, `--argument all` (one run per argument), or both
+  // (their product). The sweep expands `personas` before the pool dispatches
+  // it, so pinned-persona argument sweeps parallelize too. Keep it modest: each
+  // round fires 2 model calls, so N concurrent runs means up to 2N in flight,
+  // which can hit Anthropic rate limits.
   concurrency: number;
   seed?: string;
   dials: Partial<AdversaryDials>;
@@ -168,8 +171,8 @@ Usage: npm run adversary -- [options]
 
   -p, --persona <name|all>   persona to run (default: professor)
   -t, --turns <n>            rounds to run (default: 4)
-  -c, --concurrency <n>      personas to run in parallel (default: 1;
-                             only affects --persona all — watch rate limits)
+  -c, --concurrency <n>      independent runs in parallel (default: 1; helps
+                             --persona all and/or --argument all — watch rate limits)
       --tier <standard|premium>
       --seed "<text>"        pin the opening argument
   -s, --sophistication <1-5> override reasoning level

@@ -199,9 +199,12 @@ reference the corpus:
   chat/credits/DB path) for N rounds. Real Claude by default
   (ADVERSARY_PROVIDER/ADVERSARY_MODEL env); `--mock` for offline wiring checks,
   `--no-db` to skip persistence. CLI: `--persona <name|all>`, `--turns`,
-  `--tier`, `--seed`, `--concurrency <n>` (run personas in parallel — only
-  affects `--persona all`; a single conversation is inherently sequential;
-  watch Anthropic rate limits), `--argument <key|mixed|all>` (`all` sweeps the
+  `--tier`, `--seed`, `--concurrency <n>` (run independent runs in parallel — a
+  single conversation is inherently sequential, but any invocation that produces
+  MORE than one run parallelizes: `--persona all`, `--argument all`, or their
+  product; the sweep expands the persona list before the pool dispatches it, so
+  pinned-persona argument sweeps parallelize too; watch Anthropic rate limits),
+  `--argument <key|mixed|all>` (`all` sweeps the
   whole ARGUMENTS catalog — one run per key per persona, each a distinct
   `persona:arg` variant — so pinned personas cover every opening argument
   instead of always anchoring on their default), and dial overrides. Writes a markdown transcript to the
