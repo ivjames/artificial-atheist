@@ -12,9 +12,17 @@ import {
   minorRedirectMessage,
   articleReferenceBlock,
 } from "@/lib/agent/persona";
-import { trimStackedClosingQuestions } from "@/lib/agent/questions";
+import {
+  trimStackedClosingQuestions,
+  trimToSentenceLimit,
+} from "@/lib/agent/questions";
 import { searchArticles } from "@/lib/articles";
-import { threadTokenBudget, maxOutputTokens, SITE_URL } from "@/lib/config";
+import {
+  threadTokenBudget,
+  maxOutputTokens,
+  maxReplySentences,
+  SITE_URL,
+} from "@/lib/config";
 import { turnEconomics, type TurnEconomics } from "@/lib/pricing";
 import {
   costForTier,
@@ -160,12 +168,16 @@ export async function sendChatMessage(
     };
   }
 
-  // Production backstop for the persona's "at most one closing question" rule:
-  // if the model still stacks questions at the visitor in its closing (the
-  // adversary eval shows it does, most against high-sophistication opponents),
-  // trim the pile-on down to the first question before the reply is persisted
-  // or returned. No-op for a well-formed reply.
-  const replyText = trimStackedClosingQuestions(completion.text);
+  // Production backstops for the persona's length + closing-question rules,
+  // both of which the model ignores against high-sophistication opponents (the
+  // adversary eval confirms it). First cap the length: keep the first
+  // `maxReplySentences` sentences and drop the overflow (at a sentence boundary,
+  // never mid-word). Then trim any stacked closing questions down to the first.
+  // Both operate on whole sentences, so the reply stays well-formed; both no-op
+  // on a reply that already obeys the rule. The eval scores the RAW model output
+  // (not this guarded text), so /review/adversary still measures the true prompt.
+  const lengthCapped = trimToSentenceLimit(completion.text, maxReplySentences);
+  const replyText = trimStackedClosingQuestions(lengthCapped);
 
   // (f) Persist both turns and update thread usage / closure atomically.
   // Split the billed input into conversation vs. reference-library tokens: the

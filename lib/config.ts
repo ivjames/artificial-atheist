@@ -83,6 +83,15 @@ export const threadTokenBudget = envInt("THREAD_TOKEN_BUDGET", 40_000);
 // live-chat economics back at launch.
 export const maxOutputTokens = envInt("MAX_OUTPUT_TOKENS", 2000);
 
+// Live-reply length backstop. The persona caps a debate reply at ~8 sentences,
+// but the model ignores it against sophisticated opponents (the adversary eval
+// shows ~15 with nearly every reply over the ceiling), and prompt tuning didn't
+// move it. So chat.ts trims a reply to this many sentences before it ships —
+// at a sentence boundary, not mid-word like a token cap. Set to the persona's
+// own ceiling, not a brutal floor, so a well-formed reply is rarely cut; env-
+// tunable. This trims only the LIVE reply — the eval still scores raw output.
+export const maxReplySentences = envInt("MAX_REPLY_SENTENCES", 8);
+
 // --- Credit packs (§8) ----------------------------------------------------
 // Minimum pack pushed to ~$5 so Stripe's fixed $0.30 doesn't dominate (§8).
 export type CreditPack = {

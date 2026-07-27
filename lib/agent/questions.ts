@@ -125,3 +125,38 @@ export function trimStackedClosingQuestions(text: string): string {
   const kept = sentences.slice(0, firstQ + 1).join("");
   return kept + trailingWs;
 }
+
+// Production backstop for the length ceiling. The persona is told to keep a
+// reply to a handful of sentences, but against a sophisticated opponent the
+// model ignores it and writes ~15 (the eval confirms it). When a reply runs
+// past `max` sentences, keep the first `max` and drop the rest. The cut is at a
+// SENTENCE boundary — whole sentences only, never mid-word like a token cap —
+// so the result stays well-formed; an unterminated trailing fragment is dropped
+// with the overflow. Ordinal list markers are transparent (matching
+// sentenceCount), and original trailing whitespace is preserved. A reply
+// already within the limit is returned unchanged.
+//
+// Lives in the LIVE chat path only (lib/agent/chat.ts). The eval deliberately
+// scores the RAW model output, so this trim never touches what the eval
+// measures — /review/adversary keeps showing the true prompt behavior.
+export function trimToSentenceLimit(text: string, max: number): string {
+  if (max < 1) return text;
+  if (sentenceCount(text) <= max) return text;
+
+  const trimmedEnd = text.replace(/\s+$/, "");
+  const trailingWs = text.slice(trimmedEnd.length);
+  const { sentences } = splitSentences(trimmedEnd);
+
+  // Walk the sentences, counting only non-ordinal ones toward the cap (an
+  // ordinal marker like "2." is kept but doesn't consume the budget), and stop
+  // once `max` real sentences have been kept.
+  let counted = 0;
+  let end = 0;
+  for (let i = 0; i < sentences.length; i++) {
+    if (!ORDINAL_MARKER.test(sentences[i].trim())) counted += 1;
+    end = i + 1;
+    if (counted >= max) break;
+  }
+
+  return sentences.slice(0, end).join("") + trailingWs;
+}
