@@ -14,6 +14,8 @@
 // The adversary is a role-play. Its only job is to be a realistic, in-character
 // interlocutor so we can see how the real debate agent holds up.
 
+import { stripQuotedSpans, trailingQuestionRun } from "./questions";
+
 // --- Dials -----------------------------------------------------------------
 
 // Reasoning capacity / education. This is the "mental capacity" axis: it drives
@@ -409,44 +411,6 @@ const ENGAGEMENT_HOOK_PATTERNS: RegExp[] = [
   /where (?:would you like|do you want) to (?:go|take this)/i,
   /(?:got|have) (?:any )?(?:other|more) (?:questions|thoughts)/i,
 ];
-
-// Remove double-quoted spans (straight and curly) so a question the agent
-// QUOTES doesn't inflate its question counts. Replaced with a space so the
-// surrounding words stay separated. Single quotes are deliberately left alone —
-// stripping them would swallow apostrophes in contractions (it's, don't).
-function stripQuotedSpans(text: string): string {
-  return text
-    .replace(/"[^"]*"/g, " ")
-    .replace(/“[^”]*”/g, " ");
-}
-
-// How many question sentences sit in the reply's CLOSING run — the contiguous
-// block of question sentences at the very end. A reply that closes
-// "…so which is it — design or chance? And why should I trust that?" has a run
-// of 2 (questions fired at the visitor); a rhetorical question buried in the
-// argument and then answered ("…what caused God? That just relocates the
-// problem.") has a run of 0, because declarative text follows it. This is the
-// line between an engagement/interrogation question (flagged) and a substantive
-// rhetorical one (allowed) — position, not mere presence of a "?".
-function trailingQuestionRun(text: string): number {
-  const t = text.trim();
-  if (!t) return 0;
-  // Split into sentences, keeping terminal punctuation and any trailing
-  // brackets/quotes ("?)"). Matches are contiguous, so anything left over after
-  // the final match is an unterminated trailing fragment.
-  const sentences = t.match(/[^.!?]+[.!?]+["')\]]*/g) || [];
-  const covered = sentences.join("").length;
-  // A non-empty unterminated tail means the reply ends on a NON-question
-  // fragment (e.g. a truncated clause), so there is no trailing question.
-  if (t.slice(covered).trim().length > 0) return 0;
-  let run = 0;
-  for (let i = sentences.length - 1; i >= 0; i--) {
-    if (/\?["')\]]*$/.test(sentences[i].trim())) run++;
-    else break;
-  }
-  return run;
-}
-
 export function emptyAgentMetrics(): AgentMetrics {
   return {
     agentTurns: 0,

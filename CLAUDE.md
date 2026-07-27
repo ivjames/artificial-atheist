@@ -168,6 +168,16 @@ reference the corpus:
   and an apologetics ARGUMENTS catalog. Also holds `scoreAgentTurns` — pure
   heuristics over the agent's replies (engagement-hook endings, multi-question
   turns, length) that quantify the persona rules in `persona.ts`.
+- `lib/agent/questions.ts` — pure closing-question helpers shared by the eval
+  metric and the live guardrail so they agree by construction:
+  `trailingQuestionRun`/`stripQuotedSpans` (used by `scoreAgentTurns`) and
+  `trimStackedClosingQuestions`. The eval surfaced the debate agent stacking
+  questions at the visitor in its closing (worst vs galloper/professor), so
+  `lib/agent/chat.ts` now applies `trimStackedClosingQuestions` to the model's
+  reply before it is persisted/returned — keeping the FIRST closing question and
+  dropping the pile-on. It's a backstop; `persona.ts` still carries the primary
+  rule. The eval scores the RAW model output (not the guarded text) so it stays
+  a true measure of the prompt. Tests: `tests/agent-questions.test.ts`.
 - `scripts/adversary.ts` (`npm run adversary`) — self-play harness: pits the
   apologist against the REAL debate agent (persona + model router, NOT the live
   chat/credits/DB path) for N rounds. Real Claude by default
