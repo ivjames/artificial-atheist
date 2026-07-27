@@ -193,7 +193,15 @@ reference the corpus:
   reply before it is persisted/returned — keeping the FIRST closing question and
   dropping the pile-on. It's a backstop; `persona.ts` still carries the primary
   rule. The eval scores the RAW model output (not the guarded text) so it stays
-  a true measure of the prompt. Tests: `tests/agent-questions.test.ts`.
+  a true measure of the prompt. Also holds `sentenceCount` +
+  `trimToSentenceLimit` — the LENGTH backstop. Prompt tuning could not get the
+  agent under the persona's ~8-sentence ceiling (the eval showed ~15 with nearly
+  every reply over-length, unmoved by anchoring low, a worked example, or a
+  final-line reminder), so `chat.ts` trims the live reply to `maxReplySentences`
+  (config, default 8) sentences before it ships — at a SENTENCE boundary, never
+  mid-word like a token cap, dropping the overflow. Same "primary rule in
+  persona.ts, mechanical backstop in chat.ts, eval scores RAW" split as the
+  question guardrail. Tests: `tests/agent-questions.test.ts`.
 - `scripts/adversary.ts` (`npm run adversary`) — self-play harness: pits the
   apologist against the REAL debate agent (persona + model router, NOT the live
   chat/credits/DB path) for N rounds. Real Claude by default

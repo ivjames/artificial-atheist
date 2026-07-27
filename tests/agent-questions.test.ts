@@ -4,6 +4,7 @@ import {
   stripQuotedSpans,
   trailingQuestionRun,
   trimStackedClosingQuestions,
+  trimToSentenceLimit,
 } from "@/lib/agent/questions";
 
 // These helpers back both the adversary eval metric (scoreAgentTurns) and the
@@ -106,5 +107,48 @@ describe("trimStackedClosingQuestions", () => {
 
   it("still trims real stacked questions when the reply contains a contraction", () => {
     expect(trimStackedClosingQuestions("It's clear. Why A? Why B?")).toBe("It's clear. Why A?");
+  });
+});
+
+describe("trimToSentenceLimit", () => {
+  it("keeps the first N sentences and drops the overflow", () => {
+    expect(trimToSentenceLimit("A. B. C. D. E.", 3)).toBe("A. B. C.");
+  });
+
+  it("leaves a reply already within the limit untouched", () => {
+    const input = "One point. A second. A third.";
+    expect(trimToSentenceLimit(input, 8)).toBe(input);
+  });
+
+  it("counts sentences across . ? and !", () => {
+    expect(trimToSentenceLimit("A! B? C. D.", 2)).toBe("A! B?");
+  });
+
+  it("drops an unterminated trailing fragment along with the overflow", () => {
+    // 3 terminated + a dangling clause = 4 sentences; cap 2 keeps the first two.
+    expect(trimToSentenceLimit("A. B. C. and then this", 2)).toBe("A. B.");
+  });
+
+  it("keeps whole sentences — never cuts mid-word", () => {
+    const out = trimToSentenceLimit(
+      "Fine-tuning has no denominator. A designer just relocates the mystery. We have one universe to sample. That is the honest answer.",
+      2,
+    );
+    expect(out).toBe("Fine-tuning has no denominator. A designer just relocates the mystery.");
+  });
+
+  it("does not count ordinal markers toward the limit", () => {
+    // "1." and "2." are markers, not sentences; cap 2 keeps both real sentences.
+    expect(trimToSentenceLimit("1. First claim. 2. Second claim.", 2)).toBe(
+      "1. First claim. 2. Second claim.",
+    );
+  });
+
+  it("preserves trailing whitespace when it trims", () => {
+    expect(trimToSentenceLimit("A. B. C.\n", 1)).toBe("A.\n");
+  });
+
+  it("returns the text unchanged for a non-positive limit", () => {
+    expect(trimToSentenceLimit("A. B. C.", 0)).toBe("A. B. C.");
   });
 });
