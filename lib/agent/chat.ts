@@ -12,6 +12,7 @@ import {
   minorRedirectMessage,
   articleReferenceBlock,
 } from "@/lib/agent/persona";
+import { trimStackedClosingQuestions } from "@/lib/agent/questions";
 import { searchArticles } from "@/lib/articles";
 import { threadTokenBudget, maxOutputTokens, SITE_URL } from "@/lib/config";
 import { turnEconomics, type TurnEconomics } from "@/lib/pricing";
@@ -159,6 +160,13 @@ export async function sendChatMessage(
     };
   }
 
+  // Production backstop for the persona's "at most one closing question" rule:
+  // if the model still stacks questions at the visitor in its closing (the
+  // adversary eval shows it does, most against high-sophistication opponents),
+  // trim the pile-on down to the first question before the reply is persisted
+  // or returned. No-op for a well-formed reply.
+  const replyText = trimStackedClosingQuestions(completion.text);
+
   // (f) Persist both turns and update thread usage / closure atomically.
   // Split the billed input into conversation vs. reference-library tokens: the
   // thread budget (and the visitor's counter) count only the conversation; the
@@ -177,7 +185,7 @@ export async function sendChatMessage(
       data: {
         threadId: thread.id,
         role: "assistant",
-        content: completion.text,
+        content: replyText,
         model: completion.model,
         inputTokens: convInputTokens,
         refInputTokens,
@@ -197,7 +205,7 @@ export async function sendChatMessage(
   return {
     status: "ok",
     threadId: thread.id,
-    assistant: completion.text,
+    assistant: replyText,
     balance,
     closed,
     inputTokens: convInputTokens,
