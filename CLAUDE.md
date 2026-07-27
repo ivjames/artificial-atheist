@@ -194,7 +194,10 @@ reference the corpus:
   `--no-db` to skip persistence. CLI: `--persona <name|all>`, `--turns`,
   `--tier`, `--seed`, `--concurrency <n>` (run personas in parallel — only
   affects `--persona all`; a single conversation is inherently sequential;
-  watch Anthropic rate limits), and dial overrides. Writes a markdown transcript to the
+  watch Anthropic rate limits), `--argument <key|mixed|all>` (`all` sweeps the
+  whole ARGUMENTS catalog — one run per key per persona, each a distinct
+  `persona:arg` variant — so pinned personas cover every opening argument
+  instead of always anchoring on their default), and dial overrides. Writes a markdown transcript to the
   gitignored `drafts/adversary/` AND persists each run to the `AdversaryRun`
   table (DB is droplet-local, so run it there). The harness preflights the DB
   and prints the connected target (host/db from `DATABASE_URL`, credentials

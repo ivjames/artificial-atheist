@@ -73,6 +73,10 @@ type Options = {
   concurrency: number;
   seed?: string;
   dials: Partial<AdversaryDials>;
+  // `--argument all`: run each selected persona once per argument in the
+  // catalog (anchor swept across the whole catalog) instead of a single run on
+  // its default focus. Lets pinned personas cover every opening argument.
+  sweep: boolean;
 };
 
 // --- arg parsing -----------------------------------------------------------
@@ -89,6 +93,7 @@ function parseArgs(argv: string[]): Options {
     noDb: false,
     concurrency: 1,
     dials: {},
+    sweep: false,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -136,8 +141,9 @@ function parseArgs(argv: string[]): Options {
       }
       case "--argument":
       case "--focus": {
-        const f = next() as ArgumentFocus;
-        if (f === "mixed" || f in ARGUMENTS) opts.dials.focus = f;
+        const f = next();
+        if (f === "all") opts.sweep = true;
+        else if (f === "mixed" || f in ARGUMENTS) opts.dials.focus = f as ArgumentFocus;
         break;
       }
       case "--help":
@@ -169,7 +175,8 @@ Usage: npm run adversary -- [options]
   -s, --sophistication <1-5> override reasoning level
       --verbosity <${VERBOSITIES.join("|")}>
       --hostility <${HOSTILITIES.join("|")}>
-      --argument <key|mixed> override argument focus
+      --argument <key|mixed|all> override argument focus; "all" sweeps every
+                             argument in the catalog (one run per key, per persona)
       --mock                 no API calls (wiring check; skips DB write)
       --no-db                don't persist to the DB (transcript file only)
   -h, --help
@@ -358,7 +365,10 @@ ${body}
 `;
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  const file = path.join(OUT_DIR, `${runStamp}-${persona.name}.md`);
+  // Sanitize the persona name for the filename — sweep variants carry a ":arg"
+  // suffix that isn't safe across filesystems.
+  const safeName = persona.name.replace(/[^a-zA-Z0-9._-]+/g, "-");
+  const file = path.join(OUT_DIR, `${runStamp}-${safeName}.md`);
   fs.writeFileSync(file, md, "utf8");
   return { file, inTok, outTok };
 }
@@ -541,6 +551,23 @@ async function main(): Promise<void> {
 
   // Apply any CLI dial overrides on top of each persona.
   personas = personas.map((p) => withDials(p, opts.dials));
+
+  // --argument all: sweep each selected persona across the whole ARGUMENTS
+  // catalog — one run per key — so pinned personas cover every opening argument
+  // instead of always anchoring on their default. Each variant is a distinct
+  // persona (name/label suffixed with the argument) so transcripts don't
+  // collide and the review page breaks coverage down per argument.
+  if (opts.sweep) {
+    const keys = Object.keys(ARGUMENTS) as (keyof typeof ARGUMENTS)[];
+    personas = personas.flatMap((p) =>
+      keys.map((k) =>
+        withDials(
+          { ...p, name: `${p.name}:${k}`, label: `${p.label} · ${ARGUMENTS[k].label}` },
+          { focus: k },
+        ),
+      ),
+    );
+  }
 
   // Effective concurrency can't exceed the number of personas (one persona =
   // one sequential conversation, nothing to parallelize within it).
