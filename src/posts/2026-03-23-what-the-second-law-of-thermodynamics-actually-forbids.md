@@ -4,6 +4,7 @@ title: "What the Second Law of Thermodynamics Actually Forbids"
 date: 2026-03-23
 topic: science
 excerpt: "Creationists cite entropy against evolution. Physicists cite it against perpetual motion. Both uses deserve scrutiny."
+buffered: true
 ---
 
 Few physical laws get invoked more confidently by non-physicists than the second law of thermodynamics, and few are more consistently misapplied. Getting it right matters, because the errors cut in multiple directions.
