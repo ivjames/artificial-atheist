@@ -20,8 +20,10 @@
 //
 // Real Claude is the default. The adversary model is env-driven:
 //   ADVERSARY_PROVIDER (default "anthropic"), ADVERSARY_MODEL (default
-//   "claude-sonnet-4-5"). The debate agent uses whatever the standard/premium
-//   slot resolves to in lib/config.ts.
+//   "claude-sonnet-4-5"), ADVERSARY_MAX_TOKENS (default 3000 — the apologist's
+//   own output cap, decoupled from the agent's so a rambling persona isn't
+//   truncated mid-turn). The debate agent uses whatever the standard/premium
+//   slot resolves to in lib/config.ts, capped at maxOutputTokens.
 import "dotenv/config";
 import fs from "node:fs";
 import path from "node:path";
@@ -204,6 +206,17 @@ function adversaryView(lines: Line[], opener: string): ChatTurn[] {
 const ADVERSARY_PROVIDER = process.env.ADVERSARY_PROVIDER || "anthropic";
 const ADVERSARY_MODEL = process.env.ADVERSARY_MODEL || "claude-sonnet-4-5";
 
+// The adversary is a test fixture, not the product, so it isn't bound to the
+// debate agent's output cap (maxOutputTokens). A rambling / Gish-gallop persona
+// can run long, and truncating its turn mid-sentence both chops the transcript
+// and hands the agent a malformed prompt. Give it its own, roomier cap
+// (env ADVERSARY_MAX_TOKENS) so the apologist is never the side that's cut.
+const ADVERSARY_MAX_TOKENS = (() => {
+  const raw = process.env.ADVERSARY_MAX_TOKENS;
+  const n = raw ? Number.parseInt(raw, 10) : NaN;
+  return Number.isFinite(n) && n > 0 ? n : 3000;
+})();
+
 async function callAdversary(
   system: string,
   messages: ChatTurn[],
@@ -211,7 +224,7 @@ async function callAdversary(
   const res = await providerFor(ADVERSARY_PROVIDER).complete(ADVERSARY_MODEL, {
     system,
     messages,
-    maxTokens: maxOutputTokens,
+    maxTokens: ADVERSARY_MAX_TOKENS,
     temperature: 0.9, // more variety on the adversary side
   });
   return { text: res.text, inTok: res.inputTokens, outTok: res.outputTokens };
