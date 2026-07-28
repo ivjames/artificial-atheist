@@ -555,6 +555,167 @@ export type DimensionStat = {
   claimsRated: number;
 };
 
+// --- chart data -------------------------------------------------------------
+//
+// Aggregates for the evaluations page's visual charts. One helper, a handful
+// of groupBys plus two small findManys, so the page issues one call instead of
+// scattering queries. Everything is DERIVED from the same ProphecyEvaluation
+// rows the rest of this module reads — no new source of truth.
+
+// Local JSON parse for the string[]-in-a-String columns (claim.categoryKeys),
+// mirroring export.ts. lib/ must not import the app-layer parseKeyList.
+function parseKeys(json: string): string[] {
+  try {
+    const v = JSON.parse(json);
+    return Array.isArray(v) ? v.map(String) : [];
+  } catch {
+    return [];
+  }
+}
+
+export type DimensionChartRow = {
+  dimensionKind: string;
+  dimensionKey: string;
+  label: string;
+  mean: number;
+  n: number;
+  counts: number[]; // length 6, index = score 0..5
+};
+
+export type CategoryChartRow = { key: string; label: string; mean: number; n: number };
+
+export type EvaluationCharts = {
+  perDimension: DimensionChartRow[]; // page groups + sorts
+  overallCounts: number[]; // length 6
+  byCategory: CategoryChartRow[]; // sorted by mean desc
+  raterDiffs: number[]; // length 6, index = |max-min| gap across reviewers
+  pairedCount: number; // claim×dimension pairs scored by >=2 reviewers
+  reviewerCount: number;
+  totalRatings: number;
+  claimsRated: number;
+};
+
+/**
+ * Everything the evaluations charts need, in one pass. Only claim-targeted
+ * evaluations on live dimensions are counted; stale/foreign dimension keys are
+ * dropped (same rule as claimEvaluations / evaluationDisagreements).
+ */
+export async function evaluationChartData(prisma: PrismaClient): Promise<EvaluationCharts> {
+  const catLabel = new Map(
+    PROPHECY_VOCAB.filter((t) => t.kind === "category").map((t) => [t.key, t.label]),
+  );
+
+  const [dimScore, reviewers, claimAvg, pairRows, claims] = await Promise.all([
+    prisma.prophecyEvaluation.groupBy({
+      by: ["dimension", "score"],
+      where: { targetType: "claim" },
+      _count: { _all: true },
+    }),
+    prisma.prophecyEvaluation.groupBy({
+      by: ["reviewerId"],
+      where: { targetType: "claim" },
+      _count: { _all: true },
+    }),
+    prisma.prophecyEvaluation.groupBy({
+      by: ["targetId"],
+      where: { targetType: "claim" },
+      _avg: { score: true },
+    }),
+    prisma.prophecyEvaluation.findMany({
+      where: { targetType: "claim", status: { notIn: ["superseded", "rejected"] } },
+      select: { targetId: true, dimension: true, reviewerId: true, score: true },
+    }),
+    prisma.prophecyClaim.findMany({ select: { id: true, categoryKeys: true } }),
+  ]);
+
+  // Per dimension: counts[0..5], n, mean. Ignore dimensions outside the claim
+  // vocab and any out-of-range score defensively.
+  const dimCounts = new Map<string, number[]>();
+  for (const r of dimScore) {
+    if (!DIMENSION_META.has(r.dimension)) continue;
+    if (r.score < 0 || r.score > 5) continue;
+    const arr = dimCounts.get(r.dimension) ?? [0, 0, 0, 0, 0, 0];
+    arr[r.score] += r._count._all;
+    dimCounts.set(r.dimension, arr);
+  }
+  const perDimension: DimensionChartRow[] = [...dimCounts.entries()].map(([key, counts]) => {
+    const meta = DIMENSION_META.get(key)!;
+    const n = counts.reduce((a, b) => a + b, 0);
+    const total = counts.reduce((a, c, i) => a + c * i, 0);
+    return {
+      dimensionKind: meta.kind,
+      dimensionKey: key,
+      label: meta.label,
+      counts,
+      n,
+      mean: n ? total / n : 0,
+    };
+  });
+
+  const overallCounts = [0, 0, 0, 0, 0, 0];
+  let totalRatings = 0;
+  for (const d of perDimension) {
+    d.counts.forEach((c, i) => {
+      overallCounts[i] += c;
+      totalRatings += c;
+    });
+  }
+
+  // Rater agreement: group by (claim, dimension), keep one score per reviewer,
+  // tally the max-min gap where two or more distinct reviewers rated it.
+  const buckets = new Map<string, Map<string, number>>();
+  for (const r of pairRows) {
+    if (!DIMENSION_META.has(r.dimension)) continue;
+    const k = `${r.targetId}::${r.dimension}`;
+    const byRev = buckets.get(k) ?? new Map<string, number>();
+    byRev.set(r.reviewerId, r.score);
+    buckets.set(k, byRev);
+  }
+  const raterDiffs = [0, 0, 0, 0, 0, 0];
+  let pairedCount = 0;
+  for (const byRev of buckets.values()) {
+    if (byRev.size < 2) continue;
+    const vals = [...byRev.values()];
+    const gap = Math.max(...vals) - Math.min(...vals);
+    raterDiffs[Math.max(0, Math.min(5, gap))] += 1;
+    pairedCount += 1;
+  }
+
+  // Per category: each claim's own mean (all its ratings), attributed to every
+  // category it carries. A claim with several categories counts in each.
+  const meanByClaim = new Map<string, number>();
+  for (const c of claimAvg) if (c._avg.score != null) meanByClaim.set(c.targetId, c._avg.score);
+  const catScores = new Map<string, number[]>();
+  for (const cl of claims) {
+    const m = meanByClaim.get(cl.id);
+    if (m == null) continue;
+    for (const key of parseKeys(cl.categoryKeys)) {
+      const arr = catScores.get(key) ?? [];
+      arr.push(m);
+      catScores.set(key, arr);
+    }
+  }
+  const byCategory: CategoryChartRow[] = [...catScores.entries()]
+    .map(([key, arr]) => ({
+      key,
+      label: catLabel.get(key) ?? key.replace(/_/g, " "),
+      mean: arr.reduce((a, b) => a + b, 0) / arr.length,
+      n: arr.length,
+    }))
+    .sort((a, b) => b.mean - a.mean);
+
+  return {
+    perDimension,
+    overallCounts,
+    byCategory,
+    raterDiffs,
+    pairedCount,
+    reviewerCount: reviewers.length,
+    totalRatings,
+    claimsRated: meanByClaim.size,
+  };
+}
+
 /**
  * Corpus-wide mean per dimension — the "where does this whole corpus sit"
  * view. Ordered weakest-first, because the low end is what a reader of a
