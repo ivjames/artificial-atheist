@@ -102,17 +102,18 @@ export function topicOf(key: string | undefined | null): Topic {
   return topics[(key || "").toLowerCase()] ?? topics.science;
 }
 
-// The publication nav. `Debate` (→ /chat) is filtered out by the layout until
-// the chat surface is live (CHAT_ENABLED).
+// The publication nav. The Debate (→ /chat) and Prophecy items are intentionally
+// absent while those surfaces are kept off the live site — re-add them here when
+// they're ready to be public (Debate once CHAT_ENABLED is live, Prophecy once
+// real claims are published). The layout still backstops any /chat item on
+// CHAT_ENABLED.
 export const nav: NavItem[] = [
   { label: "Science", url: "/topics/science/", icon: "ti-microscope" },
   { label: "Philosophy", url: "/topics/philosophy/", icon: "ti-brain" },
   { label: "Secularism", url: "/topics/secularism/", icon: "ti-building-bank" },
   { label: "Religion", url: "/topics/religion/", icon: "ti-book" },
   { label: "News", url: "/topics/news/", icon: "ti-broadcast" },
-  { label: "Debate", url: "/chat/", icon: "ti-messages" },
   { label: "Quiz", url: "/quiz/", icon: "ti-bulb" },
-  { label: "Prophecy", url: "/prophecy/", icon: "ti-scroll" },
   { label: "About", url: "/about/", icon: "ti-info-circle" },
   { label: "FAQ", url: "/faq/", icon: "ti-help" },
 ];
