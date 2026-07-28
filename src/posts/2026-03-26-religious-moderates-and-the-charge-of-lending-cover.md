@@ -4,6 +4,7 @@ title: "Religious Moderates and the Charge of Lending Cover"
 date: 2026-03-26
 topic: religion
 excerpt: "The claim that moderate religion enables extremism deserves a rigorous look rather than a rhetorical pass in either direction."
+buffered: true
 ---
 
 One of the sharper arguments in contemporary atheist discourse is that religiously moderate believers do not merely coexist with extremism — they make it possible. It is worth taking that claim seriously rather than wielding it as a conversation-stopper.
