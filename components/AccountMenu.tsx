@@ -6,8 +6,9 @@ import { logout } from "@/app/(app)/account/actions";
 // Footer submenu for the app-surface routes that live outside the publication
 // nav and otherwise have no on-site links. Two independent groups, each shown
 // only when the relevant gate is satisfied:
-//   - Account: the logged-in user routes (/chat, /account, /pricing, /signup),
-//     shown once the chat surface is live.
+//   - Account: the logged-in user routes (/chat, /account, /pricing), shown
+//     once the chat surface is live AND the visitor is signed in. There is no
+//     anonymous "Sign in" entry — it's kept off the live site.
 //   - Review: the operator/eval routes (/review/adversary, /review/pipeline),
 //     shown only when the visitor holds the admin cookie. These are NOT gated
 //     on CHAT_ENABLED, so this group can appear while chat is still dark.
@@ -43,7 +44,10 @@ export default function AccountMenu() {
   }, []);
 
   if (!me) return null;
-  const showAccount = me.chatEnabled;
+  // Only surface the Account group to a signed-in user. The anonymous state used
+  // to show a "Sign in" link; that's intentionally gone so no sign-in entry
+  // appears on the live site.
+  const showAccount = me.chatEnabled && me.authed;
   const showReview = me.admin;
   if (!showAccount && !showReview) return null;
 
@@ -54,28 +58,20 @@ export default function AccountMenu() {
           <span className="account-menu-label">
             <i className="ti ti-user-circle" /> Account
           </span>
-          {me.authed ? (
-            <>
-              <a href="/chat/">
-                <i className="ti ti-messages" /> Debate
-              </a>
-              <a href="/account/">
-                <i className="ti ti-settings" /> Settings
-              </a>
-              <a href="/pricing/">
-                <i className="ti ti-coins" /> Credits
-              </a>
-              <form action={logout}>
-                <button type="submit">
-                  <i className="ti ti-logout" /> Log out
-                </button>
-              </form>
-            </>
-          ) : (
-            <a href="/signup/">
-              <i className="ti ti-login" /> Sign in
-            </a>
-          )}
+          <a href="/chat/">
+            <i className="ti ti-messages" /> Debate
+          </a>
+          <a href="/account/">
+            <i className="ti ti-settings" /> Settings
+          </a>
+          <a href="/pricing/">
+            <i className="ti ti-coins" /> Credits
+          </a>
+          <form action={logout}>
+            <button type="submit">
+              <i className="ti ti-logout" /> Log out
+            </button>
+          </form>
         </div>
       )}
 
