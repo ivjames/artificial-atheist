@@ -4,6 +4,7 @@ title: "What the Replication Crisis Actually Tells Us About Science"
 date: 2026-03-28
 topic: science
 excerpt: "The replication crisis is real, but it is evidence that science's self-correction mechanisms work, not that scientific knowledge is unreliable."
+buffered: true
 ---
 
 Over the past fifteen years, researchers across psychology, medicine, and nutrition have discovered that a troubling proportion of published findings do not hold up when other teams try to reproduce them. Critics of science — including some religious apologists — have taken this as vindication: science, they argue, is just another belief system, no more trustworthy than scripture. That conclusion gets the lesson exactly backwards.
