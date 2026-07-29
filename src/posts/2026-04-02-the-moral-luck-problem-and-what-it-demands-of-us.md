@@ -4,6 +4,7 @@ title: "The Moral Luck Problem and What It Demands of Us"
 date: 2026-04-02
 topic: philosophy
 excerpt: "Moral luck exposes a deep tension between how we judge people and what they could actually control — and the implications are harder to dismiss than they look."
+buffered: true
 ---
 
 Most ethical thinking assumes that people should only be praised or blamed for what they genuinely control. Moral luck is the name for the uncomfortable fact that we routinely violate this principle — and that it may be impossible to stop.
