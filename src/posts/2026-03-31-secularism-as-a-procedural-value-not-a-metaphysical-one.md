@@ -4,6 +4,7 @@ title: "Secularism as a Procedural Value, Not a Metaphysical One"
 date: 2026-03-31
 topic: secularism
 excerpt: "Secularism is often treated as a philosophical worldview. It works better understood as a set of institutional procedures that benefit everyone."
+buffered: true
 ---
 
 Secularism gets misread in two directions at once: critics treat it as covert atheism, while some of its defenders treat it as a substantive vision of the good life. Both readings make the same category error.
