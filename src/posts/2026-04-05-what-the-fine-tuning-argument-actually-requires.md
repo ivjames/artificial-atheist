@@ -4,6 +4,7 @@ title: "What the Fine-Tuning Argument Actually Requires"
 date: 2026-04-05
 topic: science
 excerpt: "The universe's physical constants look suspiciously life-permitting. What does that observation actually establish, and what does it leave open?"
+buffered: true
 ---
 
 The fine-tuning argument is one of the few theistic arguments that takes physics seriously, and that seriousness earns it a serious response. Understanding where it succeeds and where it stalls requires following the science carefully rather than dismissing the intuition behind it.
