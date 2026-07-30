@@ -4,6 +4,7 @@ title: "Secularism and the Funding of Faith: Where the Line Falls"
 date: 2026-04-07
 topic: secularism
 excerpt: "When public money flows to religious organizations, secularism is tested in its most concrete form. The debates are harder than they look."
+buffered: true
 ---
 
 Few questions reveal the practical limits of secular principle more sharply than this one: when, if ever, should a religiously affiliated organization receive public funding? The answer turns out to depend on distinctions that are genuinely difficult to draw.
