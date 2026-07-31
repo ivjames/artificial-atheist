@@ -4,6 +4,7 @@ title: "The Is-Ought Gap: Why Facts Alone Cannot Settle Values"
 date: 2026-04-10
 topic: philosophy
 excerpt: "Hume's guillotine separates descriptive claims from normative ones. Understanding why matters for every serious ethical argument."
+buffered: true
 ---
 
 In 1739, David Hume noticed something that most people still overlook: no collection of factual statements, however large, logically entails a statement about what ought to be done. This gap between description and prescription is narrow enough to miss and wide enough to derail entire ethical systems.
