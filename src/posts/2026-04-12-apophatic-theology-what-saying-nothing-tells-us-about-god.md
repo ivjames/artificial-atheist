@@ -4,6 +4,7 @@ title: "Apophatic Theology: What Saying Nothing Tells Us About God"
 date: 2026-04-12
 topic: religion
 excerpt: "The via negativa holds that God can only be described by what he is not. This article examines what that move actually accomplishes—and what it costs."
+buffered: true
 ---
 
 One of the most sophisticated moves in philosophical theology is to stop making positive claims about God altogether. The **apophatic tradition**—also called the *via negativa*, or negative theology—argues that any positive description of God distorts more than it reveals, and that the only honest path is to say what God is not.
