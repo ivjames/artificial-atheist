@@ -198,6 +198,13 @@ reference the corpus:
   (Phase 5), optional AI assist (Phase 6).
 
 ## QA report archive (/review/qa)
+- **The PRIMARY report history now lives in qa-engine itself** (the
+  `ivjames/qa-engine` repo, `/runs` on qa-engine.lab980.com) — the scan tool
+  keeps every run in its own DB, with the same issue grouping, an import for
+  old export files, and a server-side `/runs/<id>/export.json` this page can
+  still ingest. This surface stays as a convenience mirror for exports you
+  want visible alongside the other /review tools; new grouping/metric work
+  belongs in qa-engine's `reports.py`, not here.
 - Saved QA-scan exports (the JSON the external site-QA tool produces). Upload
   or paste at `/review/qa` (same `aa_admin` cookie as the other tools; NOT
   gated on CHAT_ENABLED); stored verbatim in the `QaReport` table, upserted on
