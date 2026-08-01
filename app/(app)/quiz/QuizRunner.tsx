@@ -22,6 +22,7 @@ export default function QuizRunner({
   const [index, setIndex] = useState(0);
   const [selections, setSelections] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   // Gate the quiz behind a one-time intake. `phase` starts as "loading" so we
   // can read localStorage in an effect (avoiding a hydration mismatch).
@@ -62,6 +63,7 @@ export default function QuizRunner({
       return;
     }
     setSubmitting(true);
+    setSubmitError(false);
     const answers = questions.map((q) => ({
       questionId: q.id,
       selectedIndex: selections[q.id],
@@ -78,6 +80,10 @@ export default function QuizRunner({
       router.push(`/result/${slug}`);
     } catch (err) {
       console.error(err);
+      // Surface the failure — a silent console.error left everyone (sighted
+      // and screen-reader users alike) stuck on a disabled "Scoring…" button
+      // with no explanation (QA scan, WCAG 4.1.3). role="alert" announces it.
+      setSubmitError(true);
       setSubmitting(false);
     }
   };
@@ -131,6 +137,16 @@ export default function QuizRunner({
           {submitting ? "Scoring…" : isLast ? "See results →" : "Next →"}
         </button>
       </div>
+
+      {submitError && (
+        <p
+          role="alert"
+          className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300"
+        >
+          Couldn&apos;t submit your answers — check your connection and press
+          &ldquo;See results&rdquo; to try again.
+        </p>
+      )}
     </div>
   );
 }

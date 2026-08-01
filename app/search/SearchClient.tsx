@@ -74,9 +74,11 @@ export default function SearchClient() {
           // accessible name is the title alone, not title+excerpt+topic.
           <article className="list-item" key={e.url}>
             <div>
-              <Link className="card-link" href={e.url}>
-                <span className="list-title">{e.title}</span>
-              </Link>
+              <h2 className="list-title">
+                <Link className="card-link" href={e.url}>
+                  {e.title}
+                </Link>
+              </h2>
               {e.excerpt && <div className="card-excerpt">{e.excerpt}</div>}
               <div className="list-meta">{e.topic}</div>
             </div>
