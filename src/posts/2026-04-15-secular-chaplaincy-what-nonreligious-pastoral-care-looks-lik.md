@@ -4,6 +4,7 @@ title: "Secular Chaplaincy: What Nonreligious Pastoral Care Looks Like"
 date: 2026-04-15
 topic: secularism
 excerpt: "Hospitals, prisons, and militaries increasingly employ secular chaplains. What they do challenges assumptions about what pastoral care requires."
+buffered: true
 ---
 
 When someone faces a terminal diagnosis, a death sentence, or combat deployment, the question of who sits with them turns out to be more complicated than it looks. Secular chaplaincy has emerged as a practical answer to a structural problem: not everyone who needs pastoral support wants it filtered through theology.
