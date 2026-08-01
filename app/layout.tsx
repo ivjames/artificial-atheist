@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Fragment } from "react";
 import Link from "next/link";
 import { Inter, Oxanium, Playfair_Display } from "next/font/google";
-import "@tabler/icons-webfont/dist/tabler-icons.min.css";
+import "./icons.css"; // generated tabler subset — see scripts/icon-subset.mjs
 import "./globals.css";
 import "./publication.css";
 
@@ -126,11 +126,16 @@ export default function RootLayout({
         )}
         <header>
           <div className="mast">
-            <Link className="brand" href="/" aria-label={`${site.title} home`}>
+            {/* No aria-label: it couldn't contain the visible tagline text,
+                tripping WCAG 2.5.3 (label-content-name-mismatch). The visible
+                brand-name text names the link; the tagline is decorative. */}
+            <Link className="brand" href="/">
               <LogoMark />
               <span>
                 <span className="brand-name">{site.title}</span>
-                <span className="brand-sub">{site.tagline}</span>
+                <span className="brand-sub" aria-hidden="true">
+                  {site.tagline}
+                </span>
               </span>
             </Link>
             <HeaderControls />

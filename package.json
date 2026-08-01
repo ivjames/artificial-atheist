@@ -30,6 +30,7 @@
     "compare": "node scripts/compare.mjs",
     "illustrate": "node scripts/illustrate.mjs",
     "images:variants": "node scripts/image-variants.mjs",
+    "icons:subset": "node scripts/icon-subset.mjs",
     "buffer": "node scripts/buffer.mjs",
     "admin": "node tools/admin/server.mjs"
   },
@@ -60,6 +61,7 @@
     "dotenv": "^17.4.2",
     "postcss": "^8.4.49",
     "prisma": "^6.1.0",
+    "subset-font": "^2.5.0",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
