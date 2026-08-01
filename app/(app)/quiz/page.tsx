@@ -45,7 +45,9 @@ export default async function QuizPage({
     return (
       <div className="card mt-10 p-8 text-center">
         <h1 className="text-xl font-bold">No questions match that filter</h1>
-        <p className="mt-2 text-slate-500">Try a different category or difficulty.</p>
+        <p className="mt-2 text-slate-600 dark:text-slate-400">
+          Try a different category or difficulty.
+        </p>
         <Link href="/quiz" className="btn-primary mt-6">
           Back to start
         </Link>
