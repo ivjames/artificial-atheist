@@ -220,6 +220,7 @@
 
 /* ===================== Search ===================== */
 .aa-pub .aa-search { display: flex; flex-direction: column; gap: 1rem; }
+.aa-pub .aa-search-label { font-size: 14px; color: var(--text-soft); margin-bottom: -0.5rem; }
 .aa-pub .aa-search input[type="search"] {
   width: 100%; background: var(--bg-raised); border: 1px solid var(--border);
   color: var(--text); border-radius: 8px; padding: 12px 14px;
