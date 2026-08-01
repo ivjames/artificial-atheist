@@ -158,6 +158,16 @@ body {
   background: var(--bg-tint);
 }
 [data-theme="dark"] .ctrl[aria-pressed="true"] { color: var(--accent-bright); }
+/* The theme toggle exposes aria-pressed for AT (pressed = dark mode) but
+   shouldn't light up with the font-stepper's "active" accent all the time
+   dark mode is on. */
+.ctrl-theme[aria-pressed="true"] {
+  border-color: var(--ctrl-border); color: var(--ctrl-icon);
+  background: var(--ctrl-bg);
+}
+.ctrl:focus-visible {
+  outline: 2px solid var(--accent-soft); outline-offset: 2px;
+}
 .ctrl-sep { width: 1px; height: 24px; background: var(--border-strong); margin: 0 6px; }
 
 /* ===================== Subnav ===================== */

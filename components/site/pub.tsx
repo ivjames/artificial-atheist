@@ -99,11 +99,26 @@ export function Hero({ post }: { post: Post }) {
   return <ArtField topic={post.topic} seed={post.slug} />;
 }
 
-export function TopicTag({ topic }: { topic: string }) {
+// `ariaHidden` drops the tag from the accessible name when it sits inside a
+// card link — otherwise screen readers announce "Secularism Secularism and
+// the Court Witness…" (topic prefix + title), which a QA scan flagged as
+// redundant link verbosity. Keep it exposed where it stands alone (post
+// header).
+export function TopicTag({
+  topic,
+  ariaHidden = false,
+}: {
+  topic: string;
+  ariaHidden?: boolean;
+}) {
   const tp = topicOf(topic);
   return (
-    <span className="tag" style={{ color: "var(--topic-color)" }}>
-      <i className={`ti ${tp.icon}`} /> {tp.name}
+    <span
+      className="tag"
+      style={{ color: "var(--topic-color)" }}
+      aria-hidden={ariaHidden || undefined}
+    >
+      <i aria-hidden="true" className={`ti ${tp.icon}`} /> {tp.name}
     </span>
   );
 }
@@ -117,11 +132,12 @@ export function PostCard({ post }: { post: Post }) {
         <Thumb post={post} sizes="(max-width: 560px) 100vw, (max-width: 820px) 50vw, 330px" />
       </div>
       <div className="card-body" data-topic={post.topic}>
-        <TopicTag topic={post.topic} />
+        <TopicTag topic={post.topic} ariaHidden />
         <span className="card-title">{post.title}</span>
         {post.excerpt && <span className="card-excerpt">{post.excerpt}</span>}
         <span className="card-meta">
-          <i className="ti ti-clock" /> {post.readingMins} min · {shortDate(post.date)}
+          <i aria-hidden="true" className="ti ti-clock" /> {post.readingMins} min ·{" "}
+          {shortDate(post.date)}
         </span>
       </div>
     </Link>
@@ -137,7 +153,7 @@ export function ListItem({ post }: { post: Post }) {
         <Thumb post={post} sizes="80px" />
       </div>
       <div data-topic={post.topic}>
-        <span className="tag" style={{ color: "var(--topic-color)" }}>
+        <span className="tag" style={{ color: "var(--topic-color)" }} aria-hidden="true">
           <i className={`ti ${tp.icon}`} /> {tp.name}
         </span>
         <div className="list-title">{post.title}</div>

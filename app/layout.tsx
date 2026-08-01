@@ -143,7 +143,7 @@ export default function RootLayout({
                     <span className="subnav-break" aria-hidden="true" />
                   )}
                   <a href={item.url}>
-                    <i className={`ti ${item.icon}`} /> {item.label}
+                    <i aria-hidden="true" className={`ti ${item.icon}`} /> {item.label}
                   </a>
                 </Fragment>
               ))}
@@ -156,7 +156,7 @@ export default function RootLayout({
                 <div className="ticker-items">
                   {latest.map((post) => (
                     <a className="ticker-item" key={post.slug} href={post.url}>
-                      <span className="dot">●</span> {post.title}
+                      <span className="dot" aria-hidden="true">●</span> {post.title}
                     </a>
                   ))}
                 </div>
@@ -173,7 +173,7 @@ export default function RootLayout({
             <div className="footer-left">
               <span className="footer-name">{site.title}</span>
               <span className="ai-badge">
-                <i className="ti ti-robot" /> AI-generated
+                <i aria-hidden="true" className="ti ti-robot" /> AI-generated
               </span>
             </div>
             <div className="footer-links">

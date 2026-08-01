@@ -28,9 +28,10 @@ function Pills({
           <button
             key={opt}
             type="button"
+            aria-pressed={active}
             onClick={() => onChange(opt)}
             className={
-              "rounded-full px-3.5 py-1.5 text-sm font-medium transition " +
+              "rounded-full px-3.5 py-1.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 " +
               (active
                 ? "bg-brand-600 text-white"
                 : "border border-slate-300 text-slate-600 hover:border-brand-400 dark:border-slate-700 dark:text-slate-300")
@@ -76,9 +77,10 @@ export default function StartForm({
             <button
               key={m.key}
               type="button"
+              aria-pressed={active}
               onClick={() => setMode(m.key)}
               className={
-                "rounded-xl border p-3 text-left transition " +
+                "rounded-xl border p-3 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 " +
                 (active
                   ? "border-brand-500 bg-brand-50 dark:bg-brand-900/30"
                   : "border-slate-200 hover:border-brand-300 dark:border-slate-800 dark:hover:bg-slate-800/50")

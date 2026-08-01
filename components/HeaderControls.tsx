@@ -43,43 +43,46 @@ export default function HeaderControls() {
 
   const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
 
+  // Native <button>s: focusable and Enter/Space-operable without the tabindex
+  // + keydown plumbing a div[role=button] needs (QA flagged the divs as not
+  // reliably keyboard operable). The theme toggle reports aria-pressed (dark =
+  // pressed); .ctrl-theme in globals.css keeps it from picking up the
+  // font-stepper's pressed accent styling.
   return (
     <div className="controls">
-      <div
+      <button
+        type="button"
         className="ctrl ctrl-font-sm"
-        role="button"
-        tabIndex={0}
         aria-label="Smaller text"
         aria-pressed={mounted && font === "sm"}
         onClick={() => setFont("sm")}
-        onKeyDown={(e) => e.key === "Enter" && setFont("sm")}
       >
         A
-      </div>
-      <div
+      </button>
+      <button
+        type="button"
         className="ctrl ctrl-font-lg"
-        role="button"
-        tabIndex={0}
         aria-label="Larger text"
         aria-pressed={mounted && font === "lg"}
         onClick={() => setFont("lg")}
-        onKeyDown={(e) => e.key === "Enter" && setFont("lg")}
       >
         A
-      </div>
+      </button>
       <div className="ctrl-sep" />
-      <div
-        className="ctrl ctrl-icon"
-        role="button"
-        tabIndex={0}
+      <button
+        type="button"
+        className="ctrl ctrl-icon ctrl-theme"
         aria-label="Toggle light or dark mode"
+        aria-pressed={mounted && theme === "dark"}
         onClick={toggleTheme}
-        onKeyDown={(e) => e.key === "Enter" && toggleTheme()}
       >
-        <i className={`ti ${mounted && theme === "dark" ? "ti-sun" : "ti-moon"}`} />
-      </div>
+        <i
+          aria-hidden="true"
+          className={`ti ${mounted && theme === "dark" ? "ti-sun" : "ti-moon"}`}
+        />
+      </button>
       <a className="ctrl ctrl-icon" href="/search/" aria-label="Search">
-        <i className="ti ti-search" />
+        <i aria-hidden="true" className="ti ti-search" />
       </a>
     </div>
   );
