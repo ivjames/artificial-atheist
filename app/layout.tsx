@@ -36,11 +36,10 @@ import { CHAT_ENABLED, SITE_URL } from "@/lib/config";
 import { site, nav } from "@/lib/site";
 import { getAllPosts } from "@/lib/posts";
 
-// Runs before paint: apply the saved theme/font (or the OS preference) so
-// there's no flash of the wrong theme and no hydration mismatch. Same
-// localStorage keys (`aa-theme` / `aa-font`) and `data-*` attributes the
-// publication has always used.
-const themeScript = `(function(){try{var t=localStorage.getItem('aa-theme');var f=localStorage.getItem('aa-font');if(!t)t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-font',f||'md');}catch(e){}})();`;
+// The theme/gtag inline bootstraps live in lib/inline-scripts.ts because
+// middleware.ts hashes those exact strings into the nonce CSP for dynamic
+// app pages — see lib/csp.mjs for the static/dynamic policy split.
+import { themeScript, gtagStub } from "@/lib/inline-scripts";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -127,9 +126,7 @@ export default function RootLayout({
               strategy="afterInteractive"
             />
             <script
-              dangerouslySetInnerHTML={{
-                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${site.analytics.gaId}');`,
-              }}
+              dangerouslySetInnerHTML={{ __html: gtagStub(site.analytics.gaId) }}
             />
           </>
         )}

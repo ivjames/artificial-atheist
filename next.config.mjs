@@ -1,20 +1,11 @@
-// Content-Security-Policy for every page. Next's hydration payloads and the
-// theme/gtag bootstraps are inline <script>s on statically generated pages, so
-// script-src needs 'unsafe-inline' (per-request nonces don't work with SSG).
-// Fonts (next/font) and the tabler icons webfont are self-hosted, so the only
-// external hosts are googletagmanager/google-analytics for GA4 (lib/site.ts).
-const csp = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
-  "style-src 'self' 'unsafe-inline'",
-  "font-src 'self'",
-  "img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com",
-  "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'self'",
-].join("; ");
+// CSP is split (see lib/csp.mjs): statically generated publication pages get
+// STATIC_CSP here — their Next hydration payloads are inline <script>s, so
+// script-src needs 'unsafe-inline' (per-request nonces don't work with SSG) —
+// while the dynamic app surface (APP_PATHS, excluded from this header's
+// source) gets a strict per-request nonce policy from middleware.ts instead.
+// Fonts and icons are self-hosted; the only external hosts are
+// googletagmanager/google-analytics for GA4 (lib/site.ts).
+import { STATIC_CSP, STATIC_CSP_SOURCE } from "./lib/csp.mjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -26,12 +17,17 @@ const nextConfig = {
       {
         source: "/:path*",
         headers: [
-          { key: "Content-Security-Policy", value: csp },
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(), payment=()",
           },
         ],
+      },
+      {
+        // Everything EXCEPT the app paths — those get their CSP from
+        // middleware, and two CSP headers enforce as the intersection.
+        source: STATIC_CSP_SOURCE,
+        headers: [{ key: "Content-Security-Policy", value: STATIC_CSP }],
       },
     ];
   },
