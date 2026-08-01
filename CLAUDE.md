@@ -85,6 +85,17 @@ node/npm — all builds run on the droplet or in GitHub Actions, never locally.
   overlay in `publication.css`) so the accessible name is the title, not
   title+excerpt+meta run together (QA scan, WCAG 2.4.4). Keep new card-style
   links on that pattern; don't wrap whole cards in an `<a>` again.
+- **CSP IS SPLIT** (`lib/csp.mjs`): static publication pages keep
+  `'unsafe-inline'` via next.config headers (SSG can't carry nonces); the
+  dynamic app surface gets a strict per-request nonce policy from
+  middleware.ts, with the two fixed layout bootstraps (`lib/inline-scripts.ts`)
+  allowed by sha256 hash. THREE lists must stay in sync when adding a
+  top-level `app/(app)/` route: `APP_PATHS` in lib/csp.mjs, the middleware
+  `matcher` literal, and the route being dynamic (ƒ) — a STATIC route matched
+  by middleware gets a nonce policy its prerendered scripts can't satisfy and
+  breaks. Never add an inline `<script>` to layout without adding its exact
+  string to lib/inline-scripts.ts (hash source) — and inline `<style>` is fine
+  (style-src keeps unsafe-inline).
 - **DB migrations:** `npm run db:deploy` (migrate deploy + idempotent seed) runs on
   every deploy and never wipes results. Never run `db:reset` on the droplet.
 
