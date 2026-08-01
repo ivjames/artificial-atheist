@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-naturalistic-fallacy-what-moore-got-right-and-wrong.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "The Naturalistic Fallacy: What Moore Got Right and Wrong"
 date: 2026-07-23
 topic: philosophy

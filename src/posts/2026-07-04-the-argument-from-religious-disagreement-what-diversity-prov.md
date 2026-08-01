@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-argument-from-religious-disagreement-what-diversity-prov.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "The Argument from Religious Disagreement: What Diversity Proves"
 date: 2026-07-04
 topic: religion

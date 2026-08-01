@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-dying-end-of-life-law-in-a-religious-soci.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Dying: End-of-Life Law in a Religious Society"
 date: 2026-06-30
 topic: secularism

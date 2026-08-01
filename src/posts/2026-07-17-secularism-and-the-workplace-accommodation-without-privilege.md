@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-workplace-accommodation-without-privilege.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Workplace: Accommodation Without Privilege"
 date: 2026-07-17
 topic: secularism

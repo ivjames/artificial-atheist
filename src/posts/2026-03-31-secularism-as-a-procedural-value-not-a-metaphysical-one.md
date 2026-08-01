@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-as-a-procedural-value-not-a-metaphysical-one.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism as a Procedural Value, Not a Metaphysical One"
 date: 2026-03-31
 topic: secularism

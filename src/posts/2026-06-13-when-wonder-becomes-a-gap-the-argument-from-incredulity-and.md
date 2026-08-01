@@ -1,5 +1,6 @@
 ---
 image: /images/posts/when-wonder-becomes-a-gap-the-argument-from-incredulity-and.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "When wonder becomes a gap: the argument from incredulity and DNA"
 date: 2026-06-13
 topic: philosophy

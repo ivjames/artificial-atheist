@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-the-base-rate-fallacy-costs-us-in-medicine.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What the Base Rate Fallacy Costs Us in Medicine"
 date: 2026-07-19
 topic: science

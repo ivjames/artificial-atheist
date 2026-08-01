@@ -1,5 +1,6 @@
 ---
 image: /images/posts/synchronistic-religion-how-new-faiths-borrow-and-transform.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Synchronistic Religion: How New Faiths Borrow and Transform"
 date: 2026-07-06
 topic: religion

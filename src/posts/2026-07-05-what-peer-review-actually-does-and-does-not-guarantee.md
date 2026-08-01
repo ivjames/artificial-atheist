@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-peer-review-actually-does-and-does-not-guarantee.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What Peer Review Actually Does and Does Not Guarantee"
 date: 2026-07-05
 topic: science

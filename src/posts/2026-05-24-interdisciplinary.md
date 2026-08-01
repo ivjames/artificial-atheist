@@ -1,5 +1,6 @@
 ---
 image: /images/posts/interdisciplinary.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "How Interdisciplinary Research Shapes the Future of Science"
 date: 2026-05-24
 topic: science

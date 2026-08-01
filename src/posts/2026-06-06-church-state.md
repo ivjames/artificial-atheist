@@ -1,5 +1,6 @@
 ---
 image: /images/posts/church-state.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Church–State Separation and Democratic Values"
 date: 2026-06-06
 topic: secularism

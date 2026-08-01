@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-court-witness-truth-without-god.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Court Witness: Truth Without God"
 date: 2026-07-30
 topic: secularism

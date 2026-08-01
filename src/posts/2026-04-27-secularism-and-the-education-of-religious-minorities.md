@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-education-of-religious-minorities.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Education of Religious Minorities"
 date: 2026-04-27
 topic: secularism

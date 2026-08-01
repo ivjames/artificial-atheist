@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-is-ought-gap-why-facts-alone-cannot-settle-values.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "The Is-Ought Gap: Why Facts Alone Cannot Settle Values"
 date: 2026-04-10
 topic: philosophy

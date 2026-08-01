@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-is-atheism.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "What Is Atheism, Really?"
 date: 2026-05-27
 topic: religion

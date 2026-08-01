@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-recognition-of-new-religions.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Recognition of New Religions"
 date: 2026-07-03
 topic: secularism

@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-in-muslim-majority-democracies-a-contested-histor.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism in Muslim-Majority Democracies: A Contested History"
 date: 2026-03-16
 topic: secularism

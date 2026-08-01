@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-the-standard-model-of-particle-physics-actually-leaves-.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What the Standard Model of Particle Physics Actually Leaves Open"
 date: 2026-07-21
 topic: science

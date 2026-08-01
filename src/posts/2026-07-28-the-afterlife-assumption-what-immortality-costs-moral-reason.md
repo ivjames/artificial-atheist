@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-afterlife-assumption-what-immortality-costs-moral-reason.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "The Afterlife Assumption: What Immortality Costs Moral Reasoning"
 date: 2026-07-28
 topic: religion

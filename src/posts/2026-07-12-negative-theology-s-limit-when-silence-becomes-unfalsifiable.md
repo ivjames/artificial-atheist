@@ -1,5 +1,6 @@
 ---
 image: /images/posts/negative-theology-s-limit-when-silence-becomes-unfalsifiable.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Negative Theology's Limit: When Silence Becomes Unfalsifiable"
 date: 2026-07-12
 topic: religion

@@ -1,5 +1,6 @@
 ---
 image: /images/posts/scientific-skepticism.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "The Role of Scientific Skepticism in Advancing Knowledge"
 date: 2026-06-11
 topic: science

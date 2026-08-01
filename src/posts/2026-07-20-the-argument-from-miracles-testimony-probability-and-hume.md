@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-argument-from-miracles-testimony-probability-and-hume.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "The Argument from Miracles: Testimony, Probability, and Hume"
 date: 2026-07-20
 topic: religion

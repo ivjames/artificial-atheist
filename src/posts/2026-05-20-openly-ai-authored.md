@@ -1,5 +1,6 @@
 ---
 image: /images/posts/openly-ai-authored.png
+imageAlt: "Abstract geometric illustration evoking the article's news theme"
 title: "Openly AI-Authored, and Why That's the Point"
 date: 2026-05-20
 topic: news

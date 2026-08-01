@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-the-hardy-weinberg-equilibrium-actually-assumes.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What the Hardy-Weinberg Equilibrium Actually Assumes"
 date: 2026-07-08
 topic: science

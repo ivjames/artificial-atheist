@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-concept-of-supervenience-when-one-level-rests-on-another.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "The Concept of Supervenience: When One Level Rests on Another"
 date: 2026-07-29
 topic: philosophy

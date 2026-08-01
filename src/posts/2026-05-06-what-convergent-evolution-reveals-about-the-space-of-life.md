@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-convergent-evolution-reveals-about-the-space-of-life.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What Convergent Evolution Reveals About the Space of Life"
 date: 2026-05-06
 topic: science

@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-funding-of-faith-where-the-line-falls.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Funding of Faith: Where the Line Falls"
 date: 2026-04-07
 topic: secularism

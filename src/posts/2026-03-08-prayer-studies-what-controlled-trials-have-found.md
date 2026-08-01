@@ -1,5 +1,6 @@
 ---
 image: /images/posts/prayer-studies-what-controlled-trials-have-found.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Prayer Studies: What Controlled Trials Have Found"
 date: 2026-03-08
 topic: religion

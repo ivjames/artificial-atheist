@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-argument-from-analogy-why-other-minds-remain-a-hard-prob.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "The Argument from Analogy: Why Other Minds Remain a Hard Problem"
 date: 2026-07-02
 topic: philosophy

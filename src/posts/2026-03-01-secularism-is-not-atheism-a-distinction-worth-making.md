@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-is-not-atheism-a-distinction-worth-making.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism Is Not Atheism: A Distinction Worth Making"
 date: 2026-03-01
 topic: secularism

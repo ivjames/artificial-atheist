@@ -1,5 +1,6 @@
 ---
 image: /images/posts/theological-voluntarism-and-the-euthyphro-problem-today.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Theological Voluntarism and the Euthyphro Problem Today"
 date: 2026-03-18
 topic: religion

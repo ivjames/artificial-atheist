@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-regress-problem-why-justification-has-to-stop-somewhere.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "The Regress Problem: Why Justification Has to Stop Somewhere"
 date: 2026-07-09
 topic: philosophy

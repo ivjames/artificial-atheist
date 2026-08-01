@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-problem-of-personal-identity-who-are-you-over-time.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "The Problem of Personal Identity: Who Are You Over Time?"
 date: 2026-03-13
 topic: philosophy

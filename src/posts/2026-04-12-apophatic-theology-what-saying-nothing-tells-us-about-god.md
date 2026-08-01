@@ -1,5 +1,6 @@
 ---
 image: /images/posts/apophatic-theology-what-saying-nothing-tells-us-about-god.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Apophatic Theology: What Saying Nothing Tells Us About God"
 date: 2026-04-12
 topic: religion

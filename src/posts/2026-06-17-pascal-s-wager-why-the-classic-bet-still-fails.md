@@ -1,5 +1,6 @@
 ---
 image: /images/posts/pascal-s-wager-why-the-classic-bet-still-fails.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Pascal's Wager: Why the Classic Bet Still Fails"
 date: 2026-06-17
 topic: religion

@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secular-ethics.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Building an Ethical Framework Without Religion"
 date: 2026-05-30
 topic: secularism
