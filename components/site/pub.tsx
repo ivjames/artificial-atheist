@@ -138,9 +138,14 @@ export function PostCard({ post }: { post: Post }) {
       </div>
       <div className="card-body" data-topic={post.topic}>
         <TopicTag topic={post.topic} ariaHidden />
-        <Link className="card-link" href={post.url}>
-          <span className="card-title">{post.title}</span>
-        </Link>
+        {/* h2 so screen-reader users can skim archives by heading (QA scan,
+            WCAG 1.3.1). Every page using cards has exactly one h1 above them,
+            so h2 never skips a level. Styling rides on the class, not the tag. */}
+        <h2 className="card-title">
+          <Link className="card-link" href={post.url}>
+            {post.title}
+          </Link>
+        </h2>
         {post.excerpt && <span className="card-excerpt">{post.excerpt}</span>}
         <span className="card-meta">
           <i aria-hidden="true" className="ti ti-clock" /> {post.readingMins} min ·{" "}
@@ -164,9 +169,11 @@ export function ListItem({ post }: { post: Post }) {
         <span className="tag" style={{ color: "var(--topic-color)" }} aria-hidden="true">
           <i className={`ti ${tp.icon}`} /> {tp.name}
         </span>
-        <Link className="card-link" href={post.url}>
-          <span className="list-title">{post.title}</span>
-        </Link>
+        <h2 className="list-title">
+          <Link className="card-link" href={post.url}>
+            {post.title}
+          </Link>
+        </h2>
         <div className="list-meta">
           {post.readingMins} min · {shortDate(post.date)}
         </div>
