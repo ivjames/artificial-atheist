@@ -35,18 +35,20 @@ function Illustration({
   className,
   sizes,
   priority = false,
+  alt = "",
 }: {
   src: string;
   className: string;
   sizes: string;
   priority?: boolean;
+  alt?: string;
 }) {
   const srcSet = variantSrcSet(src);
   const img = (
     <img
       className={className}
       src={src}
-      alt=""
+      alt={alt}
       loading={priority ? "eager" : "lazy"}
       fetchPriority={priority ? "high" : undefined}
     />
@@ -87,37 +89,30 @@ export function Thumb({
 export function Hero({ post }: { post: Post }) {
   if (post.image) {
     // .article is 720px max with 1.5rem side padding → ~672px rendered width.
+    // The hero gets the post's imageAlt when one exists (stamped by
+    // illustrate.mjs for new art); card/list Thumbs stay alt="" because there
+    // the image is decorative-redundant next to the title link.
     return (
       <Illustration
         className="hero-illustration"
         src={post.image}
         sizes="(max-width: 720px) 100vw, 672px"
         priority
+        alt={post.imageAlt ?? ""}
       />
     );
   }
   return <ArtField topic={post.topic} seed={post.slug} />;
 }
 
-// `ariaHidden` drops the tag from the accessible name when it sits inside a
-// card link — otherwise screen readers announce "Secularism Secularism and
-// the Court Witness…" (topic prefix + title), which a QA scan flagged as
-// redundant link verbosity. Keep it exposed where it stands alone (post
-// header).
-export function TopicTag({
-  topic,
-  ariaHidden = false,
-}: {
-  topic: string;
-  ariaHidden?: boolean;
-}) {
+// Exposed to assistive tech: since the card link wraps only the title, the
+// tag sits OUTSIDE the link and gives screen-reader users the topic context
+// without polluting the link's accessible name. (It was aria-hidden back when
+// the whole card was one <a> and the tag leaked into the link name.)
+export function TopicTag({ topic }: { topic: string }) {
   const tp = topicOf(topic);
   return (
-    <span
-      className="tag"
-      style={{ color: "var(--topic-color)" }}
-      aria-hidden={ariaHidden || undefined}
-    >
+    <span className="tag" style={{ color: "var(--topic-color)" }}>
       <i aria-hidden="true" className={`ti ${tp.icon}`} /> {tp.name}
     </span>
   );
@@ -137,7 +132,7 @@ export function PostCard({ post }: { post: Post }) {
         <Thumb post={post} sizes="(max-width: 560px) 100vw, (max-width: 820px) 50vw, 330px" />
       </div>
       <div className="card-body" data-topic={post.topic}>
-        <TopicTag topic={post.topic} ariaHidden />
+        <TopicTag topic={post.topic} />
         {/* h2 so screen-reader users can skim archives by heading (QA scan,
             WCAG 1.3.1). Every page using cards has exactly one h1 above them,
             so h2 never skips a level. Styling rides on the class, not the tag. */}
@@ -166,8 +161,8 @@ export function ListItem({ post }: { post: Post }) {
         <Thumb post={post} sizes="80px" />
       </div>
       <div data-topic={post.topic}>
-        <span className="tag" style={{ color: "var(--topic-color)" }} aria-hidden="true">
-          <i className={`ti ${tp.icon}`} /> {tp.name}
+        <span className="tag" style={{ color: "var(--topic-color)" }}>
+          <i aria-hidden="true" className={`ti ${tp.icon}`} /> {tp.name}
         </span>
         <h2 className="list-title">
           <Link className="card-link" href={post.url}>

@@ -23,7 +23,9 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) return {};
-  const image = post.image ? [post.image] : undefined;
+  const image = post.image
+    ? [{ url: post.image, ...(post.imageAlt ? { alt: post.imageAlt } : {}) }]
+    : undefined;
   return {
     title: post.title,
     description: post.excerpt,

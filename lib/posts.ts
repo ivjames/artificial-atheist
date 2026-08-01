@@ -19,6 +19,7 @@ export type Post = {
   topic: string; // lowercase topic key
   excerpt: string;
   image?: string; // /images/posts/<slug>.png when illustrated
+  imageAlt?: string; // description of the illustration (illustrate.mjs stamps it for new art)
   buffered?: boolean;
   html: string; // rendered article body
   text: string; // plaintext body (tags stripped) for search / word count
@@ -80,6 +81,7 @@ function loadAll(): Post[] {
       topic: String(data.topic || "science").toLowerCase(),
       excerpt: String(data.excerpt || ""),
       image: data.image ? String(data.image) : undefined,
+      imageAlt: data.imageAlt ? String(data.imageAlt) : undefined,
       buffered: Boolean(data.buffered),
       html,
       text: html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),

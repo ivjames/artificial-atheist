@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fragment } from "react";
 import Link from "next/link";
+import Script from "next/script";
 import { Inter, Oxanium, Playfair_Display } from "next/font/google";
 import "./icons.css"; // generated tabler subset — see scripts/icon-subset.mjs
 import "./globals.css";
@@ -116,7 +117,15 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         {site.analytics.gaId && (
           <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${site.analytics.gaId}`} />
+            {/* React hoists the preconnect into <head>; the gtag loader waits
+                until after hydration (afterInteractive) so it never contends
+                with the LCP image/CSS on first paint. The inline stub queues
+                events in the meantime, so nothing is lost. */}
+            <link rel="preconnect" href="https://www.googletagmanager.com" />
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${site.analytics.gaId}`}
+              strategy="afterInteractive"
+            />
             <script
               dangerouslySetInnerHTML={{
                 __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${site.analytics.gaId}');`,

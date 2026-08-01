@@ -146,6 +146,23 @@ function setFrontmatterImage(file, webPath) {
   fs.writeFileSync(fp, raw, "utf8");
 }
 
+// Upsert an `imageAlt:` line describing the illustration, built from the
+// generation subject. The article Hero uses it as the image's alt text so
+// screen-reader users get the same visual context sighted readers do (a QA
+// scan kept flagging the empty-alt heroes as "verify decorative"). Only set
+// when we actually generated art this run — the subject is the description.
+function setFrontmatterImageAlt(file, subject) {
+  const fp = path.join(POSTS_DIR, file);
+  let raw = fs.readFileSync(fp, "utf8");
+  const alt = `Abstract geometric illustration: ${subject}`.replace(/"/g, "'");
+  if (/^imageAlt:/m.test(raw.split("---")[1] || "")) {
+    raw = raw.replace(/^imageAlt:.*$/m, `imageAlt: "${alt}"`);
+  } else {
+    raw = raw.replace(/^image:.*$/m, (m) => `${m}\nimageAlt: "${alt}"`);
+  }
+  fs.writeFileSync(fp, raw, "utf8");
+}
+
 /**
  * Generate (or regenerate) the illustration for one post file.
  * Returns the web path (e.g. "/images/posts/foo.png") or null on failure.
@@ -171,6 +188,7 @@ export async function illustratePost(file, { force = false } = {}) {
     const ok = await generateImage(prompt, outPath);
     if (!ok) return null;
     setFrontmatterImage(file, webPath);
+    setFrontmatterImageAlt(file, subject);
     return webPath;
   } catch (e) {
     console.warn(`  illustration failed for ${slug}: ${e.message}`);
