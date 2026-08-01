@@ -4,6 +4,7 @@ title: "Ritual Without Belief: What Religious Practice Does on Its Own"
 date: 2026-04-17
 topic: religion
 excerpt: "Many people perform religious rituals without holding the associated doctrines. What does this tell us about what religion actually is?"
+buffered: true
 ---
 
 Surveys in several countries consistently find a gap: more people attend religious services, observe fasting periods, or perform burial rites than report believing the theological claims those practices are meant to express. This gap is not hypocrisy. It points to something genuinely interesting about the structure of religion itself.
