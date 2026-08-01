@@ -124,31 +124,39 @@ export function TopicTag({
 }
 
 // Standard article card used on the home page and topic archives.
+// The link wraps ONLY the title, so its accessible name is the title alone —
+// wrapping the whole card made screen readers announce title+excerpt+meta as
+// one run-on link name (QA scan, WCAG 2.4.4). A ::after overlay on
+// .card-link keeps the full card clickable, and the excerpt/meta stay plain
+// text so assistive tech still reads them in place.
 export function PostCard({ post }: { post: Post }) {
   return (
-    <Link className="card" href={post.url}>
+    <article className="card">
       <div className="card-img">
         {/* .cards: 3-up ≈330px, 2-up ≤820px, full width ≤560px */}
         <Thumb post={post} sizes="(max-width: 560px) 100vw, (max-width: 820px) 50vw, 330px" />
       </div>
       <div className="card-body" data-topic={post.topic}>
         <TopicTag topic={post.topic} ariaHidden />
-        <span className="card-title">{post.title}</span>
+        <Link className="card-link" href={post.url}>
+          <span className="card-title">{post.title}</span>
+        </Link>
         {post.excerpt && <span className="card-excerpt">{post.excerpt}</span>}
         <span className="card-meta">
           <i aria-hidden="true" className="ti ti-clock" /> {post.readingMins} min ·{" "}
           {shortDate(post.date)}
         </span>
       </div>
-    </Link>
+    </article>
   );
 }
 
-// Compact horizontal list item ("Also worth reading").
+// Compact horizontal list item ("Also worth reading"). Same stretched-link
+// pattern as PostCard: the link's accessible name is the title only.
 export function ListItem({ post }: { post: Post }) {
   const tp = topicOf(post.topic);
   return (
-    <Link className="list-item" href={post.url}>
+    <article className="list-item">
       <div className="list-thumb">
         <Thumb post={post} sizes="80px" />
       </div>
@@ -156,11 +164,13 @@ export function ListItem({ post }: { post: Post }) {
         <span className="tag" style={{ color: "var(--topic-color)" }} aria-hidden="true">
           <i className={`ti ${tp.icon}`} /> {tp.name}
         </span>
-        <div className="list-title">{post.title}</div>
+        <Link className="card-link" href={post.url}>
+          <span className="list-title">{post.title}</span>
+        </Link>
         <div className="list-meta">
           {post.readingMins} min · {shortDate(post.date)}
         </div>
       </div>
-    </Link>
+    </article>
   );
 }

@@ -70,13 +70,17 @@ export default function SearchClient() {
           <p className="search-empty">No articles match "{q.trim()}".</p>
         )}
         {results.map((e) => (
-          <Link className="list-item" href={e.url} key={e.url}>
+          // Stretched-link result card (same pattern as PostCard): the link's
+          // accessible name is the title alone, not title+excerpt+topic.
+          <article className="list-item" key={e.url}>
             <div>
-              <div className="list-title">{e.title}</div>
+              <Link className="card-link" href={e.url}>
+                <span className="list-title">{e.title}</span>
+              </Link>
               {e.excerpt && <div className="card-excerpt">{e.excerpt}</div>}
               <div className="list-meta">{e.topic}</div>
             </div>
-          </Link>
+          </article>
         ))}
       </div>
     </div>

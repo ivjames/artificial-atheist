@@ -1,8 +1,10 @@
 /* Webfonts are self-hosted now (the QA scan flagged the render-blocking CSS
    @imports): Oxanium/Playfair/Inter load via next/font in app/layout.tsx,
    which defines the --font-inter/--font-playfair/--font-oxanium variables
-   referenced below; the tabler icons CSS+woff2 come from the npm package
-   (@tabler/icons-webfont), also imported in layout.tsx. No external hosts. */
+   referenced below; the tabler icons load from a generated subset
+   (app/icons.css + public/fonts/, see scripts/icon-subset.mjs) — never import
+   the full @tabler/icons-webfont CSS, it's ~450KB of font for ~30 icons.
+   No external hosts. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
