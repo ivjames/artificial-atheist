@@ -22,7 +22,9 @@ export default async function QuizStart() {
           How many myths about atheism do you{" "}
           <span className="text-brand-600 dark:text-brand-300">still believe</span>?
         </h1>
-        <p className="mx-auto mt-4 max-w-md text-slate-500 dark:text-slate-400">
+        {/* slate-600, not 500: the axe scan failed slate-500 against the
+            page's off-white/tinted backgrounds (~4.1–4.4:1 < AA 4.5). */}
+        <p className="mx-auto mt-4 max-w-md text-slate-600 dark:text-slate-400">
           A quick quiz on the common misconceptions and false assumptions about
           atheism. Answer, get scored, and see the facts — then share your result.
         </p>
@@ -31,7 +33,7 @@ export default async function QuizStart() {
           <StartForm categories={categories} difficulties={difficulties} />
         </div>
 
-        <p className="mt-6 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-6 text-xs text-slate-600 dark:text-slate-400">
           {questions.length} questions · every answer comes with a sourced explanation
         </p>
       </section>
