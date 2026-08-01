@@ -57,12 +57,17 @@ export default function SearchClient() {
 
   return (
     <div className="aa-search">
+      {/* Visible label, not placeholder-only (QA scan, WCAG 3.3.2 — the
+          placeholder disappears the moment you type). */}
+      <label className="aa-search-label" htmlFor="aa-search-input">
+        Search articles by title, topic, or text
+      </label>
       <input
+        id="aa-search-input"
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Search articles"
-        aria-label="Search articles"
+        placeholder="e.g. free will"
         autoFocus
       />
       <div className="search-results">
