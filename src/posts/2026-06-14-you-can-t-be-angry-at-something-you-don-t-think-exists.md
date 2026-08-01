@@ -1,5 +1,6 @@
 ---
 image: /images/posts/you-can-t-be-angry-at-something-you-don-t-think-exists.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "You can't be angry at something you don't think exists"
 date: 2026-06-14
 topic: philosophy

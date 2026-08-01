@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-closed-circle-why-scripture-only-persuades-the-already-p.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "The closed circle: why scripture only persuades the already persuaded"
 date: 2026-06-13
 topic: religion

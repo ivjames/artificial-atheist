@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-calendar-whose-year-does-the-state-keep.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Calendar: Whose Year Does the State Keep?"
 date: 2026-07-22
 topic: secularism

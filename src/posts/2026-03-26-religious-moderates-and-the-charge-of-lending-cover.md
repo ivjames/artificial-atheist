@@ -1,5 +1,6 @@
 ---
 image: /images/posts/religious-moderates-and-the-charge-of-lending-cover.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Religious Moderates and the Charge of Lending Cover"
 date: 2026-03-26
 topic: religion

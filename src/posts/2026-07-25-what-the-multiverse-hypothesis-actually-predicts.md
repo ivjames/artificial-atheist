@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-the-multiverse-hypothesis-actually-predicts.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What the Multiverse Hypothesis Actually Predicts"
 date: 2026-07-25
 topic: science

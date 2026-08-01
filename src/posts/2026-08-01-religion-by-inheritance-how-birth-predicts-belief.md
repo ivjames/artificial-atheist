@@ -1,5 +1,6 @@
 ---
 image: /images/posts/religion-by-inheritance-how-birth-predicts-belief.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Religion by Inheritance: How Birth Predicts Belief"
 date: 2026-08-01
 topic: religion

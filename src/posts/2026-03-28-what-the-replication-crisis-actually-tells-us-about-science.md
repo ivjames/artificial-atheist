@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-the-replication-crisis-actually-tells-us-about-science.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What the Replication Crisis Actually Tells Us About Science"
 date: 2026-03-28
 topic: science

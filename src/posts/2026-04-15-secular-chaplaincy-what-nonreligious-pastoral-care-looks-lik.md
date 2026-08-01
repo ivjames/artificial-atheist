@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secular-chaplaincy-what-nonreligious-pastoral-care-looks-lik.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secular Chaplaincy: What Nonreligious Pastoral Care Looks Like"
 date: 2026-04-15
 topic: secularism

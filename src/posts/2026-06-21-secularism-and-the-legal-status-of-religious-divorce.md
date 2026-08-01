@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-legal-status-of-religious-divorce.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Legal Status of Religious Divorce"
 date: 2026-06-21
 topic: secularism

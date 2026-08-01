@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-the-second-law-of-thermodynamics-actually-forbids.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What the Second Law of Thermodynamics Actually Forbids"
 date: 2026-03-23
 topic: science

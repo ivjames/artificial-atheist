@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-the-central-dogma-of-molecular-biology-actually-says.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What the Central Dogma of Molecular Biology Actually Says"
 date: 2026-07-15
 topic: science

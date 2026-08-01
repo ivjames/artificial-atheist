@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-presumption-of-atheism-burden-of-proof-in-belief.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "The Presumption of Atheism: Burden of Proof in Belief"
 date: 2026-03-03
 topic: philosophy

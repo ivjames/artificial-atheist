@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-infinite-regress-of-causes-what-cosmological-arguments-a.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "The Infinite Regress of Causes: What Cosmological Arguments Actually Need"
 date: 2026-07-14
 topic: philosophy

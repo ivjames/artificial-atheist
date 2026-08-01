@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-political-party-when-movements-organise.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Political Party: When Movements Organise"
 date: 2026-07-26
 topic: secularism

@@ -1,5 +1,6 @@
 ---
 image: /images/posts/martyrdom-logic-why-dying-for-a-belief-proves-nothing.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Martyrdom Logic: Why Dying for a Belief Proves Nothing"
 date: 2026-07-16
 topic: religion

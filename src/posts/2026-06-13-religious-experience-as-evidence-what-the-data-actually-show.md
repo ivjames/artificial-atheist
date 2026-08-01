@@ -1,5 +1,6 @@
 ---
 image: /images/posts/religious-experience-as-evidence-what-the-data-actually-show.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Religious Experience as Evidence: What the Data Actually Show"
 date: 2026-06-13
 topic: religion

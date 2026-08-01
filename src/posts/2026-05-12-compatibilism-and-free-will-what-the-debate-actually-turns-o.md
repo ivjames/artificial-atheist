@@ -1,5 +1,6 @@
 ---
 image: /images/posts/compatibilism-and-free-will-what-the-debate-actually-turns-o.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "Compatibilism and Free Will: What the Debate Actually Turns On"
 date: 2026-05-12
 topic: philosophy

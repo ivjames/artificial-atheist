@@ -1,5 +1,6 @@
 ---
 image: /images/posts/how-secular-institutions-handle-sacred-symbols-in-public-spa.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "How Secular Institutions Handle Sacred Symbols in Public Spaces"
 date: 2026-03-06
 topic: secularism

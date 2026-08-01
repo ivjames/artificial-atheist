@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-consciousness-research-actually-measures.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What Consciousness Research Actually Measures"
 date: 2026-04-20
 topic: science

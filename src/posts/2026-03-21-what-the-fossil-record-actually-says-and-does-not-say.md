@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-the-fossil-record-actually-says-and-does-not-say.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What the Fossil Record Actually Says and Does Not Say"
 date: 2026-03-21
 topic: science

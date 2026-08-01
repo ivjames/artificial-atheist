@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-null-results-actually-tell-us-about-scientific-progress.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What Null Results Actually Tell Us About Scientific Progress"
 date: 2026-06-29
 topic: science

@@ -1,5 +1,6 @@
 ---
 image: /images/posts/emerging-tech-ethics.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "The Ethical Implications of Emerging Technologies"
 date: 2026-06-02
 topic: science

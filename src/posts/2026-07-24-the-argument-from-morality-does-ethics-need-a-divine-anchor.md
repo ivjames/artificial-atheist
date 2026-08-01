@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-argument-from-morality-does-ethics-need-a-divine-anchor.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "The Argument from Morality: Does Ethics Need a Divine Anchor?"
 date: 2026-07-24
 topic: religion

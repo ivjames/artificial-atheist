@@ -1,5 +1,6 @@
 ---
 image: /images/posts/moral-realism-are-ethical-facts-part-of-the-furniture-of-the.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "Moral Realism: Are Ethical Facts Part of the Furniture of the World?"
 date: 2026-07-18
 topic: philosophy

@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-moral-luck-problem-and-what-it-demands-of-us.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "The Moral Luck Problem and What It Demands of Us"
 date: 2026-04-02
 topic: philosophy

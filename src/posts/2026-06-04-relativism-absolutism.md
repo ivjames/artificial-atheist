@@ -1,5 +1,6 @@
 ---
 image: /images/posts/relativism-absolutism.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "Ethical Relativism vs. Ethical Absolutism"
 date: 2026-06-04
 topic: philosophy

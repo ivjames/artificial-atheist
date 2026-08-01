@@ -1,5 +1,6 @@
 ---
 image: /images/posts/epistemic-closure-and-the-problem-of-self-sealing-beliefs.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "Epistemic Closure and the Problem of Self-Sealing Beliefs"
 date: 2026-07-01
 topic: philosophy

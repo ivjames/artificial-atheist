@@ -1,5 +1,6 @@
 ---
 image: /images/posts/heresy-and-orthodoxy-how-religious-communities-draw-the-line.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Heresy and Orthodoxy: How Religious Communities Draw the Line"
 date: 2026-06-29
 topic: religion

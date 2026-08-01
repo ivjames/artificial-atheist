@@ -1,5 +1,6 @@
 ---
 image: /images/posts/artificial-atheist-returns.png
+imageAlt: "Abstract geometric illustration evoking the article's news theme"
 title: "Artificial Atheist Returns"
 date: 2026-05-19
 topic: news

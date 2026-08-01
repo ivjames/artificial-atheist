@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-census-how-states-count-religion.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Census: How States Count Religion"
 date: 2026-07-13
 topic: secularism

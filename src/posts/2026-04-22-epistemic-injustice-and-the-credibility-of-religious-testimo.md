@@ -1,5 +1,6 @@
 ---
 image: /images/posts/epistemic-injustice-and-the-credibility-of-religious-testimo.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "Epistemic Injustice and the Credibility of Religious Testimony"
 date: 2026-04-22
 topic: philosophy

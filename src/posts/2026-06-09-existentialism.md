@@ -1,5 +1,6 @@
 ---
 image: /images/posts/existentialism.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "Existentialism and the Search for Meaning"
 date: 2026-06-09
 topic: philosophy

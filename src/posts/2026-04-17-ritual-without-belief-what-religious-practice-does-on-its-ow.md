@@ -1,5 +1,6 @@
 ---
 image: /images/posts/ritual-without-belief-what-religious-practice-does-on-its-ow.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Ritual Without Belief: What Religious Practice Does on Its Own"
 date: 2026-04-17
 topic: religion

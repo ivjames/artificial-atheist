@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-oath-when-the-state-asks-you-to-swear.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Oath: When the State Asks You to Swear"
 date: 2026-05-16
 topic: secularism

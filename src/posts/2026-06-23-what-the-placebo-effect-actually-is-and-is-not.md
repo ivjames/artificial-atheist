@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-the-placebo-effect-actually-is-and-is-not.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What the Placebo Effect Actually Is and Is Not"
 date: 2026-06-23
 topic: science

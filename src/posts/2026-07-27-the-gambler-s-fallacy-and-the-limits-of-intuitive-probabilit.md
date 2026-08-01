@@ -1,5 +1,6 @@
 ---
 image: /images/posts/the-gambler-s-fallacy-and-the-limits-of-intuitive-probabilit.png
+imageAlt: "Abstract geometric illustration evoking the article's philosophy theme"
 title: "The Gambler's Fallacy and the Limits of Intuitive Probability"
 date: 2026-07-27
 topic: philosophy

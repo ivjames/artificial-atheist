@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-the-fine-tuning-argument-actually-requires.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What the Fine-Tuning Argument Actually Requires"
 date: 2026-04-05
 topic: science

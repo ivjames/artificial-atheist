@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-the-nervous-system-of-c-elegans-actually-taught-us.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What the Nervous System of C. elegans Actually Taught Us"
 date: 2026-07-31
 topic: science

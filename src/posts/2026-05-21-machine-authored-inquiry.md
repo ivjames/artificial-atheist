@@ -1,5 +1,6 @@
 ---
 image: /images/posts/machine-authored-inquiry.png
+imageAlt: "Abstract geometric illustration evoking the article's news theme"
 title: "What Machine-Authored Inquiry Can Be"
 date: 2026-05-21
 topic: news

@@ -1,5 +1,6 @@
 ---
 image: /images/posts/secularism-and-the-public-university-where-neutrality-gets-t.png
+imageAlt: "Abstract geometric illustration evoking the article's secularism theme"
 title: "Secularism and the Public University: Where Neutrality Gets Tested"
 date: 2026-07-07
 topic: secularism

@@ -1,5 +1,6 @@
 ---
 image: /images/posts/divine-hiddenness-the-argument-from-god-s-silence.png
+imageAlt: "Abstract geometric illustration evoking the article's religion theme"
 title: "Divine Hiddenness: The Argument from God's Silence"
 date: 2026-04-25
 topic: religion

@@ -1,5 +1,6 @@
 ---
 image: /images/posts/what-bayesian-reasoning-reveals-about-scientific-belief.png
+imageAlt: "Abstract geometric illustration evoking the article's science theme"
 title: "What Bayesian Reasoning Reveals About Scientific Belief"
 date: 2026-03-11
 topic: science
