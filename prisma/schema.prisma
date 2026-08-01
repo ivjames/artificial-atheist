@@ -277,6 +277,31 @@ model AdversaryRun {
   @@index([runStamp])
 }
 
+// A saved QA-scan export (the JSON the external site-QA tool produces):
+// uploaded/pasted at /review/qa, kept verbatim so past scans stay reviewable
+// and comparable. runId comes from the export and makes re-uploads idempotent
+// (same scan uploaded twice = one row, refreshed). Severity counts are
+// denormalized for the index listing so it never has to parse the payload.
+model QaReport {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  runId      String    @unique
+  kind       String // export "kind" field, e.g. "page"
+  target     String // scanned origin/URL
+  status     String // export status, e.g. "done"
+  exportedAt DateTime?
+  pages      Int       @default(0)
+  serious    Int       @default(0)
+  moderate   Int       @default(0)
+  minor      Int       @default(0)
+  info       Int       @default(0)
+  findings   String // JSON-encoded findings array, verbatim from the export
+  stats      String // JSON-encoded stats block, verbatim from the export
+
+  @@index([createdAt])
+  @@index([target])
+}
+
 // ===========================================================================
 // Prophecy analysis module (PROPHECY-HANDOFF.md — Phase 1 domain schema).
 //

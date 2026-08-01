@@ -17,6 +17,7 @@ const TOOLS: Array<{ href: string; label: string; blurb: string }> = [
   { href: "/review/pipeline/", label: "Pipeline", blurb: "Article drafts awaiting review" },
   { href: "/review/prophecy/", label: "Prophecy", blurb: "Claims, sources, evaluations" },
   { href: "/review/adversary/", label: "Adversary", blurb: "Debate-agent eval runs" },
+  { href: "/review/qa/", label: "QA", blurb: "Saved site-QA scan reports" },
 ];
 
 export default function ReviewLayout({ children }: { children: React.ReactNode }) {

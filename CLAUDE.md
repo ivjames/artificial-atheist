@@ -184,6 +184,17 @@ reference the corpus:
   publicly until you do). Next: cross-passage merges, evaluations/objections
   (Phase 5), optional AI assist (Phase 6).
 
+## QA report archive (/review/qa)
+- Saved QA-scan exports (the JSON the external site-QA tool produces). Upload
+  or paste at `/review/qa` (same `aa_admin` cookie as the other tools; NOT
+  gated on CHAT_ENABLED); stored verbatim in the `QaReport` table, upserted on
+  the export's `run_id` so re-uploads refresh instead of duplicating.
+- `lib/qaReports.ts` — pure `parseQaExport`/`groupFindings` (tested in
+  `tests/qa-reports.test.ts`) + Prisma save/list/get/delete. The detail page
+  collapses the flat per-page findings into distinct issues (pipeline+rule)
+  worst-first — a 20-page scan reads as ~7 issues, not 124 rows — with
+  per-page evidence and the raw JSON behind a disclosure.
+
 ## Adversary eval harness (debate-agent stress test)
 - `lib/agent/adversary.ts` — the debate agent's opponent: a simulated apologist
   persona library. "Mental capacities" are modelled as composable DIALS
