@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
+# The Atom feed is machine-readable, not a web page: browser-based QA/a11y
+# crawlers misreport it (axe demands an HTML <title>/lang from an XML
+# document). Feed readers fetch subscribed feeds directly and ignore robots,
+# so subscriptions are unaffected; article discovery for search engines is
+# covered by the sitemap.
+Disallow: /feed.xml
 
 Sitemap: https://artificialatheist.com/sitemap.xml
