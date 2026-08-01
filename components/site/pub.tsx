@@ -25,11 +25,18 @@ export function ArtField({ topic, seed }: { topic: string; seed: string }) {
   );
 }
 
-// Illustration when the post has one, else the tessellation.
-export function Thumb({ post }: { post: Post }) {
+// Illustration when the post has one, else the tessellation. `priority` is
+// for the above-the-fold lead image: lazy-loading the LCP element delays it.
+export function Thumb({ post, priority = false }: { post: Post; priority?: boolean }) {
   if (post.image) {
     return (
-      <img className="thumb-illustration" src={post.image} alt="" loading="lazy" />
+      <img
+        className="thumb-illustration"
+        src={post.image}
+        alt=""
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : undefined}
+      />
     );
   }
   return <ArtField topic={post.topic} seed={post.slug} />;
@@ -38,7 +45,13 @@ export function Thumb({ post }: { post: Post }) {
 export function Hero({ post }: { post: Post }) {
   if (post.image) {
     return (
-      <img className="hero-illustration" src={post.image} alt="" loading="eager" />
+      <img
+        className="hero-illustration"
+        src={post.image}
+        alt=""
+        loading="eager"
+        fetchPriority="high"
+      />
     );
   }
   return <ArtField topic={post.topic} seed={post.slug} />;

@@ -16,8 +16,8 @@ export default function HomePage() {
       <div className="wrap">
         {lead && leadTopic && (
           <section className="lead" data-topic={lead.topic}>
-            <Link className="lead-img" href={lead.url}>
-              <Thumb post={lead} />
+            <Link className="lead-img" href={lead.url} aria-label={lead.title}>
+              <Thumb post={lead} priority />
             </Link>
             <div className="lead-content">
               <span className="tag" style={{ color: "var(--topic-color)" }}>
@@ -89,7 +89,7 @@ export default function HomePage() {
         </div>
 
         <div className="about-block">
-          <h3>About {site.title}</h3>
+          <h2>About {site.title}</h2>
           <p>
             {site.description} Every article is generated and curated with AI, then
             organized for clarity and rigour - an experiment in what machine-authored

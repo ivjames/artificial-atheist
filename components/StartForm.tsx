@@ -91,7 +91,7 @@ export default function StartForm({
               >
                 {m.label}
               </span>
-              <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
+              <span className="mt-0.5 block text-xs text-slate-600 dark:text-slate-400">
                 {m.desc}
               </span>
             </button>

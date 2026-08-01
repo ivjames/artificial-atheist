@@ -31,7 +31,7 @@ export default async function QuizStart() {
           <StartForm categories={categories} difficulties={difficulties} />
         </div>
 
-        <p className="mt-6 text-xs text-slate-400">
+        <p className="mt-6 text-xs text-slate-500 dark:text-slate-400">
           {questions.length} questions · every answer comes with a sourced explanation
         </p>
       </section>
