@@ -36,6 +36,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.40.0",
     "@prisma/client": "^6.1.0",
+    "@tabler/icons-webfont": "^3.46.0",
     "gray-matter": "^4.0.3",
     "luxon": "^3.5.0",
     "markdown-it": "^14.1.0",

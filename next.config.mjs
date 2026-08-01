@@ -1,13 +1,13 @@
 // Content-Security-Policy for every page. Next's hydration payloads and the
 // theme/gtag bootstraps are inline <script>s on statically generated pages, so
 // script-src needs 'unsafe-inline' (per-request nonces don't work with SSG).
-// External hosts: Google Fonts + jsDelivr (tabler icons) for styles/fonts,
-// googletagmanager/google-analytics for GA4 (see lib/site.ts analytics.gaId).
+// Fonts (next/font) and the tabler icons webfont are self-hosted, so the only
+// external hosts are googletagmanager/google-analytics for GA4 (lib/site.ts).
 const csp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
-  "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self'",
   "img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com",
   "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
   "object-src 'none'",

@@ -23,8 +23,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        display: ['"Playfair Display"', "Georgia", "serif"],
+        // next/font hashes the real family names; use its variables (defined
+        // on <html> in app/layout.tsx) with the same fallbacks as before.
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        display: ["var(--font-playfair)", "Georgia", "serif"],
       },
       keyframes: {
         "fade-in-up": {

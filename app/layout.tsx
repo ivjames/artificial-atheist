@@ -1,8 +1,34 @@
 import type { Metadata } from "next";
 import { Fragment } from "react";
 import Link from "next/link";
+import { Inter, Oxanium, Playfair_Display } from "next/font/google";
+import "@tabler/icons-webfont/dist/tabler-icons.min.css";
 import "./globals.css";
 import "./publication.css";
+
+// Self-hosted webfonts (next/font downloads them at build time and serves
+// them from /_next/static with preload + font-display:swap). The CSS variables
+// feed the --font-display/--font-body/--font-mark tokens in globals.css and
+// the Tailwind sans/display families — nothing references the raw family
+// names, which next/font hashes.
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-inter",
+  display: "swap",
+});
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+const oxanium = Oxanium({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-oxanium",
+  display: "swap",
+});
 import HeaderControls from "@/components/HeaderControls";
 import AccountMenu from "@/components/AccountMenu";
 import { CHAT_ENABLED, SITE_URL } from "@/lib/config";
@@ -57,7 +83,7 @@ function LogoMark() {
         x="36"
         y="44"
         textAnchor="middle"
-        fontFamily="Oxanium"
+        style={{ fontFamily: "var(--font-mark)" }}
         fontSize="26"
         fontWeight="700"
         fill="var(--mark-letter)"
@@ -79,7 +105,13 @@ export default function RootLayout({
   const latest = getAllPosts().slice(0, 4);
 
   return (
-    <html lang="en" data-theme="light" data-font="md" suppressHydrationWarning>
+    <html
+      lang="en"
+      data-theme="light"
+      data-font="md"
+      className={`${inter.variable} ${playfair.variable} ${oxanium.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         {site.analytics.gaId && (

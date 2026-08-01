@@ -1,6 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@700&family=Playfair+Display:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap');
-@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css');
-
+/* Webfonts are self-hosted now (the QA scan flagged the render-blocking CSS
+   @imports): Oxanium/Playfair/Inter load via next/font in app/layout.tsx,
+   which defines the --font-inter/--font-playfair/--font-oxanium variables
+   referenced below; the tabler icons CSS+woff2 come from the npm package
+   (@tabler/icons-webfont), also imported in layout.tsx. No external hosts. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,9 +14,9 @@
    scaling via [data-font].
    ============================================================ */
 :root {
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body: 'Inter', system-ui, sans-serif;
-  --font-mark: 'Oxanium', sans-serif;
+  --font-display: var(--font-playfair), Georgia, serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-mark: var(--font-oxanium), sans-serif;
 
   --accent: #534AB7;
   --accent-soft: #7F77DD;
