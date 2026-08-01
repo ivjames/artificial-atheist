@@ -2,6 +2,7 @@ import Link from "next/link";
 import { topicPattern, TOPIC_ICONS } from "@/lib/art";
 import { topicOf } from "@/lib/site";
 import { shortDate } from "@/lib/dates";
+import { variantSrcSet } from "@/lib/images";
 import type { Post } from "@/lib/posts";
 
 // Presentational pieces for the publication surface, ported from the former
@@ -25,17 +26,58 @@ export function ArtField({ topic, seed }: { topic: string; seed: string }) {
   );
 }
 
+// Post illustration with responsive WebP renditions when they exist
+// (scripts/image-variants.mjs), falling back to the full-size committed PNG.
+// `sizes` should state the rendered CSS width so the browser picks the
+// smallest sufficient variant — the whole point of the QA LCP fix.
+function Illustration({
+  src,
+  className,
+  sizes,
+  priority = false,
+}: {
+  src: string;
+  className: string;
+  sizes: string;
+  priority?: boolean;
+}) {
+  const srcSet = variantSrcSet(src);
+  const img = (
+    <img
+      className={className}
+      src={src}
+      alt=""
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : undefined}
+    />
+  );
+  if (!srcSet) return img;
+  return (
+    <picture>
+      <source type="image/webp" srcSet={srcSet} sizes={sizes} />
+      {img}
+    </picture>
+  );
+}
+
 // Illustration when the post has one, else the tessellation. `priority` is
 // for the above-the-fold lead image: lazy-loading the LCP element delays it.
-export function Thumb({ post, priority = false }: { post: Post; priority?: boolean }) {
+export function Thumb({
+  post,
+  sizes = "100vw",
+  priority = false,
+}: {
+  post: Post;
+  sizes?: string;
+  priority?: boolean;
+}) {
   if (post.image) {
     return (
-      <img
+      <Illustration
         className="thumb-illustration"
         src={post.image}
-        alt=""
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : undefined}
+        sizes={sizes}
+        priority={priority}
       />
     );
   }
@@ -44,13 +86,13 @@ export function Thumb({ post, priority = false }: { post: Post; priority?: boole
 
 export function Hero({ post }: { post: Post }) {
   if (post.image) {
+    // .article is 720px max with 1.5rem side padding → ~672px rendered width.
     return (
-      <img
+      <Illustration
         className="hero-illustration"
         src={post.image}
-        alt=""
-        loading="eager"
-        fetchPriority="high"
+        sizes="(max-width: 720px) 100vw, 672px"
+        priority
       />
     );
   }
@@ -71,7 +113,8 @@ export function PostCard({ post }: { post: Post }) {
   return (
     <Link className="card" href={post.url}>
       <div className="card-img">
-        <Thumb post={post} />
+        {/* .cards: 3-up ≈330px, 2-up ≤820px, full width ≤560px */}
+        <Thumb post={post} sizes="(max-width: 560px) 100vw, (max-width: 820px) 50vw, 330px" />
       </div>
       <div className="card-body" data-topic={post.topic}>
         <TopicTag topic={post.topic} />
@@ -91,7 +134,7 @@ export function ListItem({ post }: { post: Post }) {
   return (
     <Link className="list-item" href={post.url}>
       <div className="list-thumb">
-        <Thumb post={post} />
+        <Thumb post={post} sizes="80px" />
       </div>
       <div data-topic={post.topic}>
         <span className="tag" style={{ color: "var(--topic-color)" }}>

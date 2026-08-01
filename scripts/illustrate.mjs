@@ -21,6 +21,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { generate as llm } from "./providers.mjs";
+import { makeVariants } from "./image-variants.mjs";
 
 const ROOT = process.cwd();
 const POSTS_DIR = path.join(ROOT, "src", "posts");
@@ -104,6 +105,15 @@ async function generateImage(prompt, outPath) {
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, Buffer.from(b64, "base64"));
   compressPng(outPath);
+  // Responsive WebP renditions for the publication's <picture> srcset. Best
+  // effort like compressPng: a variant failure must not sink the post — the
+  // components fall back to the plain PNG, and `npm run images:variants`
+  // backfills anything missed here.
+  try {
+    await makeVariants(outPath, { force: true });
+  } catch (e) {
+    console.warn(`  variant generation failed (PNG still fine): ${e.message}`);
+  }
   return true;
 }
 

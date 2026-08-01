@@ -64,6 +64,14 @@ node/npm — all builds run on the droplet or in GitHub Actions, never locally.
 - **IMAGES moved to `public/images/posts/`** (Next serves `public/` at web root;
   the URL is still `/images/posts/<slug>.png`). `illustrate.mjs` writes there now.
   16:9 (1536x864); illustrate.mjs falls back to 1536x1024. PNGs ~1.8MB, committed.
+  **Responsive WebP variants** (`<slug>-w{320,640,960,1344}.webp`, ~10-50KB each,
+  also committed) are derived from each PNG by `scripts/image-variants.mjs`
+  (sharp) — illustrate.mjs generates them for new art; `npm run images:variants`
+  backfills (idempotent, `--force` to regenerate). The publication's Thumb/Hero
+  serve them via `<picture>` srcset (`lib/images.ts` checks existence at build,
+  so a missing variant falls back to the PNG instead of 404ing). The PNG stays
+  canonical for OG tags + feed enclosures. This was the QA scan's LCP fix —
+  don't ship the 1.8MB PNGs to every viewport again.
 - **DB migrations:** `npm run db:deploy` (migrate deploy + idempotent seed) runs on
   every deploy and never wipes results. Never run `db:reset` on the droplet.
 

@@ -17,7 +17,8 @@ export default function HomePage() {
         {lead && leadTopic && (
           <section className="lead" data-topic={lead.topic}>
             <Link className="lead-img" href={lead.url} aria-label={lead.title}>
-              <Thumb post={lead} priority />
+              {/* .lead: 1.5fr column of the 1080px wrap ≈600px, stacked ≤820px */}
+              <Thumb post={lead} sizes="(max-width: 820px) 100vw, 600px" priority />
             </Link>
             <div className="lead-content">
               <span className="tag" style={{ color: "var(--topic-color)" }}>
