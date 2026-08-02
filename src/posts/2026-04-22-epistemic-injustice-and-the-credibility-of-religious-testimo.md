@@ -5,6 +5,7 @@ title: "Epistemic Injustice and the Credibility of Religious Testimony"
 date: 2026-04-22
 topic: philosophy
 excerpt: "When religious claims are dismissed without examination, who bears the cost—and what does fair inquiry actually require?"
+buffered: true
 ---
 
 Miranda Fricker's concept of epistemic injustice offers a rarely used tool for thinking about religious testimony. The question is not whether God exists, but whether the people who report religious experiences are being heard fairly—and what fairness actually demands of a skeptic.
