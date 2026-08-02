@@ -5,6 +5,7 @@ title: "What Consciousness Research Actually Measures"
 date: 2026-04-20
 topic: science
 excerpt: "The science of consciousness is genuine and growing, but the gap between neural correlates and subjective experience remains philosophically unresolved."
+buffered: true
 ---
 
 Consciousness is the one subject where science and philosophy cannot cleanly divide their labor. Neuroscience has made real progress in identifying what happens in the brain during conscious experience, but that progress has also sharpened, rather than dissolved, the hardest question: why physical processes produce subjective experience at all.
