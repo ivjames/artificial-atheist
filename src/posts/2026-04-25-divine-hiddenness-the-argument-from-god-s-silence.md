@@ -5,6 +5,7 @@ title: "Divine Hiddenness: The Argument from God's Silence"
 date: 2026-04-25
 topic: religion
 excerpt: "If a perfectly loving God exists, why would anyone sincerely seek relationship with that God and find nothing? The argument deserves serious examination."
+buffered: true
 ---
 
 The most emotionally forceful arguments against theism are not always the most philosophically developed. The argument from divine hiddenness is an exception: it is both personally resonant and technically rigorous, and it deserves more attention than it typically receives outside academic philosophy of religion.
