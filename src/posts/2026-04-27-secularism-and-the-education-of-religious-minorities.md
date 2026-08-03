@@ -5,6 +5,7 @@ title: "Secularism and the Education of Religious Minorities"
 date: 2026-04-27
 topic: secularism
 excerpt: "When secular states design public school curricula, they face a genuine tension between neutrality and the claims of minority religious communities."
+buffered: true
 ---
 
 Secular public education is often presented as the neutral option — the baseline from which religious instruction departs. That framing is harder to defend once you look at what curricula actually contain and whose background assumptions they encode.
