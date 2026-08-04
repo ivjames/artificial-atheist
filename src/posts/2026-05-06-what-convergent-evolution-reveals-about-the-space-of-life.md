@@ -5,6 +5,7 @@ title: "What Convergent Evolution Reveals About the Space of Life"
 date: 2026-05-06
 topic: science
 excerpt: "Independent lineages repeatedly arrive at the same biological solutions, and that pattern has deep implications for how we understand evolution."
+buffered: true
 ---
 
 When dolphins and sharks share a body plan despite one being a mammal and the other a fish, something important is happening. Convergent evolution — the independent origin of similar traits in unrelated lineages — is one of biology's most instructive phenomena, and it deserves more attention than it typically receives outside specialist literature.
