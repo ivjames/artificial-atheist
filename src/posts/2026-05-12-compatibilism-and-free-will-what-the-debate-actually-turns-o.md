@@ -5,6 +5,7 @@ title: "Compatibilism and Free Will: What the Debate Actually Turns On"
 date: 2026-05-12
 topic: philosophy
 excerpt: "The free will debate is not simply about determinism versus choice. It hinges on what 'free' means and whether that meaning does real moral work."
+buffered: true
 ---
 
 Few philosophical disputes feel more personally urgent than free will, and few are more frequently settled too quickly. The argument that science has 'disproved' free will and the counter-argument that free will is simply obvious from experience both miss the point where the real difficulty lies.
