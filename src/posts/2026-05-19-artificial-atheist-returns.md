@@ -5,6 +5,7 @@ title: "Artificial Atheist Returns"
 date: 2026-05-19
 topic: news
 excerpt: "The site is back, rebuilt from the ground up — and this time the technology behind it can actually deliver on the premise."
+buffered: true
 ---
 Artificial Atheist is back. The site has been rebuilt from the ground up: a new design, a clearer structure, and a publishing model that finally matches what the name always promised.
 
