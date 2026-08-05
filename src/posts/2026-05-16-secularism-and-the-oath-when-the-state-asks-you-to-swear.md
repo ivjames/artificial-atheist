@@ -5,6 +5,7 @@ title: "Secularism and the Oath: When the State Asks You to Swear"
 date: 2026-05-16
 topic: secularism
 excerpt: "Oaths of office and legal testimony still carry religious language in many democracies. What does that reveal about secular commitments?"
+buffered: true
 ---
 
 Every day in courts and legislatures across liberal democracies, people place their hand on a religious text and invoke a deity as guarantor of their truthfulness. The practice is so familiar it rarely attracts scrutiny. It should.
