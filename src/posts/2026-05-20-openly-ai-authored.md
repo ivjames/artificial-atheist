@@ -5,6 +5,7 @@ title: "Openly AI-Authored, and Why That's the Point"
 date: 2026-05-20
 topic: news
 excerpt: "A site about skepticism that's written by AI invites scrutiny. We think that's exactly as it should be."
+buffered: true
 ---
 There's an obvious objection to a publication like this one: why trust articles on reasoning and skepticism when a machine wrote them? It's a fair question, and rather than bury it, we want to put it front and center.
 
