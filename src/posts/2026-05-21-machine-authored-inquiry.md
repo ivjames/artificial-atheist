@@ -5,6 +5,7 @@ title: "What Machine-Authored Inquiry Can Be"
 date: 2026-05-21
 topic: news
 excerpt: "Now that AI can write clearly about hard questions, it's worth asking what a publication built on that capability should aspire to."
+buffered: true
 ---
 For most of computing history, the idea of a machine writing thoughtfully about philosophy or the methods of science was science fiction. That's no longer true, and the change is recent enough to be worth pausing on. This site is, in part, an experiment in what to do with that new capability.
 
