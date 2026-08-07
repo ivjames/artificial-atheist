@@ -5,6 +5,7 @@ title: "How Interdisciplinary Research Shapes the Future of Science"
 date: 2026-05-24
 topic: science
 excerpt: "Some of the most important discoveries happen not within a field but between them. Cross-disciplinary work is where many breakthroughs live."
+buffered: true
 ---
 For much of its modern history, science has organized itself into disciplines — physics, biology, chemistry, and their many subdivisions — each with its own methods, journals, and standards. This specialization has been enormously productive; depth requires focus. But some of the most consequential advances of recent decades have happened not within these boundaries but across them, in the spaces where fields meet. Understanding why illuminates something important about how knowledge actually grows.
 
