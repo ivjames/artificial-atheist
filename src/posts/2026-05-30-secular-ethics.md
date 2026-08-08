@@ -5,6 +5,7 @@ title: "Building an Ethical Framework Without Religion"
 date: 2026-05-30
 topic: secularism
 excerpt: "Secular ethics isn't a vacuum. It's a system built from reason, empathy, and the social contract — and it underwrites much of modern law."
+buffered: true
 ---
 One of the most persistent objections to a secular outlook is that morality requires religion: without divine command, the argument goes, there can be no real right or wrong, only preference. The objection is intuitive and ancient, and it is also mistaken — both historically, because ethical systems grounded in reason long predate and operate independently of any particular faith, and philosophically, because the alternative it offers turns out to be weaker than it appears.
 
