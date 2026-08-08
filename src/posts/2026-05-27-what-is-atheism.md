@@ -5,6 +5,7 @@ title: "What Is Atheism, Really?"
 date: 2026-05-27
 topic: religion
 excerpt: "Clearing up persistent misconceptions — atheism is a position on one claim, not a worldview, ideology, or moral system."
+buffered: true
 ---
 Few words generate as much confusion as "atheism." It is taken to mean certainty that no god exists, or a hostility toward religion, or a whole worldview complete with politics and morality attached. Much of the heat in debates about it comes from these misunderstandings rather than from any real disagreement. A great deal of clarity can be gained simply by being precise about what the word actually means.
 
