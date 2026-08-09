@@ -5,6 +5,7 @@ title: "The Ethical Implications of Emerging Technologies"
 date: 2026-06-02
 topic: science
 excerpt: "As AI, biotech, and surveillance expand, secular ethics must keep pace with what is technically possible — and learn to say no."
+buffered: true
 ---
 Every powerful technology arrives faster than the frameworks for governing it. The printing press, the steam engine, the atom — each forced societies to work out, after the fact, how to live with a capability they had not anticipated. We are now in the middle of several such moments at once. Artificial intelligence, genetic engineering, and pervasive surveillance each raise questions that older moral systems were not built to answer, and the gap between what we can do and what we have decided we should do has rarely been wider.
 
