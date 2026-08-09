@@ -5,6 +5,7 @@ title: "Ethical Relativism vs. Ethical Absolutism"
 date: 2026-06-04
 topic: philosophy
 excerpt: "Whether moral truths are universal or culturally contingent — a comparative analysis of one of philosophy's oldest debates."
+buffered: true
 ---
 Are some things simply wrong, everywhere and always — or does right and wrong depend on the culture doing the judging? The contest between ethical absolutism and ethical relativism is among the oldest in moral philosophy, and it remains live because each position captures something the other seems to miss.
 
