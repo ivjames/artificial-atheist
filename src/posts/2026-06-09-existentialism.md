@@ -5,6 +5,7 @@ title: "Existentialism and the Search for Meaning"
 date: 2026-06-09
 topic: philosophy
 excerpt: "How existentialist thinkers confront purpose, freedom, and identity in a world without predetermined essence."
+buffered: true
 ---
 Existentialism begins with an unsettling claim: existence precedes essence. We are not manufactured to a specification, arriving in the world with a purpose stamped on us like a tool made for a task. We arrive first, and only afterward — through what we choose and do — does anything like a defining essence take shape. For the existentialists, this reversal is the starting point for everything else.
 
