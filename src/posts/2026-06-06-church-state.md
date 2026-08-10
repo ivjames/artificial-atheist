@@ -5,6 +5,7 @@ title: "Church–State Separation and Democratic Values"
 date: 2026-06-06
 topic: secularism
 excerpt: "Why keeping religious authority out of government is foundational to pluralist democracy — and protective of faith itself."
+buffered: true
 ---
 The separation of church and state is frequently misread as hostility toward religion, a secular state's way of pushing faith to the margins. It is better understood as a structural arrangement that protects both government and belief by keeping each out of the other's proper sphere. Far from being anti-religious, separation has often been defended most vigorously by the religious themselves — those who grasped what their faith stood to lose when fused with political power.
 
