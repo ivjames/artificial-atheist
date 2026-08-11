@@ -5,6 +5,7 @@ title: "Religious Experience as Evidence: What the Data Actually Show"
 date: 2026-06-13
 topic: religion
 excerpt: "Millions report direct encounters with the divine. What do neuroscience, psychology, and philosophy make of that evidence?"
+buffered: true
 ---
 
 The argument from religious experience is one of the oldest and most personally compelling cases for theism. Unlike cosmological or design arguments, it does not depend on abstract inference — it points to something felt, immediate, and often life-altering.
