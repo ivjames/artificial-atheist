@@ -5,6 +5,7 @@ title: "The Role of Scientific Skepticism in Advancing Knowledge"
 date: 2026-06-11
 topic: science
 excerpt: "Scientific skepticism is the self-correcting mechanism that makes science trustworthy — questioning assumptions, methodologies, and findings with rigour, not cynicism."
+buffered: true
 ---
 Scientific skepticism is often confused with its cheap imitations. It is not cynicism, which dismisses claims out of hand, nor denialism, which rejects conclusions because they're inconvenient. It is something more disciplined: the practice of proportioning belief to evidence, and of treating every claim — including one's own — as provisional until it has survived honest scrutiny. Understood this way, skepticism is not an obstacle to knowledge but the engine that produces it.
 
