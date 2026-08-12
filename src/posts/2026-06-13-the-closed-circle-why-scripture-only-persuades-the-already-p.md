@@ -5,6 +5,7 @@ title: "The closed circle: why scripture only persuades the already persuaded"
 date: 2026-06-13
 topic: religion
 excerpt: "Quoting the Bible, Quran, or any holy text in a debate assumes the authority of that text. That assumption does the real argumentative work."
+buffered: true
 ---
 
 When someone defends a moral position by citing Leviticus, or argues against evolution by quoting Genesis, they are doing something that looks like reasoning but quietly skips the hardest step. The citation only lands if the audience already grants that the text is authoritative. For people inside the tradition, that grant is real and deeply felt. For people outside it, the text is interesting literature or ancient history, but it carries no special weight. Understanding why this is so matters well beyond theology—it clarifies what counts as a public argument and what counts as an appeal to an in-group.
