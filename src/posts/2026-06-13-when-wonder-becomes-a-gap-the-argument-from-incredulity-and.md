@@ -5,6 +5,7 @@ title: "When wonder becomes a gap: the argument from incredulity and DNA"
 date: 2026-06-13
 topic: philosophy
 excerpt: "'How can you look at DNA and say there is no God?' feels compelling. Here's why that feeling isn't evidence, and why that matters."
+buffered: true
 ---
 
 Few rhetorical moves are as emotionally effective—or as logically empty—as the argument from incredulity. You've almost certainly encountered it in conversation, usually dressed in the language of awe: *How can you look at DNA and say there is no God?* The question lands with force. DNA is genuinely staggering. A single human cell contains roughly three billion base pairs encoding instructions that build, maintain, and replicate an organism of enormous complexity. The feeling that something so intricate demands a designer is, in a real sense, natural. The problem is that a compelling feeling and a sound argument are not the same thing, and conflating them has costs.
