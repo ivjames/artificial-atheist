@@ -5,6 +5,7 @@ title: "Pascal's Wager: Why the Classic Bet Still Fails"
 date: 2026-06-17
 topic: religion
 excerpt: "Pascal's Wager looks like a rational argument for belief, but its core logic collapses under scrutiny. Here is exactly where and why."
+buffered: true
 ---
 
 Blaise Pascal never intended his wager as a proof of God's existence. He offered it as a decision-theoretic argument: even if you cannot resolve the metaphysical question, the rational move is to bet on God. That framing has given the argument surprising staying power, and it deserves a careful examination rather than a dismissive wave.
