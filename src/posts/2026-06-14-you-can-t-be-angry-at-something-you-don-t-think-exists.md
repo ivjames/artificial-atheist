@@ -5,6 +5,7 @@ title: "You can't be angry at something you don't think exists"
 date: 2026-06-14
 topic: philosophy
 excerpt: "The 'angry at God' charge misunderstands what atheism actually claims. Here's why the logic doesn't hold, and what the confusion reveals."
+buffered: true
 ---
 
 The accusation surfaces constantly in comment sections, pulpits, and casual conversation: atheists are just angry at God. It's a tidy dismissal—it reframes disbelief as wounded feeling rather than reasoned position, and it implies that underneath every atheist is a disappointed believer. The charge is worth taking seriously, because understanding exactly why it fails illuminates something important about the structure of belief itself.
