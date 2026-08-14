@@ -5,6 +5,7 @@ title: "Secularism and the Legal Status of Religious Divorce"
 date: 2026-06-21
 topic: secularism
 excerpt: "When religious tribunals govern marriage dissolution, secular states face a genuine tension between autonomy, equality, and non-establishment."
+buffered: true
 ---
 
 In many liberal democracies, couples can dissolve a civil marriage through secular courts while remaining bound, in the eyes of their religious community, by a separate religious marriage that only a faith tribunal can end. This gap between civil and religious divorce is not a theoretical puzzle — it has concrete consequences for real people, and it forces secular governance to answer a question it would prefer to avoid.
