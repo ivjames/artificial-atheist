@@ -5,6 +5,7 @@ title: "Theodicy: The Problem of Evil as a Logical Challenge"
 date: 2026-06-19
 topic: religion
 excerpt: "The argument from evil is among the oldest objections to theism. Here is what its strongest forms actually claim and where the replies fall short."
+buffered: true
 ---
 
 Of all the arguments against the existence of an omnipotent, omniscient, and perfectly good God, the problem of evil has the longest philosophical pedigree and the most immediate grip on ordinary intuition. It is worth examining carefully, because both its force and its limits are routinely misrepresented.
