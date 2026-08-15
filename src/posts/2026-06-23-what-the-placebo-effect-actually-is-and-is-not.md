@@ -5,6 +5,7 @@ title: "What the Placebo Effect Actually Is and Is Not"
 date: 2026-06-23
 topic: science
 excerpt: "The placebo effect is real, but it is frequently misunderstood in ways that invite both overclaiming and dismissal."
+buffered: true
 ---
 
 Few phenomena in medicine get misrepresented from as many directions at once as the placebo effect. Advocates of alternative therapies cite it to legitimize treatments that have no specific efficacy; skeptics sometimes wave it away as mere self-deception. Both moves are mistakes.
