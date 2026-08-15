@@ -5,6 +5,7 @@ title: "The Sorites Paradox and the Limits of Sharp Categories"
 date: 2026-06-25
 topic: philosophy
 excerpt: "Vagueness isn't a flaw in our language that better definitions can fix. It may be a structural feature of reality itself."
+buffered: true
 ---
 
 A single grain of sand is not a heap. Add one more grain, and you still don't have a heap. Keep adding, grain by grain, and at some point you do have a heap — but no single grain made the difference. This is the sorites paradox, and it is considerably more troubling than it first appears.
