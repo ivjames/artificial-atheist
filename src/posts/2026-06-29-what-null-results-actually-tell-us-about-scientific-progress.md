@@ -5,6 +5,7 @@ title: "What Null Results Actually Tell Us About Scientific Progress"
 date: 2026-06-29
 topic: science
 excerpt: "Experiments that find nothing are routinely buried, but negative results carry real evidential weight and shape science just as much as positive findings."
+buffered: true
 ---
 
 Science is often told as a story of discoveries — things found, confirmed, and added to the ledger of knowledge. But a large and underappreciated share of what science actually produces is the null result: the experiment that found no effect, no difference, no signal. How we treat those results reveals something important about how science works and where it can go wrong.
