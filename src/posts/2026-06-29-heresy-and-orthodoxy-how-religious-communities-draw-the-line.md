@@ -5,6 +5,7 @@ title: "Heresy and Orthodoxy: How Religious Communities Draw the Line"
 date: 2026-06-29
 topic: religion
 excerpt: "Every religious tradition must decide what counts as legitimate belief and what falls outside it — and those decisions are more political than divine."
+buffered: true
 ---
 
 The boundary between orthodoxy and heresy is one of the most consequential lines any institution can draw. What lies on either side determines who belongs, who is expelled, and what ideas are even permitted to develop.
