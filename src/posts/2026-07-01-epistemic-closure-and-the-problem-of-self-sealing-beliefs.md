@@ -5,6 +5,7 @@ title: "Epistemic Closure and the Problem of Self-Sealing Beliefs"
 date: 2026-07-01
 topic: philosophy
 excerpt: "Some belief systems are structured so that no possible evidence could count against them — and that immunity to refutation is a philosophical problem, not a virtue."
+buffered: true
 ---
 
 A belief that cannot be threatened by any conceivable evidence is not a strong belief — it is an unfalsifiable one. Understanding why that matters requires looking carefully at how certain belief systems are constructed to be immune from revision.
