@@ -5,6 +5,7 @@ title: "Secularism and the Dying: End-of-Life Law in a Religious Society"
 date: 2026-06-30
 topic: secularism
 excerpt: "When the state sets the rules around dying, religious assumptions often shape the law in ways that harm those with no faith commitments at all."
+buffered: true
 ---
 
 End-of-life law is one of the places where secular and religious conceptions of the good life collide most sharply, and most personally. The rules governing how people may die — what assistance is permitted, whose consent is required, which bodies have authority — reflect deep assumptions about the value and ownership of human life, assumptions that in many societies remain quietly theological.
