@@ -5,6 +5,7 @@ title: "Secularism and the Recognition of New Religions"
 date: 2026-07-03
 topic: secularism
 excerpt: "When the state must decide what counts as a religion, it faces a problem that secular neutrality alone cannot solve."
+buffered: true
 ---
 
 Liberal democracies generally commit to treating religions equally and avoiding favouritism toward any particular faith. That commitment, however, quietly depends on a prior decision the state rarely acknowledges: who counts as a religion in the first place?
