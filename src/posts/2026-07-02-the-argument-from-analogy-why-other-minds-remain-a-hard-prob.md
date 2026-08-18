@@ -5,6 +5,7 @@ title: "The Argument from Analogy: Why Other Minds Remain a Hard Problem"
 date: 2026-07-02
 topic: philosophy
 excerpt: "We cannot directly verify that other people are conscious, yet we assume it constantly. Examining this assumption reveals something important about evidence and inference."
+buffered: true
 ---
 
 You have direct access to exactly one mind: your own. Everyone else's inner life is, strictly speaking, invisible to you. This is not a paranoid fantasy but a genuine epistemological situation, and how we reason our way out of it has consequences far beyond personal philosophy.
