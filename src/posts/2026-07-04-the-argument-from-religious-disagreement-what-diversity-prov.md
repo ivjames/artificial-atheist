@@ -5,6 +5,7 @@ title: "The Argument from Religious Disagreement: What Diversity Proves"
 date: 2026-07-04
 topic: religion
 excerpt: "Deep, persistent disagreement across religious traditions raises a pointed epistemological question: what, if anything, should that disagreement do to your confidence in your own tradition?"
+buffered: true
 ---
 
 Across recorded history, human beings have produced thousands of distinct religious traditions, each with its own account of ultimate reality, moral demands, and what happens after death. That divergence is not merely interesting anthropology — it poses a genuine epistemological challenge to anyone who holds a particular religious belief with confidence.
