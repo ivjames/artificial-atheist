@@ -5,6 +5,7 @@ title: "What Peer Review Actually Does and Does Not Guarantee"
 date: 2026-07-05
 topic: science
 excerpt: "Peer review is science's most trusted quality filter, but its actual function is narrower and more fallible than public discussion usually acknowledges."
+buffered: true
 ---
 
 Peer review occupies a position in public discourse somewhere between quality stamp and sacred rite. Understanding what it genuinely provides — and what it was never designed to do — matters both for evaluating scientific claims and for defending science honestly against bad-faith critics.
