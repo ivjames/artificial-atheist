@@ -5,6 +5,7 @@ title: "Secularism and the Public University: Where Neutrality Gets Tested"
 date: 2026-07-07
 topic: secularism
 excerpt: "Public universities claim institutional neutrality on religion, but funding decisions, campus speech, and curriculum design reveal how hard that neutrality is to hold."
+buffered: true
 ---
 
 The public university sits at one of the sharpest pressure points in secular governance. It is simultaneously a state institution bound by constitutional neutrality, a marketplace of ideas where religious claims compete openly, and a community with pastoral responsibilities toward students whose identities are deeply religious. That combination does not resolve tidily.
