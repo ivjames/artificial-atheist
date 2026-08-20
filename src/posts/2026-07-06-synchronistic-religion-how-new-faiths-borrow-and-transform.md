@@ -5,6 +5,7 @@ title: "Synchronistic Religion: How New Faiths Borrow and Transform"
 date: 2026-07-06
 topic: religion
 excerpt: "Religious syncretism—the blending of distinct traditions—is historically normal, yet it challenges claims of revealed, unchanging truth at their foundation."
+buffered: true
 ---
 
 Every living religion is a palimpsest: older beliefs scraped down but never fully erased, with newer layers written on top. Understanding how this process works—and what it implies—is one of the more underappreciated tools of critical religious inquiry.
