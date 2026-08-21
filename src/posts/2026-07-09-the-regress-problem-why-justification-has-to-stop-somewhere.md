@@ -5,6 +5,7 @@ title: "The Regress Problem: Why Justification Has to Stop Somewhere"
 date: 2026-07-09
 topic: philosophy
 excerpt: "Every belief justified by another belief faces an infinite regress—epistemology's most stubborn structural problem and what the main solutions actually cost."
+buffered: true
 ---
 
 Ask someone why they believe something, and they will give a reason. Ask why they believe that reason, and they will give another. Keep asking, and the conversation either goes on forever, circles back on itself, or hits a wall. This is the **epistemic regress problem**, and how you resolve it shapes your entire theory of knowledge.
