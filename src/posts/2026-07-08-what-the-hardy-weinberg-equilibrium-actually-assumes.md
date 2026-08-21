@@ -5,6 +5,7 @@ title: "What the Hardy-Weinberg Equilibrium Actually Assumes"
 date: 2026-07-08
 topic: science
 excerpt: "The Hardy-Weinberg principle is foundational to population genetics, but its real power lies in the assumptions it makes—and what happens when they break down."
+buffered: true
 ---
 
 Population genetics rests on a deceptively simple equation, one that describes what a gene pool looks like when nothing interesting is happening. Understanding why that baseline matters—and what disturbs it—is central to understanding how evolution actually works.
