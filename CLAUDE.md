@@ -17,6 +17,14 @@ node/npm — all builds run on the droplet or in GitHub Actions, never locally.
   165.22.128.19. Webroot: /var/www/artificial-atheist.
 - Deploy: git push → webhook → `deploy.sh` (git reset, `npm ci`, `npm run db:deploy`,
   `npm run build`, restart the service). See `deploy/`.
+  **The webhook half of that is not working (verified 2026-09-07):** the live
+  build's newest article is dated 2026-08-01 while `main` is 37 articles ahead,
+  and every one of those 404s in production. Until someone fixes it on the box,
+  a merge to `main` ships nothing — deploy by hand with
+  `cd /var/www/artificial-atheist && ./deploy.sh`, and confirm with the article
+  check in `README.md` ("Check what is actually live") rather than a 200 on `/`.
+- `atheismiq.lab980.com` fronts this same deployment (verified 2026-09-07:
+  byte-identical HTML to the apex), so it is not a separate site to deploy.
 - AI: Claude via @anthropic-ai/sdk (articles, debate agent, moderation); OpenAI
   gpt-image-1-mini for illustrations. Keys in /etc/aa-admin.env (droplet) + Actions secrets.
 

@@ -85,9 +85,9 @@ the old Eleventy build, it is **not destructive** — the running server keeps
 serving the previous build until it's restarted, so a failed build can't take the
 live site down.
 
-Deploys are automatic: a push to `main` (from the scheduled generator, the
-pipeline, or by hand) fires the adnanh/webhook listener on the droplet, which runs
-repo-root `./deploy.sh`:
+Deploys are *meant* to be automatic: a push to `main` (from the scheduled
+generator, the pipeline, or by hand) fires the adnanh/webhook listener on the
+droplet, which runs repo-root `./deploy.sh`:
 
 1. `git fetch` + `git reset --hard origin/main`
 2. `npm ci`
@@ -95,9 +95,44 @@ repo-root `./deploy.sh`:
 4. `npm run build`
 5. restart the `artificial-atheist` service (systemd unit or pm2 app on port 8060)
 
+> **As of 2026-09-07 that chain is not running, and has not been for about five
+> weeks.** The live site's newest article is `2026-08-01-religion-by-inheritance-how-birth-predicts-belief`;
+> `origin/main` has 37 articles newer than that and **every one of them 404s on
+> the live host**. See "Check what is actually live" below for the commands.
+> Whatever is broken is on the droplet — the webhook listener, its secret, or
+> the service restart — so fixing it needs box access. Until then, **treat a
+> merge to `main` as not deployed** and run the deploy by hand:
+>
+> ```bash
+> cd /var/www/artificial-atheist && ./deploy.sh
+> ```
+
 See `deploy/README.md` for the full droplet setup (nginx thin proxy, GeoIP2 region
 gate, service install) and `deploy/GO-LIVE-RUNBOOK.md` for the chat go-live
 sequence.
+
+### Check what is actually live
+
+A 200 on the home page proves nginx answered, not which build it served — and
+this site's failure mode is precisely a build that answers 200 while being weeks
+old. Ask for something only a current build has:
+
+```bash
+# newest article on the branch
+git fetch -q origin main
+newest=$(git ls-tree -r --name-only origin/main src/posts | sort | tail -1)
+slug=$(basename "$newest" .md | sed -E 's/^[0-9]{4}-[0-9]{2}-[0-9]{2}-//')
+
+# is it live?
+curl -s -o /dev/null -w '%{http_code}\n' "https://artificialatheist.com/posts/$slug/"
+```
+
+`200` means the deploy landed. `404` means it did not, however healthy the home
+page looks. Run this before saying an article shipped.
+
+`atheismiq.lab980.com` is the same deployment, not a second one — verified
+2026-09-07, both hosts return byte-identical HTML for `/`, so checking either
+one answers for both.
 
 ## 4. Automated publishing
 
