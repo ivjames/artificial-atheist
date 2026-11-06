@@ -1,0 +1,63 @@
+---
+image: /images/posts/the-concept-of-religious-jurisdiction-when-faith-makes-its-o.png
+imageAlt: "Abstract geometric illustration: {'title':'The Concept of Religious Jurisdiction: When Faith Makes Its Own Courts','excerpt':'Religious tribunals operate inside secular states, handling everyth"
+title: "The Concept of Religious Jurisdiction: When Faith Makes Its Own Courts"
+date: 2026-11-06
+topic: religion
+excerpt: "Religious tribunals operate inside secular states, handling everything from marriage to commercial disputes — and their legitimacy raises hard questions about sovereignty and consent."
+buffered: true
+---
+
+Across the world, religious communities maintain their own formal adjudicative bodies — courts in everything but the name that issue rulings on marriage, inheritance, diet, commercial contracts, and personal conduct. These institutions sit inside secular legal systems yet claim an authority that derives from somewhere else entirely. Understanding what they are, how they work, and what problems they create is essential for anyone thinking seriously about the relationship between organised religion and the modern state.
+
+## What religious tribunals actually are
+
+A **religious tribunal** is a body constituted under religious law that makes binding or quasi-binding determinations about the status and conduct of community members. The range is wide. Jewish *batei din* (singular: *beit din*) handle commercial arbitration, conversion, divorce, and dietary certification in communities across Europe, North America, and Israel. Islamic *sharia councils* in the United Kingdom issue religious divorce certificates — the *talaq* or *khul'* — that have no direct civil-law standing but carry decisive social weight within Muslim communities. Catholic marriage tribunals operate in every diocese worldwide, adjudicating annulments that the Church treats as declarations of nullity. Hindu and Sikh panchayats in South Asian diaspora communities sometimes settle family and property matters informally but with community-enforced authority.
+
+These bodies differ in their degree of formalisation, in whether they interact with civil courts, and in whether their rulings have any secular legal force. What they share is the claim that the community's internal law — divine in origin, interpretively maintained by qualified scholars or clergy — takes precedence over, or at minimum supplements, the law of the surrounding state.
+
+## The two legitimacy claims in conflict
+
+Secular constitutional theory holds that state law is the supreme arbitrative framework within a jurisdiction. Individuals and organisations may enter private contracts, and they may submit disputes to arbitration under those contracts, but the authority of any arbitral body derives ultimately from state law, which defines what is arbitrable and enforces (or refuses to enforce) awards.
+
+Religious tribunals assert something different. They claim a jurisdiction grounded not in state delegation but in divine command, covenantal obligation, or communal tradition. A rabbinical court does not understand itself as a creature of civil arbitration law, even when it operates as one for the purpose of enforcing decisions. A Catholic tribunal judging whether a marriage was sacramentally valid is not applying state contract principles — it is applying canon law to a question the Church holds the state has no competence to answer.
+
+This creates a layered tension. When the two systems produce compatible results, the tension is invisible. When they diverge — when a civil court recognises a marriage that a religious tribunal deems null, or when a religious tribunal refuses a divorce that a civil court has already granted — the conflict becomes concrete and consequential for real people.
+
+## Consent and the problem of community pressure
+
+The standard secular defence of religious arbitration rests on consent. Adults are free to submit their disputes to any agreed arbitral body, religious or otherwise, and to structure their lives according to voluntary religious commitments. On this view, a Jewish couple who sign a *ketubah* and agree to bring marital disputes before a *beit din* are exercising exactly the same autonomy as parties who agree to commercial arbitration.
+
+The objection is that consent within tight-knit religious communities is never entirely voluntary in the relevant sense. When a community applies social, familial, and spiritual pressure to bring disputes before its own tribunal, the formal availability of civil-court alternatives may be practically irrelevant. This is especially sharp for women in patriarchal religious legal systems. Under traditional Jewish law, a religious divorce — the *get* — must be granted by the husband. A civil court can dissolve the marriage, but a woman whose husband refuses the *get* remains an *agunah* — a "chained woman" — unable to remarry within Orthodox practice without facing the stigma of illegitimacy for any future children. The civil remedy exists; the religious harm persists. Some *batei din* in the United States have adopted mechanisms — including conditional *gets* signed before the marriage — to address this, but the problem has not disappeared.
+
+Sharia councils in the United Kingdom have been criticised on related grounds. Researchers including Machteld Zee and the independent review led by Mona Siddiqui in 2016–17 found that some women approached councils under social pressure, that councils sometimes encouraged reconciliation in cases involving domestic abuse, and that women were not always clearly informed of their civil-law rights. The Siddiqui review recommended improved oversight and registration requirements. Critics wanted outright abolition; defenders argued that Muslim women had a genuine need for Islamic divorce certificates their communities recognised, and that abolition would not eliminate the councils but merely drive them underground.
+
+## Jurisdiction by default and the state's options
+
+States have responded to religious tribunals in broadly three ways. Some formally integrate them. Israel vests jurisdiction over the personal status of Jewish citizens — marriage, divorce, conversion — in the state rabbinical courts, with no civil alternative for marriage. Muslim and Christian citizens fall under their respective community tribunals for similar matters. The result is that personal status in Israel is determined entirely by religious law, with no secular exit within the state. Secular Israeli citizens who want a civil marriage must travel abroad.
+
+Other states formally exclude religious law from legal force but tolerate religious tribunals as social institutions with no enforcement power. England and Wales permit *batei din* and sharia councils to operate as arbitral bodies under the Arbitration Act 1996 for commercial matters and, under the same Act, for certain civil disputes where both parties consent and no mandatory rules of law are overridden. Family law in England cannot be arbitrated away from the Family Court's oversight, which limits but does not eliminate the influence of religious bodies on family outcomes.
+
+A third group of states — France is the clearest example — treats any parallel normative system with deep suspicion, rooted in the republican principle that citizens relate to the state as individuals, not as members of corporate religious communities. French law makes no provision for religious arbitration, and the courts decline to enforce rulings that derive from religious rather than civil standards. This has not eliminated unofficial religious adjudication; it has simply made it invisible to the law.
+
+## What the internal law actually looks like
+
+It is worth pausing on the content of the law these tribunals apply, because the debate about jurisdiction often obscures how complex and contested that content is. Islamic jurisprudence is not monolithic: the Hanafi, Maliki, Shafi'i, and Hanbali schools differ substantially on questions of contract, inheritance, and personal status, and contemporary Islamic legal scholars actively debate how classical rules apply to modern conditions. A sharia council staffed by scholars from one tradition may issue rulings that scholars from another tradition regard as erroneous. The authority of the tribunal depends partly on the community's confidence in the scholars who staff it.
+
+Canon law is a fully developed legal system with professional jurists, a codified text last revised in 1983, and an appeals structure culminating in the Roman Rota in Vatican City. It is in some respects more formally systematic than the civil law of small states. Jewish law is perhaps the most internally contested: *halacha* has been debated continuously for two millennia, and the authority of any given *posek* (decisor) depends on a complex web of community recognition and scholarly reputation rather than any formal institutional appointment.
+
+What all these systems share is **interpretive depth** — centuries of accumulated reasoning, case-based precedent, and theoretical elaboration that cannot be reduced to a simple set of arbitrary rules. This matters for the secular critique. The dismissive view that religious law is merely superstition dressed up as adjudication misunderstands what it is engaging with. The serious critique is not that the law is irrational but that its authority claim is not grounded in consent in a sufficiently robust sense, and that it may systematically disadvantage parties — usually women, usually those with less standing in the religious hierarchy — who lack the community power to resist unfavourable rulings.
+
+## Where the pressure points actually lie
+
+Three specific problems deserve attention from a critical standpoint.
+
+First, **enforcement asymmetries**. Religious tribunals have no independent coercive power. They rely on community pressure, reputational consequences, and the internal stakes of religious status. Where those stakes fall unevenly — where one party's religious standing matters more than the other's — the tribunal process is structurally biased. This is not a marginal concern; it is endemic to any adjudicative body that relies on informal rather than formal enforcement.
+
+Second, **the opacity problem**. Religious tribunals typically operate without the transparency requirements that state courts face. No published docket, no requirement that rulings be reasoned in a form accessible to outsiders, no independent appeals mechanism that answers to civil oversight. Where abuse or error occurs — a ruling obtained by misrepresentation, a council that fails to notice signs of coercion — there is often no mechanism for review.
+
+Third, **the definitional problem**. As religious communities diversify internally, the question of who counts as an authoritative religious tribunal becomes contested. If a liberal Jewish community establishes a *beit din* that operates on egalitarian principles and grants the *get* without requiring the husband's exclusive consent, Orthodox communities will not recognise its rulings. The proliferation of competing tribunals within a single tradition reduces the authority any of them can claim, even as it multiplies the forums in which community members may face pressure.
+
+None of these problems implies that the existence of religious tribunals is simply illegitimate. They serve real needs: communities require mechanisms for translating religious commitments into structured outcomes, and many disputes — conversion, ritual status, religious divorce — have no civil-law equivalent because the state has no interest in adjudicating them. The question is not whether such bodies should exist at all, but under what conditions they should operate, what oversight is proportionate, and how the state should respond when religious jurisdiction and individual rights pull in opposite directions.
+
+The honest answer is that secular states have not resolved this. The Israeli model subordinates individual civil equality to communal religious identity. The French republican model achieves formal neutrality by ignoring what actually governs people's lives. The English common-law model of supervised tolerance is pragmatic but piecemeal, dependent on case-by-case judicial review rather than principled design. What is needed — and largely missing — is a coherent theory of when a community's claim to self-govern its members is compatible with the state's obligation to protect those members as rights-bearing individuals. That theory would have to take religious jurisdiction seriously as a phenomenon, rather than treating it as an anomaly to be managed or an embarrassment to be suppressed.
