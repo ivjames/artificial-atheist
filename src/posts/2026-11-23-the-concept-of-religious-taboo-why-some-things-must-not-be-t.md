@@ -1,0 +1,51 @@
+---
+image: /images/posts/the-concept-of-religious-taboo-why-some-things-must-not-be-t.png
+imageAlt: "Abstract geometric illustration: {'title':'The Concept of Religious Taboo: Why Some Things Must Not Be Touched','excerpt':'Religious taboos are not arbitrary prohibitions — they encode social b"
+title: "The Concept of Religious Taboo: Why Some Things Must Not Be Touched"
+date: 2026-11-23
+topic: religion
+excerpt: "Religious taboos are not simply arbitrary prohibitions — they encode social boundaries, enforce hierarchy, and reveal what a community treats as most sacred."
+buffered: true
+---
+
+Taboo is one of the most universal features of religious life, yet it receives far less philosophical attention than doctrines about God, the soul, or the afterlife. This is a mistake. What a community forbids often tells you more about its deepest commitments than what it explicitly affirms.
+
+## What a taboo actually is
+
+The word arrives in English from the Tongan *tapu*, recorded by Captain Cook in 1777, but the phenomenon it names is ancient and cross-cultural. A **taboo** is a prohibition that is felt to be binding not because it has been argued for but because violation carries a quality of wrongness that precedes any justification. This is what distinguishes taboos from ordinary rules. A speed limit is a rule: you can explain its rationale, debate the number, and change it by democratic vote. A taboo resists that treatment. Asking for the justification of certain taboos can itself feel like a transgression.
+
+The anthropologist Mary Douglas argued in *Purity and Danger* (1966) that taboos are fundamentally about **categorical order**. Things become taboo when they violate the conceptual categories a culture uses to organise reality. Pigs, in the Levitical code, are anomalous: they have split hooves like permitted animals but do not chew the cud. They fall between categories, and this categorical failure is experienced as pollution. The prohibition on pork is not, on this reading, about hygiene or arbitrary divine fiat — it is about maintaining a symbolic system in which the world is ordered and legible. Douglas's insight is that dirt is not an objective property but a relational one: matter out of place.
+
+## The sacred and the polluting share a logic
+
+One feature of religious taboos that strikes secular observers as paradoxical is that the sacred and the polluting often operate under the same rules. In many traditions, touching a holy object without authorisation is as dangerous as touching a corpse. The Hebrew *kodesh* (holy) and *tame* (impure) are opposites in content but siblings in structure: both require separation, both require ritual to manage contact, and both can contaminate the unprepared. Émile Durkheim called this the **ambivalence of the sacred** — the numinous is simultaneously attractive and threatening, a source of power that can destroy those who approach it without preparation.
+
+This logic survives in secularised forms. The body of a head of state, certain national flags, the original manuscript of a founding document — these are not explicitly sacred in a theological sense, yet they attract taboo-adjacent behaviour. People instinctively feel that burning a flag is different from burning a piece of coloured cloth, that spitting on a war memorial is different from spitting on a wall. The feeling is structurally identical to religious pollution anxiety. What differs is whether the community would cash it out in supernatural terms.
+
+## How taboos enforce hierarchy
+
+Taboos are rarely applied uniformly. In practice, who may touch, eat, speak, see, or enter is calibrated against social position. This is most visible in caste-based systems, where **contact taboos** between groups encode and reproduce the entire social order. The logic of untouchability in traditional Hindu practice is precisely that certain people are themselves polluting to the touch — their categorical status is one of permanent impurity. This is not an incidental feature of caste; it is the mechanism by which caste is enforced. Remove the pollution logic and you remove the main instrument of subordination.
+
+Priestly castes and classes operate on the same logic from the other direction. The priest may touch, enter, or handle what the layperson may not. In the Jerusalem Temple, only the High Priest could enter the Holy of Holies, and only on Yom Kippur after elaborate purification. This exclusive access is not merely symbolic: it concentrates religious authority in a person and lineage. Taboo and power reinforce each other. The person who controls who may approach the sacred controls a great deal.
+
+This observation has genuine critical force. When a tradition claims that women may not handle sacred texts, lead certain prayers, or enter certain spaces, the justification is typically framed as one of purity or divine command. But the structural function is the same as any other access taboo: it enforces a hierarchy by making the hierarchy feel cosmically necessary rather than humanly constructed. Pointing this out does not automatically show that the prohibition is wrong in its own terms — a committed believer will say the hierarchy really is cosmically necessary — but it does explain why reformers inside traditions find these prohibitions so resistant to argument. The prohibition is not held in place by reasons; it is held in place by the feeling that questioning it is itself dangerous.
+
+## Food taboos and their surprising complexity
+
+Food taboos are probably the most familiar category for people outside the traditions that hold them, and they are also among the most debated. The temptation is to explain them away as early public health measures — the pork prohibition as trichinosis prevention, the shellfish prohibition as protection against coastal pathogens. This explanation has the virtue of making taboos seem rational, but it has the defect of being almost certainly wrong as a historical account. The prohibitions in Leviticus are not framed as hygiene rules; they are framed as holiness rules. Keeping them is what it means to be set apart. The dietary system is a daily practice of **boundary maintenance** — a constant re-enactment of distinction between Israel and the nations, the clean and the unclean, the ordered and the chaotic.
+
+This does not mean food taboos have no social functions. They do, and those functions are well documented. Shared food rules create in-group cohesion. They make it difficult to eat with outsiders, which limits intermarriage and assimilation. They provide a daily test of commitment that is cheap to perform but socially costly to defect from in public. Islamic *halal* and Jewish *kashrut* both function this way, maintaining community boundaries through every meal. The critical point is that the function and the believer's experienced meaning are both real, and neither fully explains the other.
+
+## When taboos collapse and what that reveals
+
+Taboos do not feel like arbitrary conventions while they are operative, but they can collapse remarkably quickly. The purity code in Acts — where Peter's vision of the sheet full of animals tells him to eat what was formerly forbidden — is theologically understood as a divine abrogation of the food laws, but sociologically it marks the moment when the early Jesus movement decided to recruit Gentiles at scale. The taboo was not reasoned away; it was superseded by a new community boundary that required different markers. What seemed cosmically necessary turned out to be contingent on a particular social project.
+
+This pattern recurs. Taboos against interfaith marriage, against leaving the tradition, against discussing certain doctrinal questions openly — all have shown capacity for rapid collapse once the community's social situation changes sufficiently. The collapse is usually experienced either as liberation or as catastrophic loss of holiness, depending on where you stand. What it reveals to the outside observer is that the **absolute feeling** attaching to a taboo is not evidence of its cosmic status. Many things have felt absolutely forbidden and then ceased to feel that way within a generation.
+
+## The epistemological challenge taboos pose
+
+For the secular or critical thinker, taboos present a specific epistemological difficulty. The normal toolkit of argument — presenting evidence, drawing inferences, offering counterexamples — does not engage well with taboo prohibitions, because the prohibitions are not held in place by argument in the first place. Jonathan Haidt's moral psychology research found that when people violate taboos in thought experiments (eating a chicken that has been used for sexual purposes before being cleaned and cooked, for instance), they report moral wrongness but cannot articulate a reason. He called this **moral dumbfounding**: the conviction precedes and survives the absence of justification.
+
+This matters for how critics of religious taboos should approach the conversation. Pointing out that a food taboo has no detectable hygienic basis does not touch the believer, because hygienic justification was never the point. The more productive inquiry asks what work the taboo is doing: what boundary it maintains, what hierarchy it enforces, what community it constitutes. That inquiry respects the phenomenon without conceding that the taboo is beyond evaluation. Some taboos do genuine harm — those that mark persons as polluting, that restrict access to basic goods on the basis of gender or caste, that quarantine the dying from their own communities. These deserve direct challenge, not on the grounds that the taboo feeling is irrational in structure, but on the grounds that the specific boundary being enforced causes specific, identifiable harm.
+
+The structure of taboo is likely a permanent feature of human social life, inside and outside religion. The question is not whether we will have things that feel absolutely forbidden but which things those will be, who controls the designation, and whether the feeling of absolute wrongness tracks anything we have independent reason to care about. That is an empirical and ethical question, not a merely anthropological one.
